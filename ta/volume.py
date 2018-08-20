@@ -80,14 +80,7 @@ def on_balance_volume_mean(close, volume, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    df = pd.DataFrame([close, volume]).T
-    sign = close.diff(1)
-    sign[sign > 0] = 1
-    sign[sign < 0] = -1
-    sign.iloc[0] = 1
-    
-    signed_volume = sign * volume
-    obv = signed_volume.cumsum()
+    obv = on_balance_volume(close, volume, fillna=fillna)
     obv = obv.rolling(n).mean()
     if fillna:
         obv = obv.fillna(0)

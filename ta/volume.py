@@ -91,7 +91,7 @@ def on_balance_volume_mean(close, volume, n=10, fillna=False):
     
     signed_volume = sign * volume
     obv = signed_volume.cumsum()
-    return dpd.Series(obv, name='obv')
+    return pd.Series(obv, name='obv')
 
 
 def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):

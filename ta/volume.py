@@ -40,8 +40,8 @@ def acc_dist_index(high, low, close, volume, fillna=False):
 def on_balance_volume(close, volume, fillna=False):
     """On-balance volume (OBV)
 
-    It relates price and volume in the stock market. OBV is based on a
-    cumulative total volume.
+    It relates price and volume in the stock market. OBV is based on
+    signed cumulative volume.
 
     https://en.wikipedia.org/wiki/On-balance_volume
 
@@ -53,24 +53,21 @@ def on_balance_volume(close, volume, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    df = pd.DataFrame([close, volume]).transpose()
-    df['OBV'] = 0
-    c1 = close < close.shift(1)
-    c2 = close > close.shift(1)
-    if c1.any():
-        df.loc[c1, 'OBV'] = - volume
-    if c2.any():
-        df.loc[c2, 'OBV'] = volume
-    obv = df['OBV']
-    if fillna:
-        obv = obv.fillna(0)
+    df = pd.DataFrame([close, volume]).T
+    sign = close.diff(1)
+    sign[sign > 0] = 1
+    sign[sign < 0] = -1
+    sign.iloc[0] = 1
+    
+    signed_volume = sign * volume
+    obv = signed_volume.cumsum()
     return pd.Series(obv, name='obv')
 
 
 def on_balance_volume_mean(close, volume, n=10, fillna=False):
     """On-balance volume mean (OBV mean)
 
-    It's based on a cumulative total volume.
+    It's based on signed cumulative volume.
 
     https://en.wikipedia.org/wiki/On-balance_volume
 
@@ -83,18 +80,18 @@ def on_balance_volume_mean(close, volume, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-    df = pd.DataFrame([close, volume]).transpose()
-    df['OBV'] = 0
-    c1 = close < close.shift(1)
-    c2 = close > close.shift(1)
-    if c1.any():
-        df.loc[c1, 'OBV'] = - volume
-    if c2.any():
-        df.loc[c2, 'OBV'] = volume
-    obv = df['OBV'].rolling(n).mean()
+    df = pd.DataFrame([close, volume]).T
+    sign = close.diff(1)
+    sign[sign > 0] = 1
+    sign[sign < 0] = -1
+    sign.iloc[0] = 1
+    
+    signed_volume = sign * volume
+    obv = signed_volume.cumsum()
+    obv = obv.rolling(n).mean()
     if fillna:
         obv = obv.fillna(0)
-    return pd.Series(obv, name='obv')
+    return pd.Series(obv, name=f"obvm_{n}")
 
 
 def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):

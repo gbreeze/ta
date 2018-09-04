@@ -80,11 +80,26 @@ def on_balance_volume_mean(close, volume, n=10, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
+<<<<<<< HEAD
     obv = on_balance_volume(close, volume, fillna=fillna)
     obv = obv.rolling(n).mean()
     if fillna:
         obv = obv.fillna(0)
     return pd.Series(obv, name=f"obvm_{n}")
+=======
+    df = pd.DataFrame([close, volume]).transpose()
+    df['OBV'] = 0
+    c1 = close < close.shift(1)
+    c2 = close > close.shift(1)
+    if c1.any():
+        df.loc[c1, 'OBV'] = - volume
+    if c2.any():
+        df.loc[c2, 'OBV'] = volume
+    obv = df['OBV'].rolling(n).mean()
+    if fillna:
+        obv = obv.fillna(0)
+    return pd.Series(obv, name='obv')
+>>>>>>> parent of 8dfe7eb... Corrected OBV Calculation.
 
 
 def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):

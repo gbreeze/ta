@@ -53,16 +53,6 @@ def on_balance_volume(close, volume, fillna=False):
     Returns:
         pandas.Series: New feature generated.
     """
-<<<<<<< HEAD
-    df = pd.DataFrame([close, volume]).T
-    sign = close.diff(1)
-    sign[sign > 0] = 1
-    sign[sign < 0] = -1
-    sign.iloc[0] = 1
-    
-    signed_volume = sign * volume
-    obv = signed_volume.cumsum()
-=======
     df = pd.DataFrame([close, volume]).transpose()
     df['OBV'] = 0
     c1 = close < close.shift(1)
@@ -74,7 +64,6 @@ def on_balance_volume(close, volume, fillna=False):
     obv = df['OBV']
     if fillna:
         obv = obv.replace([np.inf, -np.inf], np.nan).fillna(0)
->>>>>>> upstream/master
     return pd.Series(obv, name='obv')
 
 

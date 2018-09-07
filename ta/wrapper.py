@@ -99,8 +99,8 @@ def add_trend_ta(df, high, low, close, fillna=False):
                                     fillna=fillna)
     df['trend_macd_diff'] = macd_diff(df[close], n_fast=12, n_slow=26, n_sign=9,
                                     fillna=fillna)
-    df['trend_ema_fast'] = ema(df[close], n=12, fillna=fillna)
-    df['trend_ema_slow'] = ema(df[close], n=26, fillna=fillna)
+    df['trend_ema_fast'] = ema_indicator(df[close], n=12, fillna=fillna)
+    df['trend_ema_slow'] = ema_indicator(df[close], n=26, fillna=fillna)
     df['trend_adx'] = adx(df[high], df[low], df[close], n=14, fillna=fillna)
     df['trend_adx_pos'] = adx_pos(df[high], df[low], df[close], n=14, fillna=fillna)
     df['trend_adx_neg'] = adx_neg(df[high], df[low], df[close], n=14, fillna=fillna)
@@ -123,6 +123,9 @@ def add_trend_ta(df, high, low, close, fillna=False):
     df['trend_kst_diff'] = df['trend_kst'] - df['trend_kst_sig']
     df['trend_ichimoku_a'] = ichimoku_a(df[high], df[low], n1=9, n2=26, fillna=fillna)
     df['trend_ichimoku_b'] = ichimoku_b(df[high], df[low], n2=26, n3=52, fillna=fillna)
+    df['trend_aroon_up'] = aroon_up(df[close], n=25, fillna=fillna)
+    df['trend_aroon_down'] = aroon_down(df[close], n=25, fillna=fillna)
+    df['trend_aroon_ind'] = df['trend_aroon_up'] - df['trend_aroon_down']
     return df
 
 

@@ -16,6 +16,8 @@ class BasePandasObject(PandasObject):
         
         total_columns = len(data.columns)
         if total_columns > 0:
+            # Lower Case Initial Columns
+            data.columns = data.columns.str.lower()
             self._data = data
         else:
             raise AttributeError(f"[X] No columns!")
@@ -71,7 +73,8 @@ class AnalysisIndicators(BasePandasObject):
         """ hl2 = (high + low) / 2 """
         df = self._valid_df('hl2')
 
-        # Get the correct columns
+        # Get the correct columns.
+        # If parameters are pandas, use those and skip df columns
         if self._valid_pandas(high):
             high = high
         else:

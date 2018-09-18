@@ -76,7 +76,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
 
-    ## Category
+    ## Categories
     hl2.category = 'overlay'
 
     ## Aliases

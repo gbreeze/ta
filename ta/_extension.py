@@ -70,7 +70,21 @@ class AnalysisIndicators(BasePandasObject):
 
     ## Indicators
     def hl2(self, high=None, low=None, **kwargs):
-        """ hl2 = (high + low) / 2 """
+        """Calculates and returns the average of two series.
+
+        Parameters:
+        -----------
+        high: None or a Series or DataFrame, optional
+            If None, uses local df column: 'high'
+        low: None or a Series or DataFrame, optional
+            If None, uses local df column: 'low'
+        append: bool, kwarg, optional
+            If True, appends result to current df
+        
+        Returns:
+        --------
+        hl2 = (high + low) / 2
+        """
         df = self._valid_df('hl2')
 
         # Get the correct columns.

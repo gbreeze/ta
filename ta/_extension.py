@@ -68,7 +68,7 @@ class AnalysisIndicators(BasePandasObject):
     def _valid_pandas(self, name):
         return isinstance(name, pd.DataFrame) or isinstance(name, pd.Series)
 
-    ## Indicators
+    ## Overlay Indicators
     def hl2(self, high=None, low=None, **kwargs):
         """Calculates and returns the average of two series.
 
@@ -163,6 +163,66 @@ class AnalysisIndicators(BasePandasObject):
         
         return hlc3
 
+
+    def ohlc4(self, open_=None, high=None, low=None, close=None, **kwargs):
+        """Calculates and returns the average of four series.
+
+        Parameters:
+        -----------
+        open_: None or a Series or DataFrame, optional
+            If None, uses local df column: 'open'
+        high: None or a Series or DataFrame, optional
+            If None, uses local df column: 'high'
+        low: None or a Series or DataFrame, optional
+            If None, uses local df column: 'low'
+        close: None or a Series or DataFrame, optional
+            If None, uses local df column: 'close'
+        append: bool, kwarg, optional
+            If True, appends result to current df
+        
+        Returns:
+        --------
+        ohlc4 = (open + high + low + close) / 4
+        """
+        df = self._valid_df('ohlc4')
+
+        # Get the correct columns.
+        # If parameters are pandas, use those and skip df columns
+        if self._valid_pandas(open_):
+            open_ = open_
+        else:
+            open_ = df[open_] if open_ in df.columns else df.open
+
+        if self._valid_pandas(high):
+            high = high
+        else:
+            high = df[high] if high in df.columns else df.high
+        
+        if self._valid_pandas(low):
+            low = low
+        else:
+            low = df[low] if low in df.columns else df.low
+
+        if self._valid_pandas(close):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
+
+        # Calculate Result
+        ohlc4 = 0.25 * (open_ + high + low + close)
+
+        # Name & Category
+        ohlc4.name = 'OHLC4'
+        ohlc4.category = 'overlay'
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[ohlc4.name] = ohlc4
+        
+        return ohlc4
+
+
     ## Aliases
     HL2 = hl2
     HLC3 = hlc3
+    OHLC4 = ohlc4

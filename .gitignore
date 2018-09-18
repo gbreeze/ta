@@ -110,3 +110,7 @@ env/**
 
 # Original Source (Dev)
 ta/_wrapper.py
+
+# twopirllc stuff
+data/AAPL_D.csv
+driver.py

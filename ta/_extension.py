@@ -12,6 +12,7 @@ class BasePandasObject(PandasObject):
         if data.empty:
             return None
         
+        print(f"Total Columns: {len(data.columns)}")
         if len(data.columns):
             self._data = data
         else:
@@ -23,7 +24,22 @@ class BasePandasObject(PandasObject):
 
 @pd.api.extensions.register_dataframe_accessor('ta')
 class AnalysisIndicators(BasePandasObject):
-    """ """
+    """AnalysisIndicators registers the extension 'ta' to the DataFrame.
+    
+    All Indicators can be called one of two ways:
+    Given a TimeSeries DataFrame called df with lower case column names. ie. open, high, lose, close, volume
+
+    Example:
+    df = pd.read_csv('AAPL.csv', index_col='date', parse_dates=True, dtype=float, infer_datetime_format=False, keep_date_col=True)
+
+    Calling HL2:
+    * hl2 = df.ta.hl2()
+    * hl2 = df.ta.HL2()
+    * hl2 = df.ta(kind='hl2')
+
+    Additional kwargs:
+    * append: Default: False.  If True, appends the indicator result to the df.
+    """
 
     def __call__(self, kind=None, **kwargs):
         try:

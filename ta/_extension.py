@@ -81,8 +81,9 @@ class AnalysisIndicators(BasePandasObject):
         # Calculate Result
         hl2 = 0.5 * (high + low)
 
-        # Name it
+        # Name & Category
         hl2.name = 'HL2'
+        hl2.category = 'overlay'
 
         # If 'append', then add it to the df
         if 'append' in kwargs and kwargs['append']:
@@ -91,9 +92,6 @@ class AnalysisIndicators(BasePandasObject):
         return hl2
 
 
-
-    ## Categories
-    hl2.category = 'overlay'
 
     ## Aliases
     HL2 = hl2

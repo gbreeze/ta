@@ -5,7 +5,9 @@ import pandas as pd
 
 from pandas.core.base import PandasObject
 
+
 class BasePandasObject(PandasObject):
+    """ """
     def __init__(self, data, **kwargs):
         if data.empty:
             return None
@@ -17,3 +19,16 @@ class BasePandasObject(PandasObject):
     
     def __call__(self, kind, *args, **kwargs):
         raise NotImplementedError()
+
+
+@pd.api.extensions.register_dataframe_accessor('ta')
+class AnalysisIndicators(BasePandasObject):
+    """ """
+
+    def __call__(self, kind=None, **kwargs):
+        try:
+            indicator = getattr(self, kind.lower())
+        except AttributeError:
+            raise ValueError(f"kind='{kind.lower()}' is not valid for {self.__class__.__name__}")
+        
+        return indicator(**kwargs)

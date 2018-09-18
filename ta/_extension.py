@@ -32,3 +32,16 @@ class AnalysisIndicators(BasePandasObject):
             raise ValueError(f"kind='{kind.lower()}' is not valid for {self.__class__.__name__}")
         
         return indicator(**kwargs)
+    
+    def _valid_df(self, name=None):
+        try:
+            df = self._data
+        except AttributeError as ex:
+            msg = f"[X] {ex}: Invalid DataFrame"
+            if name:
+                print(msg + f": {name}")
+            else:
+                print(msg)
+            return None
+        return df
+        

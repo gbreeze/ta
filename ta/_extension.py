@@ -44,4 +44,31 @@ class AnalysisIndicators(BasePandasObject):
                 print(msg)
             return None
         return df
+
+
+    def hl2(self, high=None, low=None, **kwargs):
+        """ hl2 = (high + low) / 2 """
+        df = self._valid_df('hl2')
+
+        # Get the correct columns
+        if isinstance(high, pd.DataFrame) or isinstance(high, pd.Series):
+            high = high
+        else:
+            high = df[high] if high in df.columns else df.high
         
+        if isinstance(low, pd.DataFrame) or isinstance(low, pd.Series):
+            low = low
+        else:
+            low = df[low] if low in df.columns else df.low
+        
+        # Calculate Result
+        hl2 = 0.5 * (high + low)
+
+        # Name it
+        hl2.name = 'hl2'
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[hl2.name] = hl2
+        
+        return hl2

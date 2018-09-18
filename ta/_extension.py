@@ -46,6 +46,7 @@ class AnalysisIndicators(BasePandasObject):
         return df
 
 
+    ## Indicators
     def hl2(self, high=None, low=None, **kwargs):
         """ hl2 = (high + low) / 2 """
         df = self._valid_df('hl2')
@@ -65,10 +66,18 @@ class AnalysisIndicators(BasePandasObject):
         hl2 = 0.5 * (high + low)
 
         # Name it
-        hl2.name = 'hl2'
+        hl2.name = 'HL2'
 
         # If 'append', then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[hl2.name] = hl2
         
         return hl2
+
+
+
+    ## Category
+    hl2.category = 'overlay'
+
+    ## Aliases
+    HL2 = hl2

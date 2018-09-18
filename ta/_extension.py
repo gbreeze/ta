@@ -7,16 +7,18 @@ from pandas.core.base import PandasObject
 
 
 class BasePandasObject(PandasObject):
-    """ """
+    """Simple PandasObject Extension
+    
+    Ensures the DataFrame is not empty and has columns."""
     def __init__(self, data, **kwargs):
         if data.empty:
             return None
         
-        print(f"Total Columns: {len(data.columns)}")
-        if len(data.columns):
+        total_columns = len(data.columns)
+        if total_columns > 0:
             self._data = data
         else:
-            raise AttributeError(f"[X] Not enough columns!")
+            raise AttributeError(f"[X] No columns!")
     
     def __call__(self, kind, *args, **kwargs):
         raise NotImplementedError()

@@ -63,6 +63,8 @@ class AnalysisIndicators(BasePandasObject):
             return None
         return df
 
+    def _valid_pandas(self, name):
+        return isinstance(name, pd.DataFrame) or isinstance(name, pd.Series)
 
     ## Indicators
     def hl2(self, high=None, low=None, **kwargs):
@@ -70,12 +72,12 @@ class AnalysisIndicators(BasePandasObject):
         df = self._valid_df('hl2')
 
         # Get the correct columns
-        if isinstance(high, pd.DataFrame) or isinstance(high, pd.Series):
+        if self._valid_pandas(high):
             high = high
         else:
             high = df[high] if high in df.columns else df.high
         
-        if isinstance(low, pd.DataFrame) or isinstance(low, pd.Series):
+        if self._valid_pandas(low):
             low = low
         else:
             low = df[low] if low in df.columns else df.low

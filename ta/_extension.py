@@ -113,6 +113,56 @@ class AnalysisIndicators(BasePandasObject):
         return hl2
 
 
+    def hlc3(self, high=None, low=None, close=None, **kwargs):
+        """Calculates and returns the average of three series.
+
+        Parameters:
+        -----------
+        high: None or a Series or DataFrame, optional
+            If None, uses local df column: 'high'
+        low: None or a Series or DataFrame, optional
+            If None, uses local df column: 'low'
+        close: None or a Series or DataFrame, optional
+            If None, uses local df column: 'close'
+        append: bool, kwarg, optional
+            If True, appends result to current df
+        
+        Returns:
+        --------
+        hlc3 = (high + low + close) / 3
+        """
+        df = self._valid_df('hlc3')
+
+        # Get the correct columns.
+        # If parameters are pandas, use those and skip df columns
+        if self._valid_pandas(high):
+            high = high
+        else:
+            high = df[high] if high in df.columns else df.high
+        
+        if self._valid_pandas(low):
+            low = low
+        else:
+            low = df[low] if low in df.columns else df.low
+
+        if self._valid_pandas(close):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
+
+        # Calculate Result
+        hlc3 = (high + low + close) / 3
+
+        # Name & Category
+        hlc3.name = 'HLC3'
+        hlc3.category = 'overlay'
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[hlc3.name] = hlc3
+        
+        return hlc3
 
     ## Aliases
     HL2 = hl2
+    HLC3 = hlc3

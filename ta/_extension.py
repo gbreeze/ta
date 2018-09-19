@@ -5,6 +5,19 @@ import pandas as pd
 
 from pandas.core.base import PandasObject
 
+
+def positive_int(x, minimum, verbose=False):
+    # return int(x) if x and x > 0 else minimum
+    try:
+        valid = int(x)
+    except ValueError as vex:
+        print(f"[X] {vex}\n")
+        return
+    else:
+        print(f"[i] int({x})= {valid}") if verbose else None
+        return valid
+
+
 class BasePandasObject(PandasObject):
     """Simple PandasObject Extension
     
@@ -75,8 +88,8 @@ class AnalysisIndicators(BasePandasObject):
         """
         try:
             df = self._data
-        except AttributeError as ex:
-            msg = f"[X] {ex}: Invalid DataFrame"
+        except AttributeError as aex:
+            msg = f"[X] {aex}: Invalid DataFrame"
             msg = msg + f": {name}" if name else msg
             print(msg)
             return None
@@ -84,7 +97,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Overlay Indicators
-    def hl2(self, high=None, low=None, **kwargs):
+    def hl2(self, high=None, low=None, length=None, **kwargs):
         """Returns the average of two series.
 
         Args:
@@ -103,6 +116,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
+        length = positive_int(length, minimum=0)
+
         # Get the correct columns.
         # Loads current Pandas DataFrame column if None are passed in.
         try:
@@ -137,7 +152,7 @@ class AnalysisIndicators(BasePandasObject):
         return hl2
 
 
-    def hlc3(self, high=None, low=None, close=None, **kwargs):
+    def hlc3(self, high=None, low=None, close=None, length=None, **kwargs):
         """Returns the average of three series.
 
         Args:
@@ -158,6 +173,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
+        length = positive_int(length, minimum=0)
+
         # Get the correct columns.
         # If parameters are pandas, use those and skip df columns
         try:
@@ -220,6 +237,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
+        length = positive_int(length, minimum=0)
 
         # Get the correct columns.
         # If parameters are pandas, use those and skip df columns
@@ -283,7 +301,7 @@ class AnalysisIndicators(BasePandasObject):
         """
 
         # Sanitize Args
-        length = int(length) if length and length > 0 else 1
+        length = positive_int(length, minimum=1)
 
         # Get the correct column
         try:
@@ -340,7 +358,7 @@ class AnalysisIndicators(BasePandasObject):
             pd.Series: New feature
         """
         # Sanitize Args
-        length = int(length) if length and length > 0 else 1
+        length = positive_int(length, minimum=1)
 
         # Get the correct column
         try:
@@ -396,7 +414,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        length = int(length) if length and length > 0 else 1
+        length = positive_int(length, minimum=1)
         min_periods = int(kwargs['minperiods']) if 'minperiods' in kwargs else length
 
         # Get the correct column

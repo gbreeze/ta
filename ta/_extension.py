@@ -322,6 +322,52 @@ class AnalysisIndicators(BasePandasObject):
 
         return increasing
 
+
+    def midpoint(self, close:str = None, length:int = None, **kwargs):
+        """Returns the Midpoint of a Series over a certain length.
+
+        Args:
+            close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+            length(int): How far to look back
+            asint(bool): True.  Returns zeros and ones.
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+        
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df('midpoint')
+        
+        length = length if length and length > 0 else 1
+        min_periods = int(kwargs['minperiods']) if 'minperiods' in kwargs else length
+
+        # Get the correct column
+        if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
+            
+        lowest = close.rolling(length, min_periods=min_periods).min()
+        highest = close.rolling(length, min_periods=min_periods).max()
+        midpoint = 0.5 * (lowest + highest)
+        
+        # Handle fills
+        if 'fillna' in kwargs:
+            midpoint.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            midpoint.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        midpoint.name = f"MIDPOINT_{length}"
+        midpoint.category = 'overlay'
+        
+        # If append, then add it to the df 
+        if 'append' in kwargs and kwargs['append']:
+            df[midpoint.name] = midpoint
+            
+        return midpoint
+
+
     ## Aliases
     HL2 = hl2
     HLC3 = hlc3

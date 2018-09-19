@@ -5,19 +5,20 @@ import pandas as pd
 
 from pandas.core.base import PandasObject
 
-
 class BasePandasObject(PandasObject):
     """Simple PandasObject Extension
     
-    Ensures the DataFrame is not empty and has columns."""
+    Ensures the DataFrame is not empty and has columns.
+
+    Args:
+        data (pd.DataFrame): Extends Pandas DataFrame 
+    """
     def __init__(self, data, **kwargs):
         if data.empty:
             return None
         
         total_columns = len(data.columns)
         if total_columns > 0:
-            # Lower Case Initial Columns
-            data.columns = data.columns.str.lower()
             self._data = data
         else:
             raise AttributeError(f"[X] No columns!")
@@ -64,24 +65,23 @@ class AnalysisIndicators(BasePandasObject):
             raise ValueError(f"kind='{kind.lower()}' is not valid for {self.__class__.__name__}")
         
         return indicator(**kwargs)
-    
+
+
+    ## Private Methods
     def _valid_df(self, name=None):
+        """Validates and returns self._data
+
+        ** May be overkill
+        """
         try:
             df = self._data
         except AttributeError as ex:
             msg = f"[X] {ex}: Invalid DataFrame"
             msg = msg + f": {name}" if name else msg
             print(msg)
-            # if name:
-            #     print(msg + f": {name}")
-            # else:
-            #     print(msg)
             return None
         return df
 
-    def _valid_pandas(self, panda_object):
-        """ Private Method that return True is the panda_object is a DataFrame or Series"""
-        return isinstance(panda_object, pd.DataFrame) or isinstance(panda_object, pd.Series)
 
     ## Overlay Indicators
     def hl2(self, high=None, low=None, **kwargs):
@@ -102,16 +102,21 @@ class AnalysisIndicators(BasePandasObject):
 
         # Get the correct columns.
         # Loads current Pandas DataFrame column if None are passed in.
-        if self._valid_pandas(high):
-            high = high
-        else:
-            high = df[high] if high in df.columns else df.high
-        
-        if self._valid_pandas(low):
-            low = low
-        else:
-            low = df[low] if low in df.columns else df.low
-        
+        try:
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+            
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+        except AttributeError as aex:
+            print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
+            return
+
         # Calculate Result
         hl2 = 0.5 * (high + low)
 
@@ -146,20 +151,25 @@ class AnalysisIndicators(BasePandasObject):
 
         # Get the correct columns.
         # If parameters are pandas, use those and skip df columns
-        if self._valid_pandas(high):
-            high = high
-        else:
-            high = df[high] if high in df.columns else df.high
-        
-        if self._valid_pandas(low):
-            low = low
-        else:
-            low = df[low] if low in df.columns else df.low
+        try:
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+            
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
 
-        if self._valid_pandas(close):
-            close = close
-        else:
-            close = df[close] if close in df.columns else df.close
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        except AttributeError as aex:
+            print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
+            return
 
         # Calculate Result
         hlc3 = (high + low + close) / 3
@@ -197,25 +207,30 @@ class AnalysisIndicators(BasePandasObject):
 
         # Get the correct columns.
         # If parameters are pandas, use those and skip df columns
-        if self._valid_pandas(open_):
-            open_ = open_
-        else:
-            open_ = df[open_] if open_ in df.columns else df.open
+        try:
+            if isinstance(open_, pd.Series):
+                open_ = open_
+            else:
+                open_ = df[open_] if open_ in df.columns else df.open
 
-        if self._valid_pandas(high):
-            high = high
-        else:
-            high = df[high] if high in df.columns else df.high
-        
-        if self._valid_pandas(low):
-            low = low
-        else:
-            low = df[low] if low in df.columns else df.low
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+            
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
 
-        if self._valid_pandas(close):
-            close = close
-        else:
-            close = df[close] if close in df.columns else df.close
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        except AttributeError as aex:
+            print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
+            return
 
         # Calculate Result
         ohlc4 = 0.25 * (open_ + high + low + close)
@@ -250,10 +265,15 @@ class AnalysisIndicators(BasePandasObject):
         length = length if length and length > 0 else 1
 
         # Get the correct column
-        if self._valid_pandas(close):
-            close = close
-        else:
-            close = df[close] if close in df.columns else df.close
+        try:
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        except AttributeError as aex:
+            print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
+            return
 
         # Calculate Result
         decreasing = close.diff(length) < 0
@@ -296,10 +316,15 @@ class AnalysisIndicators(BasePandasObject):
         length = length if length and length > 0 else 1
 
         # Get the correct column
-        if self._valid_pandas(close):
-            close = close
-        else:
-            close = df[close] if close in df.columns else df.close
+        try:
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        except AttributeError as aex:
+            print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
+            return
 
         # Calculate Result
         increasing = close.diff(length) > 0
@@ -324,14 +349,19 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def midpoint(self, close:str = None, length:int = None, **kwargs):
-        """Returns the Midpoint of a Series over a certain length.
+        """Returns the Midpoint of a Series of a certain length.
 
         Args:
-            close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            length(int): How far to look back
-            asint(bool): True.  Returns zeros and ones.
+            close (None, str, pd.Series, optional):
+                pd.Series: A seperate Series not in the current DataFrame.
+                str: Looksup column in DataFrame under 'str' name.
+                None: Default.  Uses current DataFrame column 'close'.
+            length (int): Lookback length. Defaults to 1.
 
-            append(bool): kwarg, optional.  If True, appends result to current df
+            **kwargs:
+                fillna (value, optional):
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
         
         Returns:
             pd.Series: New feature
@@ -342,11 +372,16 @@ class AnalysisIndicators(BasePandasObject):
         min_periods = int(kwargs['minperiods']) if 'minperiods' in kwargs else length
 
         # Get the correct column
-        if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
-            close = close
-        else:
-            close = df[close] if close in df.columns else df.close
-            
+        try:
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        except AttributeError as aex:
+            print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
+            return
+
         lowest = close.rolling(length, min_periods=min_periods).min()
         highest = close.rolling(length, min_periods=min_periods).max()
         midpoint = 0.5 * (lowest + highest)
@@ -373,7 +408,8 @@ class AnalysisIndicators(BasePandasObject):
     HLC3 = hlc3
     OHLC4 = ohlc4
     Decreasing = decreasing
-    # Increasing = increasing
+    Increasing = increasing
+    Midpoint = midpoint
 
 ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))
 print(f"[i] Loaded {len(ta_indicators)} TA Indicators: {', '.join(ta_indicators)}")

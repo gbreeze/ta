@@ -95,14 +95,20 @@ class AnalysisIndicators(BasePandasObject):
             append: bool, kwarg, optional
                 If True, appends result to current df
         
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df('hl2')
-
         # Get the correct columns.
         # Loads current Pandas DataFrame column if None are passed in.
         try:
+            # df = self._valid_df('hl2')   # Might be overkill.
+            df = self._data
+
             if isinstance(high, pd.Series):
                 high = high
             else:
@@ -144,14 +150,20 @@ class AnalysisIndicators(BasePandasObject):
             append: bool, kwarg, optional
                 If True, appends result to current df
         
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df('hlc3')
-
         # Get the correct columns.
         # If parameters are pandas, use those and skip df columns
         try:
+            # df = self._valid_df('hlc3')   # Might be overkill.
+            df = self._data
+
             if isinstance(high, pd.Series):
                 high = high
             else:
@@ -185,7 +197,7 @@ class AnalysisIndicators(BasePandasObject):
         return hlc3
 
 
-    def ohlc4(self, open_=None, high=None, low=None, close=None, **kwargs):
+    def ohlc4(self, open_=None, high=None, low=None, close=None, length=None, **kwargs):
         """Calculates and returns the average of four series.
 
         Args:
@@ -200,14 +212,21 @@ class AnalysisIndicators(BasePandasObject):
             append: bool, kwarg, optional
                 If True, appends result to current df
         
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df('ohlc4')
 
         # Get the correct columns.
         # If parameters are pandas, use those and skip df columns
         try:
+            # df = self._valid_df('ohlc4')   # Might be overkill.
+            df = self._data
+
             if isinstance(open_, pd.Series):
                 open_ = open_
             else:
@@ -251,21 +270,26 @@ class AnalysisIndicators(BasePandasObject):
 
         Args:
             close(None,pd.Series,pd.DataFrame): optional. If None, uses local df column: 'close'
-            length(int): How many 
+            length(int): How many periods long.
             asint(bool): True.  Returns zeros and ones.
 
-            append(bool): kwarg, optional.  If True, appends result to current df
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
         
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df('decreasing')
 
         # Sanitize Args
-        length = length if length and length > 0 else 1
+        length = int(length) if length and length > 0 else 1
 
         # Get the correct column
         try:
+            # df = self._valid_df('decreasing')   # Might be overkill.
+            df = self._data
+
             if isinstance(close, pd.Series):
                 close = close
             else:
@@ -306,17 +330,23 @@ class AnalysisIndicators(BasePandasObject):
             asint(bool): True.  Returns zeros and ones.
 
             append(bool): kwarg, optional.  If True, appends result to current df
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
         
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df('increasing')
-        
         # Sanitize Args
-        length = length if length and length > 0 else 1
+        length = int(length) if length and length > 0 else 1
 
         # Get the correct column
         try:
+            # df = self._valid_df('increasing')   # Might be overkill.
+            df = self._data
+
             if isinstance(close, pd.Series):
                 close = close
             else:
@@ -359,20 +389,21 @@ class AnalysisIndicators(BasePandasObject):
             length (int): Lookback length. Defaults to 1.
 
             **kwargs:
-                fillna (value, optional):
+                fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
         
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df('midpoint')
-        
-        length = length if length and length > 0 else 1
+        length = int(length) if length and length > 0 else 1
         min_periods = int(kwargs['minperiods']) if 'minperiods' in kwargs else length
 
         # Get the correct column
         try:
+            # df = self._valid_df('midpoint')   # Might be overkill.
+            df = self._data
+
             if isinstance(close, pd.Series):
                 close = close
             else:

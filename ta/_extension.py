@@ -6,15 +6,15 @@ import pandas as pd
 from pandas.core.base import PandasObject
 
 
-def positive_int(x, minimum, verbose=False):
+def positive_int(x, minimum:int, verbose:bool = False):
     # return int(x) if x and x > 0 else minimum
     try:
-        valid = int(x)
+        valid = int(x) if x and minimum and x > 0 else minimum
     except ValueError as vex:
         print(f"[X] {vex}\n")
         return
     else:
-        print(f"[i] int({x})= {valid}") if verbose else None
+        print(f"[i]   x: int({x})= {valid}") if verbose else None
         return valid
 
 

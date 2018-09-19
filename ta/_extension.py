@@ -28,18 +28,30 @@ class BasePandasObject(PandasObject):
 
 @pd.api.extensions.register_dataframe_accessor('ta')
 class AnalysisIndicators(BasePandasObject):
-    """AnalysisIndicators registers the extension 'ta' to the DataFrame.
-    
-    All Indicators can be called one of two ways:
-    Given a TimeSeries DataFrame called df with lower case column names. ie. open, high, lose, close, volume
+    """AnalysisIndicators is class that extends a DataFrame.  The name extension is
+    registered to all instances of the DataFrame wit the name of 'ta'.
 
-    Example:
+    Args:
+        kind(str): Name of the indicator.  Converts kind to lowercase.
+        kwargs(dict): Method specific modifiers
+    
+    Returns:
+        Either a Pandas Series or DataFrame of the results of the called indicator.
+
+    
+
+    Example A:  Loading Data and multiply ways of calling a function.
+    # Load some data. If local, this would do.
+    # Assum having a CSV with columns: date,open,high,low,close,volume
     df = pd.read_csv('AAPL.csv', index_col='date', parse_dates=True, dtype=float, infer_datetime_format=False, keep_date_col=True)
 
-    Calling HL2:
-    * hl2 = df.ta.hl2()
-    * hl2 = df.ta.HL2()
-    * hl2 = df.ta(kind='hl2')
+    # Calling HL2.  All equivalent.  Thy return a new Series/DataFrame with
+    #  the Indicator result
+    hl2 = df.ta.hl2()
+    hl2 = df.ta.HL2()
+    hl2 = df.ta(kind='hl2')
+
+    #Given a TimeSeries DataFrame called df with lower case column names. ie. open, high, lose, close, volume
 
     Additional kwargs:
     * append: Default: False.  If True, appends the indicator result to the df.
@@ -58,37 +70,38 @@ class AnalysisIndicators(BasePandasObject):
             df = self._data
         except AttributeError as ex:
             msg = f"[X] {ex}: Invalid DataFrame"
-            if name:
-                print(msg + f": {name}")
-            else:
-                print(msg)
+            msg = msg + f": {name}" if name else msg
+            print(msg)
+            # if name:
+            #     print(msg + f": {name}")
+            # else:
+            #     print(msg)
             return None
         return df
 
-    def _valid_pandas(self, name):
-        return isinstance(name, pd.DataFrame) or isinstance(name, pd.Series)
+    def _valid_pandas(self, panda_object):
+        """ Private Method that return True is the panda_object is a DataFrame or Series"""
+        return isinstance(panda_object, pd.DataFrame) or isinstance(panda_object, pd.Series)
 
     ## Overlay Indicators
     def hl2(self, high=None, low=None, **kwargs):
-        """Calculates and returns the average of two series.
+        """Returns the average of two series.
 
-        Parameters:
-        -----------
-        high: None or a Series or DataFrame, optional
-            If None, uses local df column: 'high'
-        low: None or a Series or DataFrame, optional
-            If None, uses local df column: 'low'
-        append: bool, kwarg, optional
-            If True, appends result to current df
+        Args:
+            high: None or a Series or DataFrame, optional
+                If None, uses local df column: 'high'
+            low: None or a Series or DataFrame, optional
+                If None, uses local df column: 'low'
+            append: bool, kwarg, optional
+                If True, appends result to current df
         
         Returns:
-        --------
-        hl2 = (high + low) / 2
+            pd.Series: New feature
         """
         df = self._valid_df('hl2')
 
         # Get the correct columns.
-        # If parameters are pandas, use those and skip df columns
+        # Loads current Pandas DataFrame column if None are passed in.
         if self._valid_pandas(high):
             high = high
         else:
@@ -114,22 +127,20 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def hlc3(self, high=None, low=None, close=None, **kwargs):
-        """Calculates and returns the average of three series.
+        """Returns the average of three series.
 
-        Parameters:
-        -----------
-        high: None or a Series or DataFrame, optional
-            If None, uses local df column: 'high'
-        low: None or a Series or DataFrame, optional
-            If None, uses local df column: 'low'
-        close: None or a Series or DataFrame, optional
-            If None, uses local df column: 'close'
-        append: bool, kwarg, optional
-            If True, appends result to current df
+        Args:
+            high: None or a Series or DataFrame, optional
+                If None, uses local df column: 'high'
+            low: None or a Series or DataFrame, optional
+                If None, uses local df column: 'low'
+            close: None or a Series or DataFrame, optional
+                If None, uses local df column: 'close'
+            append: bool, kwarg, optional
+                If True, appends result to current df
         
         Returns:
-        --------
-        hlc3 = (high + low + close) / 3
+            pd.Series: New feature
         """
         df = self._valid_df('hlc3')
 
@@ -167,22 +178,20 @@ class AnalysisIndicators(BasePandasObject):
     def ohlc4(self, open_=None, high=None, low=None, close=None, **kwargs):
         """Calculates and returns the average of four series.
 
-        Parameters:
-        -----------
-        open_: None or a Series or DataFrame, optional
-            If None, uses local df column: 'open'
-        high: None or a Series or DataFrame, optional
-            If None, uses local df column: 'high'
-        low: None or a Series or DataFrame, optional
-            If None, uses local df column: 'low'
-        close: None or a Series or DataFrame, optional
-            If None, uses local df column: 'close'
-        append: bool, kwarg, optional
-            If True, appends result to current df
+        Args:
+            open_: None or a Series or DataFrame, optional
+                If None, uses local df column: 'open'
+            high: None or a Series or DataFrame, optional
+                If None, uses local df column: 'high'
+            low: None or a Series or DataFrame, optional
+                If None, uses local df column: 'low'
+            close: None or a Series or DataFrame, optional
+                If None, uses local df column: 'close'
+            append: bool, kwarg, optional
+                If True, appends result to current df
         
         Returns:
-        --------
-        ohlc4 = (open + high + low + close) / 4
+            pd.Series: New feature
         """
         df = self._valid_df('ohlc4')
 
@@ -222,7 +231,103 @@ class AnalysisIndicators(BasePandasObject):
         return ohlc4
 
 
+    def decreasing(self, close:str = None, length:int = None, asint:bool = True, **kwargs):
+        """Returns if a Series is Decreasing over a certain length.
+
+        Args:
+            close(None,pd.Series,pd.DataFrame): optional. If None, uses local df column: 'close'
+            length(int): How many 
+            asint(bool): True.  Returns zeros and ones.
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+        
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df('decreasing')
+
+        # Sanitize Args
+        length = length if length and length > 0 else 1
+
+        # Get the correct column
+        if self._valid_pandas(close):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
+
+        # Calculate Result
+        decreasing = close.diff(length) < 0
+        if asint:
+            decreasing = decreasing.astype(int)
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            decreasing.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            decreasing.fillna(method=kwargs['fill_method'], inplace=True)
+        
+        # Name and Categorize it
+        decreasing.name = f"DEC_{length}"
+        decreasing.category = 'trend'
+        
+        # If append, then add it to the df 
+        if 'append' in kwargs and kwargs['append']:
+            df[decreasing.name] = decreasing
+
+        return decreasing
+
+
+    def increasing(self, close:str = None, length:int = None, asint:bool = True, **kwargs):
+        """Returns if a Series is Increasing over a certain length.
+
+        Args:
+            close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+            length(int): How many 
+            asint(bool): True.  Returns zeros and ones.
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+        
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df('increasing')
+        
+        # Sanitize Args
+        length = length if length and length > 0 else 1
+
+        # Get the correct column
+        if self._valid_pandas(close):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
+
+        # Calculate Result
+        increasing = close.diff(length) > 0
+        if asint:
+            increasing = increasing.astype(int)
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            increasing.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            increasing.fillna(method=kwargs['fill_method'], inplace=True)
+        
+        # Name and Categorize it
+        increasing.name = f"INC_{length}"
+        increasing.category = 'trend'
+        
+        # If append, then add it to the df 
+        if 'append' in kwargs and kwargs['append']:
+            df[increasing.name] = increasing
+
+        return increasing
+
     ## Aliases
     HL2 = hl2
     HLC3 = hlc3
     OHLC4 = ohlc4
+    Decreasing = decreasing
+    # Increasing = increasing
+
+ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))
+print(f"[i] Loaded {len(ta_indicators)} TA Indicators: {', '.join(ta_indicators)}")

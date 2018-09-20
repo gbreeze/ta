@@ -115,7 +115,7 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._valid_df()
 
-        if df:
+        if df is not None:
             # Get the correct column(s).
             if isinstance(high, pd.Series):
                 high = high
@@ -172,7 +172,7 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._valid_df()
 
-        if df:
+        if df is not None:
             # Get the correct column(s).
             if isinstance(high, pd.Series):
                 high = high
@@ -236,7 +236,7 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._valid_df()
 
-        if df:
+        if df is not None:
             # Get the correct column(s).
             if isinstance(open_, pd.Series):
                 open_ = open_
@@ -299,7 +299,7 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._valid_df()
 
-        if df:
+        if df is not None:
             # Get the correct column(s).
             if isinstance(close, pd.Series):
                 close = close
@@ -357,7 +357,7 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._valid_df()
 
-        if df:
+        if df is not None:
             # Get the correct column(s).
             if isinstance(close, pd.Series):
                 close = close
@@ -415,7 +415,7 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._valid_df()
 
-        if df:
+        if df is not None:
             # Get the correct column(s).
             if isinstance(close, pd.Series):
                 close = close
@@ -477,7 +477,7 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._valid_df()
 
-        if df:
+        if df is not None:
             # Get the correct column(s).
             if isinstance(high, pd.Series):
                 high = high
@@ -520,7 +520,7 @@ class AnalysisIndicators(BasePandasObject):
         """ donchian """
         df = self._valid_df()
 
-        if df:
+        if df is not None:
             # Get the correct column.
             if isinstance(close, pd.Series):
                 close = close
@@ -571,7 +571,7 @@ class AnalysisIndicators(BasePandasObject):
         """ midprice """
         df = self._valid_df()
 
-        if df:
+        if df is not None:
             # Get the correct column(s).
             if isinstance(low, pd.Series):
                 low = low
@@ -615,7 +615,7 @@ class AnalysisIndicators(BasePandasObject):
         """ mom """
         df = self._valid_df()
 
-        if df:
+        if df is not None:
             # Get the correct column.
             if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
                 close = close

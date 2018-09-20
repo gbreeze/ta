@@ -4,30 +4,12 @@ import numpy as np
 import pandas as pd
 
 from pandas.core.base import PandasObject
+from sys import float_info as sflt
 
+TA_EPSILON = sflt.epsilon
 
-def positive_int(x, minimum:int, verbose:bool = False):
-    # return int(x) if x and x > 0 else minimum
-    try:
-        valid = int(x) if x and minimum and x > 0 else minimum
-    except ValueError as vex:
-        print(f"[X] {vex}\n")
-        return
-    else:
-        print(f"[i]   x: int({x})= {valid}") if verbose else None
-        return valid
-
-
-def positive_float(x, minimum:int, verbose:bool = False):
-    # return float(x) if x and x > 0 else minimum
-    try:
-        valid = float(x) if x and minimum and x > 0.0 else minimum
-    except ValueError as vex:
-        print(f"[X] {vex}\n")
-        return
-    else:
-        print(f"[i]   x: float({x})= {valid}") if verbose else None
-        return valid
+def validate_positive(fn, x, minimum, default=None):
+    return fn(x) if x and default and x > minimum else fn(default)
 
 
 class BasePandasObject(PandasObject):
@@ -108,7 +90,7 @@ class AnalysisIndicators(BasePandasObject):
         return df
 
 
-    def notnull(self):
+    def _notnull(self):
         """Alias for `notna` method. See `notna` for more detail."""
         return self.notna()
 
@@ -124,7 +106,7 @@ class AnalysisIndicators(BasePandasObject):
                 del self._data[f'{x}']
 
     ## Overlay Indicators
-    def hl2(self, high=None, low=None, length=None, **kwargs):
+    def hl2(self, high=None, low=None, offset=None, **kwargs):
         """Returns the average of two series.
 
         Args:
@@ -143,7 +125,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        length = positive_int(length, minimum=0)
+        offset = offset if isinstance(offset, int) else 0
 
         # Get the correct columns.
         # Loads current Pandas DataFrame column if None are passed in.
@@ -168,6 +150,9 @@ class AnalysisIndicators(BasePandasObject):
         # Calculate Result
         hl2 = 0.5 * (high + low)
 
+        # Offset
+        hl2.shift(offset)
+
         # Name & Category
         hl2.name = 'HL2'
         hl2.category = 'overlay'
@@ -179,7 +164,7 @@ class AnalysisIndicators(BasePandasObject):
         return hl2
 
 
-    def hlc3(self, high=None, low=None, close=None, length=None, **kwargs):
+    def hlc3(self, high=None, low=None, close=None, offset=None, **kwargs):
         """Returns the average of three series.
 
         Args:
@@ -200,7 +185,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        length = positive_int(length, minimum=0)
+        offset = offset if isinstance(offset, int) else 0
 
         # Get the correct columns.
         # If parameters are pandas, use those and skip df columns
@@ -230,6 +215,9 @@ class AnalysisIndicators(BasePandasObject):
         # Calculate Result
         hlc3 = (high + low + close) / 3
 
+        # Offset
+        hlc3.shift(offset)
+
         # Name & Category
         hlc3.name = 'HLC3'
         hlc3.category = 'overlay'
@@ -241,7 +229,7 @@ class AnalysisIndicators(BasePandasObject):
         return hlc3
 
 
-    def ohlc4(self, open_=None, high=None, low=None, close=None, length=None, **kwargs):
+    def ohlc4(self, open_=None, high=None, low=None, close=None, offset=None, **kwargs):
         """Calculates and returns the average of four series.
 
         Args:
@@ -264,7 +252,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        length = positive_int(length, minimum=0)
+        offset = offset if isinstance(offset, int) else 0
 
         # Get the correct columns.
         # If parameters are pandas, use those and skip df columns
@@ -299,6 +287,9 @@ class AnalysisIndicators(BasePandasObject):
         # Calculate Result
         ohlc4 = 0.25 * (open_ + high + low + close)
 
+        # Offset
+        ohlc4.shift(offset)
+
         # Name & Category
         ohlc4.name = 'OHLC4'
         ohlc4.category = 'overlay'
@@ -310,7 +301,7 @@ class AnalysisIndicators(BasePandasObject):
         return ohlc4
 
 
-    def decreasing(self, close:str = None, length:int = None, asint:bool = True, **kwargs):
+    def decreasing(self, close:str = None, length:int = None, asint:bool = True, offset=None, **kwargs):
         """Returns if a Series is Decreasing over a certain length.
 
         Args:
@@ -328,7 +319,8 @@ class AnalysisIndicators(BasePandasObject):
         """
 
         # Sanitize Args
-        length = positive_int(length, minimum=1)
+        length = validate_positive(int, length, minimum=1, default=1)
+        offset = offset if isinstance(offset, int) else 0
 
         # Get the correct column
         try:
@@ -348,6 +340,9 @@ class AnalysisIndicators(BasePandasObject):
         decreasing = close.diff(length) < 0
         if asint:
             decreasing = decreasing.astype(int)
+        
+        # Offset
+        decreasing.shift(offset)
 
         # Handle fills
         if 'fillna' in kwargs:
@@ -366,7 +361,7 @@ class AnalysisIndicators(BasePandasObject):
         return decreasing
 
 
-    def increasing(self, close:str = None, length:int = None, asint:bool = True, **kwargs):
+    def increasing(self, close:str = None, length:int = None, asint:bool = True, offset=None, **kwargs):
         """Returns if a Series is Increasing over a certain length.
 
         Args:
@@ -385,7 +380,8 @@ class AnalysisIndicators(BasePandasObject):
             pd.Series: New feature
         """
         # Sanitize Args
-        length = positive_int(length, minimum=1)
+        length = validate_positive(int, length, minimum=1, default=1)
+        offset = offset if isinstance(offset, int) else 0
 
         # Get the correct column
         try:
@@ -405,6 +401,9 @@ class AnalysisIndicators(BasePandasObject):
         increasing = close.diff(length) > 0
         if asint:
             increasing = increasing.astype(int)
+        
+        # Offset
+        increasing.shift(offset)
 
         # Handle fills
         if 'fillna' in kwargs:
@@ -423,7 +422,7 @@ class AnalysisIndicators(BasePandasObject):
         return increasing
 
 
-    def midpoint(self, close:str = None, length:int = None, **kwargs):
+    def midpoint(self, close:str = None, length:int = None, offset=None, **kwargs):
         """Returns the Midpoint of a Series of a certain length.
 
         Args:
@@ -441,8 +440,10 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        length = positive_int(length, minimum=1)
-        min_periods = int(kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = validate_positive(int, length, minimum=1, default=1)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        offset = offset if isinstance(offset, int) else 0
+        print(f"offset: {offset}")
 
         # Get the correct column
         try:
@@ -458,10 +459,14 @@ class AnalysisIndicators(BasePandasObject):
             print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
             return
 
+        # Calculate Result
         lowest = close.rolling(length, min_periods=min_periods).min()
         highest = close.rolling(length, min_periods=min_periods).max()
         midpoint = 0.5 * (lowest + highest)
         
+        # Offset
+        midpoint.shift(offset)
+
         # Handle fills
         if 'fillna' in kwargs:
             midpoint.fillna(kwargs['fillna'], inplace=True)
@@ -480,7 +485,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Overlay Indicators
-    def rpn(self, high=None, low=None, length=None, percentage=0.1, **kwargs):
+    def rpn(self, high=None, low=None, length=None, percentage=None, **kwargs):
         """Returns the Series of values that are a percentage of the absolute difference of two Series.
 
         Args:
@@ -492,6 +497,7 @@ class AnalysisIndicators(BasePandasObject):
                 If True, appends result to current df
         
             **kwargs:
+                addLow (bool, optional): If true, adds low value to result
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
@@ -499,8 +505,9 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        length = positive_int(length, minimum=0)
-        # percentage = positive_float(percentage, minimum=0.0)
+        length = validate_positive(int, length, minimum=0, default=1)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        percentage = validate_positive(float, percentage, minimum=0.0, default=0.1)
 
         # Get the correct columns.
         # Loads current Pandas DataFrame column if None are passed in.
@@ -523,13 +530,13 @@ class AnalysisIndicators(BasePandasObject):
             return
 
         # Calculate Result
-        # highest_high = high.rolling(length).max()
-        # lowest_low = low.rolling(length).min()
-        # abs_range = (highest_high - lowest_low).abs()
-        abs_range = (high - low).abs()
+        highest_high = high.rolling(length, min_periods=min_periods).max()
+        lowest_low = low.rolling(length, min_periods=min_periods).min()
+        abs_range = (highest_high - lowest_low).abs()
+
         rp = percentage * abs_range
-        print(abs_range.head())
-        print(rp.head())
+        if 'addLow' in kwargs and kwargs['addLow']:
+            rp += low
 
         # Name & Category
         rp.name = f"RP_{length}_{percentage}"
@@ -542,6 +549,56 @@ class AnalysisIndicators(BasePandasObject):
         return rp
 
 
+    def donchian(self, close=None, length:int = None, **kwargs):
+        """ donchian """
+        length = validate_positive(int, length, minimum=0, default=20)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+
+        try:
+            # df = self._valid_df('donchian')   # Might be overkill.
+            df = self._data
+
+            # Get the correct column
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        except AttributeError as aex:
+            print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
+            return
+
+        # Calculate Result
+        lower = close.rolling(length, min_periods=min_periods).min()
+        upper = close.rolling(length, min_periods=min_periods).max()
+        mid = 0.5 * (lower + upper)
+    
+        # Handle fills
+        if 'fillna' in kwargs:
+            lower.fillna(kwargs['fillna'], inplace=True)
+            mid.fillna(kwargs['fillna'], inplace=True)
+            upper.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            lower.fillna(method=kwargs['fill_method'], inplace=True)
+            mid.fillna(method=kwargs['fill_method'], inplace=True)
+            upper.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        lower.name = f"DCL_{length}"
+        mid.name = f"DCM_{length}"
+        upper.name = f"DCU_{length}"
+        mid.category = upper.category = lower.category = 'volatility'
+        
+        # If append, then add it to the df 
+        if 'append' in kwargs and kwargs['append']:
+            df[lower.name] = lower
+            df[mid.name] = mid
+            df[upper.name] = upper
+
+        dcdf = pd.DataFrame({lower.name: lower, mid.name: mid, upper.name: upper})
+            
+        return dcdf
+
     ## Aliases
     Decreasing = decreasing
     Increasing = increasing
@@ -550,6 +607,7 @@ class AnalysisIndicators(BasePandasObject):
     OHLC4 = ohlc4
     Midpoint = midpoint
     range_percentage = rpn
+    Donchian = donchian
 
 
 ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))

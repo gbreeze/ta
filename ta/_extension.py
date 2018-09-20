@@ -527,7 +527,7 @@ class AnalysisIndicators(BasePandasObject):
         # lowest_low = low.rolling(length).min()
         # abs_range = (highest_high - lowest_low).abs()
         abs_range = (high - low).abs()
-        rp = 0.01 * percentage * abs_range
+        rp = percentage * abs_range
         print(abs_range.head())
         print(rp.head())
 

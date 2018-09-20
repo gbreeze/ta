@@ -105,7 +105,7 @@ class AnalysisIndicators(BasePandasObject):
             for x in _levels:
                 del self._df[f'{x}']
 
-    ## Overlay Indicators
+    ## overlap Indicators
     def hl2(self, high=None, low=None, offset=None, **kwargs):
         """Returns the average of two series.
 
@@ -153,7 +153,7 @@ class AnalysisIndicators(BasePandasObject):
 
         # Name & Category
         hl2.name = 'HL2'
-        hl2.category = 'overlay'
+        hl2.category = 'overlap'
 
         # If 'append', then add it to the df
         if 'append' in kwargs and kwargs['append']:
@@ -216,7 +216,7 @@ class AnalysisIndicators(BasePandasObject):
 
         # Name & Category
         hlc3.name = 'HLC3'
-        hlc3.category = 'overlay'
+        hlc3.category = 'overlap'
 
         # If 'append', then add it to the df
         if 'append' in kwargs and kwargs['append']:
@@ -287,7 +287,7 @@ class AnalysisIndicators(BasePandasObject):
 
         # Name & Category
         ohlc4.name = 'OHLC4'
-        ohlc4.category = 'overlay'
+        ohlc4.category = 'overlap'
 
         # If 'append', then add it to the df
         if 'append' in kwargs and kwargs['append']:
@@ -463,7 +463,7 @@ class AnalysisIndicators(BasePandasObject):
 
         # Name and Categorize it
         midpoint.name = f"MIDPOINT_{length}"
-        midpoint.category = 'overlay'
+        midpoint.category = 'overlap'
         
         # If append, then add it to the df 
         if 'append' in kwargs and kwargs['append']:
@@ -472,7 +472,7 @@ class AnalysisIndicators(BasePandasObject):
         return midpoint
 
 
-    ## Overlay Indicators
+    ## Overlap Indicators
     def rpn(self, high=None, low=None, length=None, percentage=None, **kwargs):
         """Returns the Series of values that are a percentage of the absolute difference of two Series.
 
@@ -526,7 +526,7 @@ class AnalysisIndicators(BasePandasObject):
 
         # Name & Category
         rp.name = f"RP_{length}_{percentage}"
-        rp.category = 'overlay'
+        rp.category = 'overlap'
 
         # If 'append', then add it to the df
         if 'append' in kwargs and kwargs['append']:
@@ -586,15 +586,71 @@ class AnalysisIndicators(BasePandasObject):
             
         return dcdf
 
-    ## Aliases
+
+    def midprice(self, high:str = None, low:str = None, length:int = None, **kwargs):
+        """ midprice """
+        try:
+            df = self._df
+        except AttributeError as aex:
+            print(f"[X] {aex}")
+            return
+
+        # Get the correct column(s).
+        if isinstance(low, pd.Series):
+            low = low
+        else:
+            low = df[low] if low in df.columns else df.low
+
+        if isinstance(high, pd.Series):
+            high = high
+        else:
+            high = df[high] if high in df.columns else df.high
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=1)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+
+        # Calculate Result
+        lowest_low = low.rolling(length, min_periods=min_periods).min()
+        highest_high = high.rolling(length, min_periods=min_periods).max()
+        midprice = 0.5 * (lowest_low + highest_high)
+        
+        # Handle fills
+        if 'fillna' in kwargs:
+            midprice.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            midprice.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        midprice.name = f"MIDPRICE_{length}"
+        midprice.category = 'overlap'
+        
+        # If append, then add it to the df 
+        if 'append' in kwargs and kwargs['append']:
+            df[midprice.name] = midprice
+            
+        return midprice
+
+
+    ## Indicator Aliases
+    # Overlap
     Decreasing = decreasing
     Increasing = increasing
     HL2 = hl2
     HLC3 = hlc3
     OHLC4 = ohlc4
     Midpoint = midpoint
+    Midprice = midprice
     range_percentage = rpn
+
+    # Momentum
+
+    # Volume
+
+    # Volatility
     Donchian = donchian
+
+    # Statistics
 
 
 ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))

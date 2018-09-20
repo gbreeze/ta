@@ -18,15 +18,15 @@ class BasePandasObject(PandasObject):
     Ensures the DataFrame is not empty and has columns.
 
     Args:
-        data (pd.DataFrame): Extends Pandas DataFrame 
+        df (pd.DataFrame): Extends Pandas DataFrame 
     """
-    def __init__(self, data, **kwargs):
-        if data.empty:
+    def __init__(self, df, **kwargs):
+        if df.empty:
             return None
         
-        total_columns = len(data.columns)
+        total_columns = len(df.columns)
         if total_columns > 0:
-            self._data = data
+            self._df = df
         else:
             raise AttributeError(f"[X] No columns!")
     
@@ -76,12 +76,12 @@ class AnalysisIndicators(BasePandasObject):
 
     ## Private Methods
     def _valid_df(self, name=None):
-        """Validates and returns self._data
+        """Validates and returns self._df
 
         ** May be overkill
         """
         try:
-            df = self._data
+            df = self._df
         except AttributeError as aex:
             msg = f"[X] {aex}: Invalid DataFrame"
             msg = msg + f": {name}" if name else msg
@@ -100,10 +100,10 @@ class AnalysisIndicators(BasePandasObject):
         _levels = [x for x in range(min_range, max_range + 1) if x % every == 0]
         if value:
             for x in _levels:
-                self._data[f'{x}'] = x
+                self._df[f'{x}'] = x
         else:
             for x in _levels:
-                del self._data[f'{x}']
+                del self._df[f'{x}']
 
     ## Overlay Indicators
     def hl2(self, high=None, low=None, offset=None, **kwargs):
@@ -128,7 +128,7 @@ class AnalysisIndicators(BasePandasObject):
         # Get the correct column(s).
         try:
             # df = self._valid_df('hl2')   # Might be overkill.
-            df = self._data
+            df = self._df
 
             if isinstance(high, pd.Series):
                 high = high
@@ -188,7 +188,7 @@ class AnalysisIndicators(BasePandasObject):
         # Get the correct column(s).
         try:
             # df = self._valid_df('hlc3')   # Might be overkill.
-            df = self._data
+            df = self._df
 
             if isinstance(high, pd.Series):
                 high = high
@@ -254,7 +254,7 @@ class AnalysisIndicators(BasePandasObject):
         """
         # Get the correct column(s).
         try:
-            df = self._data
+            df = self._df
 
             if isinstance(open_, pd.Series):
                 open_ = open_
@@ -319,7 +319,7 @@ class AnalysisIndicators(BasePandasObject):
         """
         # Get the correct column(s).
         try:
-            df = self._data
+            df = self._df
 
             if isinstance(close, pd.Series):
                 close = close
@@ -379,7 +379,7 @@ class AnalysisIndicators(BasePandasObject):
         """
         # Get the correct column(s).
         try:
-            df = self._data
+            df = self._df
 
             if isinstance(close, pd.Series):
                 close = close
@@ -439,7 +439,7 @@ class AnalysisIndicators(BasePandasObject):
         """
         # Get the correct column(s).
         try:
-            df = self._data
+            df = self._df
 
             if isinstance(close, pd.Series):
                 close = close
@@ -503,7 +503,7 @@ class AnalysisIndicators(BasePandasObject):
         """
         # Get the correct column(s).
         try:
-            df = self._data
+            df = self._df
 
             if isinstance(high, pd.Series):
                 high = high
@@ -548,7 +548,7 @@ class AnalysisIndicators(BasePandasObject):
         """ donchian """
         # Get the correct column(s).
         try:
-            df = self._data
+            df = self._df
 
             if isinstance(close, pd.Series):
                 close = close
@@ -590,7 +590,9 @@ class AnalysisIndicators(BasePandasObject):
             df[mid.name] = mid
             df[upper.name] = upper
 
-        dcdf = pd.DataFrame({lower.name: lower, mid.name: mid, upper.name: upper})
+        # Prepare DataFrame to return
+        data = {lower.name: lower, mid.name: mid, upper.name: upper}
+        dcdf = pd.DataFrame(data)
             
         return dcdf
 

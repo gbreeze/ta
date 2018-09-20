@@ -125,10 +125,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        offset = offset if isinstance(offset, int) else 0
-
-        # Get the correct columns.
-        # Loads current Pandas DataFrame column if None are passed in.
+        # Get the correct column(s).
         try:
             # df = self._valid_df('hl2')   # Might be overkill.
             df = self._data
@@ -146,6 +143,9 @@ class AnalysisIndicators(BasePandasObject):
         except AttributeError as aex:
             print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
             return
+
+        # Validate Arguments
+        offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
         hl2 = 0.5 * (high + low)
@@ -185,10 +185,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        offset = offset if isinstance(offset, int) else 0
-
-        # Get the correct columns.
-        # If parameters are pandas, use those and skip df columns
+        # Get the correct column(s).
         try:
             # df = self._valid_df('hlc3')   # Might be overkill.
             df = self._data
@@ -211,6 +208,9 @@ class AnalysisIndicators(BasePandasObject):
         except AttributeError as aex:
             print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
             return
+
+        # Validate Arguments
+        offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
         hlc3 = (high + low + close) / 3
@@ -252,12 +252,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        offset = offset if isinstance(offset, int) else 0
-
-        # Get the correct columns.
-        # If parameters are pandas, use those and skip df columns
+        # Get the correct column(s).
         try:
-            # df = self._valid_df('ohlc4')   # Might be overkill.
             df = self._data
 
             if isinstance(open_, pd.Series):
@@ -283,6 +279,10 @@ class AnalysisIndicators(BasePandasObject):
         except AttributeError as aex:
             print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
             return
+
+        # Validate Arguments
+        length = validate_positive(int, length, minimum=1, default=1)
+        offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
         ohlc4 = 0.25 * (open_ + high + low + close)
@@ -317,14 +317,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-
-        # Sanitize Args
-        length = validate_positive(int, length, minimum=1, default=1)
-        offset = offset if isinstance(offset, int) else 0
-
-        # Get the correct column
+        # Get the correct column(s).
         try:
-            # df = self._valid_df('decreasing')   # Might be overkill.
             df = self._data
 
             if isinstance(close, pd.Series):
@@ -335,6 +329,10 @@ class AnalysisIndicators(BasePandasObject):
         except AttributeError as aex:
             print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
             return
+
+        # Validate Arguments
+        length = validate_positive(int, length, minimum=1, default=1)
+        offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
         decreasing = close.diff(length) < 0
@@ -379,13 +377,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        # Sanitize Args
-        length = validate_positive(int, length, minimum=1, default=1)
-        offset = offset if isinstance(offset, int) else 0
-
-        # Get the correct column
+        # Get the correct column(s).
         try:
-            # df = self._valid_df('increasing')   # Might be overkill.
             df = self._data
 
             if isinstance(close, pd.Series):
@@ -396,6 +389,10 @@ class AnalysisIndicators(BasePandasObject):
         except AttributeError as aex:
             print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
             return
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=1, default=1)
+        offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
         increasing = close.diff(length) > 0
@@ -440,14 +437,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        length = validate_positive(int, length, minimum=1, default=1)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-        offset = offset if isinstance(offset, int) else 0
-        print(f"offset: {offset}")
-
-        # Get the correct column
+        # Get the correct column(s).
         try:
-            # df = self._valid_df('midpoint')   # Might be overkill.
             df = self._data
 
             if isinstance(close, pd.Series):
@@ -458,6 +449,11 @@ class AnalysisIndicators(BasePandasObject):
         except AttributeError as aex:
             print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
             return
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=1, default=1)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
         lowest = close.rolling(length, min_periods=min_periods).min()
@@ -505,14 +501,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        length = validate_positive(int, length, minimum=0, default=1)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-        percentage = validate_positive(float, percentage, minimum=0.0, default=0.1)
-
-        # Get the correct columns.
-        # Loads current Pandas DataFrame column if None are passed in.
+        # Get the correct column(s).
         try:
-            # df = self._valid_df('hl2')   # Might be overkill.
             df = self._data
 
             if isinstance(high, pd.Series):
@@ -528,6 +518,11 @@ class AnalysisIndicators(BasePandasObject):
         except AttributeError as aex:
             print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
             return
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=1)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        percentage = validate_positive(float, percentage, minimum=0.0, default=0.1)
 
         # Calculate Result
         highest_high = high.rolling(length, min_periods=min_periods).max()
@@ -551,14 +546,10 @@ class AnalysisIndicators(BasePandasObject):
 
     def donchian(self, close=None, length:int = None, **kwargs):
         """ donchian """
-        length = validate_positive(int, length, minimum=0, default=20)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-
+        # Get the correct column(s).
         try:
-            # df = self._valid_df('donchian')   # Might be overkill.
             df = self._data
 
-            # Get the correct column
             if isinstance(close, pd.Series):
                 close = close
             else:
@@ -567,6 +558,10 @@ class AnalysisIndicators(BasePandasObject):
         except AttributeError as aex:
             print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
             return
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=20)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
 
         # Calculate Result
         lower = close.rolling(length, min_periods=min_periods).min()

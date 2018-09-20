@@ -93,7 +93,62 @@ class AnalysisIndicators(BasePandasObject):
             for x in _levels:
                 del self._df[f'{x}']
 
-    ## overlap Indicators
+
+
+    ## Performance Indicators
+    def percent_return(self, close=None, length=None, offset=None, **kwargs):
+        """Returns the Percent Change of a Series.
+
+        Args:
+            close (None, pd.Series, optional):
+                If None, uses local df column: 'high'
+            length (None, int, optional):
+                An integer of how periods to compute.  Default is None and one.
+            offset (None, int, optional):
+                An integer on how to shift the Series.  Default is None and zero.
+        
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+
+        # Validate Arguments
+        length = validate_positive(int, length, minimum=1, default=1)
+        offset = offset if isinstance(offset, int) else 0
+
+        # Calculate Result
+        pct_return = close.pct_change(length)
+
+        # Offset
+        pct_return.shift(offset)
+
+        # Name & Category
+        pct_return.name = f"PCTRET_{length}"
+        pct_return.category = 'performance'
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[pct_return.name] = pct_return
+        
+        return pct_return
+
+
+
+    ## Overlap Indicators
     def hl2(self, high=None, low=None, offset=None, **kwargs):
         """Returns the average of two series.
 
@@ -139,7 +194,7 @@ class AnalysisIndicators(BasePandasObject):
         hl2.shift(offset)
 
         # Name & Category
-        hl2.name = 'HL2'
+        hl2.name = "HL2"
         hl2.category = 'overlap'
 
         # If 'append', then add it to the df
@@ -201,7 +256,7 @@ class AnalysisIndicators(BasePandasObject):
         hlc3.shift(offset)
 
         # Name & Category
-        hlc3.name = 'HLC3'
+        hlc3.name = "HLC3"
         hlc3.category = 'overlap'
 
         # If 'append', then add it to the df
@@ -261,7 +316,6 @@ class AnalysisIndicators(BasePandasObject):
             return
 
         # Validate Arguments
-        length = validate_positive(int, length, minimum=1, default=1)
         offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
@@ -271,7 +325,7 @@ class AnalysisIndicators(BasePandasObject):
         ohlc4.shift(offset)
 
         # Name & Category
-        ohlc4.name = 'OHLC4'
+        ohlc4.name = "OHLC4"
         ohlc4.category = 'overlap'
 
         # If 'append', then add it to the df
@@ -648,7 +702,10 @@ class AnalysisIndicators(BasePandasObject):
         return mom
 
 
-    ## Indicator Aliases
+    ## Indicator Aliases & Categories
+    # Performance
+    PctReturn = percent_return
+
     # Overlap
     Decreasing = decreasing
     Increasing = increasing

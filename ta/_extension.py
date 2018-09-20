@@ -125,24 +125,22 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        # Get the correct column(s).
         try:
-            # df = self._valid_df('hl2')   # Might be overkill.
             df = self._df
-
-            if isinstance(high, pd.Series):
-                high = high
-            else:
-                high = df[high] if high in df.columns else df.high
-            
-            if isinstance(low, pd.Series):
-                low = low
-            else:
-                low = df[low] if low in df.columns else df.low
-
         except AttributeError as aex:
-            print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
+            print(f"[X] {aex}")
             return
+
+        # Get the correct column(s).
+        if isinstance(high, pd.Series):
+            high = high
+        else:
+            high = df[high] if high in df.columns else df.high
+        
+        if isinstance(low, pd.Series):
+            low = low
+        else:
+            low = df[low] if low in df.columns else df.low
 
         # Validate Arguments
         offset = offset if isinstance(offset, int) else 0
@@ -185,29 +183,27 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        # Get the correct column(s).
         try:
-            # df = self._valid_df('hlc3')   # Might be overkill.
             df = self._df
-
-            if isinstance(high, pd.Series):
-                high = high
-            else:
-                high = df[high] if high in df.columns else df.high
-            
-            if isinstance(low, pd.Series):
-                low = low
-            else:
-                low = df[low] if low in df.columns else df.low
-
-            if isinstance(close, pd.Series):
-                close = close
-            else:
-                close = df[close] if close in df.columns else df.close
-
         except AttributeError as aex:
-            print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
+            print(f"[X] {aex}")
             return
+        
+        # Get the correct column(s).
+        if isinstance(high, pd.Series):
+            high = high
+        else:
+            high = df[high] if high in df.columns else df.high
+        
+        if isinstance(low, pd.Series):
+            low = low
+        else:
+            low = df[low] if low in df.columns else df.low
+
+        if isinstance(close, pd.Series):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
 
         # Validate Arguments
         offset = offset if isinstance(offset, int) else 0
@@ -252,33 +248,32 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        # Get the correct column(s).
         try:
             df = self._df
-
-            if isinstance(open_, pd.Series):
-                open_ = open_
-            else:
-                open_ = df[open_] if open_ in df.columns else df.open
-
-            if isinstance(high, pd.Series):
-                high = high
-            else:
-                high = df[high] if high in df.columns else df.high
-            
-            if isinstance(low, pd.Series):
-                low = low
-            else:
-                low = df[low] if low in df.columns else df.low
-
-            if isinstance(close, pd.Series):
-                close = close
-            else:
-                close = df[close] if close in df.columns else df.close
-
         except AttributeError as aex:
-            print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
+            print(f"[X] {aex}")
             return
+        
+        # Get the correct column(s).
+        if isinstance(open_, pd.Series):
+            open_ = open_
+        else:
+            open_ = df[open_] if open_ in df.columns else df.open
+
+        if isinstance(high, pd.Series):
+            high = high
+        else:
+            high = df[high] if high in df.columns else df.high
+        
+        if isinstance(low, pd.Series):
+            low = low
+        else:
+            low = df[low] if low in df.columns else df.low
+
+        if isinstance(close, pd.Series):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
 
         # Validate Arguments
         length = validate_positive(int, length, minimum=1, default=1)
@@ -317,18 +312,17 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        # Get the correct column(s).
         try:
             df = self._df
-
-            if isinstance(close, pd.Series):
-                close = close
-            else:
-                close = df[close] if close in df.columns else df.close
-
         except AttributeError as aex:
-            print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
+            print(f"[X] {aex}")
             return
+
+        # Get the correct column(s).
+        if isinstance(close, pd.Series):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
 
         # Validate Arguments
         length = validate_positive(int, length, minimum=1, default=1)
@@ -377,18 +371,17 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        # Get the correct column(s).
         try:
             df = self._df
-
-            if isinstance(close, pd.Series):
-                close = close
-            else:
-                close = df[close] if close in df.columns else df.close
-
         except AttributeError as aex:
-            print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
+            print(f"[X] {aex}")
             return
+
+        # Get the correct column(s).
+        if isinstance(close, pd.Series):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
 
         # Validate arguments
         length = validate_positive(int, length, minimum=1, default=1)
@@ -437,18 +430,17 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        # Get the correct column(s).
         try:
             df = self._df
-
-            if isinstance(close, pd.Series):
-                close = close
-            else:
-                close = df[close] if close in df.columns else df.close
-
         except AttributeError as aex:
-            print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
+            print(f"[X] {aex}")
             return
+
+        # Get the correct column(s).
+        if isinstance(close, pd.Series):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
 
         # Validate arguments
         length = validate_positive(int, length, minimum=1, default=1)
@@ -501,23 +493,22 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        # Get the correct column(s).
         try:
             df = self._df
-
-            if isinstance(high, pd.Series):
-                high = high
-            else:
-                high = df[high] if high in df.columns else df.high
-            
-            if isinstance(low, pd.Series):
-                low = low
-            else:
-                low = df[low] if low in df.columns else df.low
-
         except AttributeError as aex:
-            print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
+            print(f"[X] {aex}")
             return
+
+        # Get the correct column(s).
+        if isinstance(high, pd.Series):
+            high = high
+        else:
+            high = df[high] if high in df.columns else df.high
+        
+        if isinstance(low, pd.Series):
+            low = low
+        else:
+            low = df[low] if low in df.columns else df.low
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=1)
@@ -546,18 +537,17 @@ class AnalysisIndicators(BasePandasObject):
 
     def donchian(self, close=None, length:int = None, **kwargs):
         """ donchian """
-        # Get the correct column(s).
         try:
             df = self._df
-
-            if isinstance(close, pd.Series):
-                close = close
-            else:
-                close = df[close] if close in df.columns else df.close
-
         except AttributeError as aex:
-            print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
+            print(f"[X] {aex}")
             return
+
+        # Get the correct column(s).
+        if isinstance(close, pd.Series):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=20)

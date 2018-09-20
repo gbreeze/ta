@@ -18,6 +18,18 @@ def positive_int(x, minimum:int, verbose:bool = False):
         return valid
 
 
+def positive_float(x, minimum:int, verbose:bool = False):
+    # return float(x) if x and x > 0 else minimum
+    try:
+        valid = float(x) if x and minimum and x > 0.0 else minimum
+    except ValueError as vex:
+        print(f"[X] {vex}\n")
+        return
+    else:
+        print(f"[i]   x: float({x})= {valid}") if verbose else None
+        return valid
+
+
 class BasePandasObject(PandasObject):
     """Simple PandasObject Extension
     
@@ -95,6 +107,21 @@ class AnalysisIndicators(BasePandasObject):
             return None
         return df
 
+
+    def notnull(self):
+        """Alias for `notna` method. See `notna` for more detail."""
+        return self.notna()
+
+
+    @property
+    def defaults(self, value, min_range:int= 0, max_range:int = 100, every:int = 10):
+        _levels = [x for x in range(min_range, max_range + 1) if x % every == 0]
+        if value:
+            for x in _levels:
+                self._data[f'{x}'] = x
+        else:
+            for x in _levels:
+                del self._data[f'{x}']
 
     ## Overlay Indicators
     def hl2(self, high=None, low=None, length=None, **kwargs):
@@ -452,13 +479,78 @@ class AnalysisIndicators(BasePandasObject):
         return midpoint
 
 
+    ## Overlay Indicators
+    def rpn(self, high=None, low=None, length=None, percentage=0.1, **kwargs):
+        """Returns the Series of values that are a percentage of the absolute difference of two Series.
+
+        Args:
+            high: None or a Series or DataFrame, optional
+                If None, uses local df column: 'high'
+            low: None or a Series or DataFrame, optional
+                If None, uses local df column: 'low'
+            append: bool, kwarg, optional
+                If True, appends result to current df
+        
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
+        Returns:
+            pd.Series: New feature
+        """
+        length = positive_int(length, minimum=0)
+        # percentage = positive_float(percentage, minimum=0.0)
+
+        # Get the correct columns.
+        # Loads current Pandas DataFrame column if None are passed in.
+        try:
+            # df = self._valid_df('hl2')   # Might be overkill.
+            df = self._data
+
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+            
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+        except AttributeError as aex:
+            print(f"[X] {aex}\n[i] 'DataFrame' Columns: {list(df.columns)}")
+            return
+
+        # Calculate Result
+        # highest_high = high.rolling(length).max()
+        # lowest_low = low.rolling(length).min()
+        # abs_range = (highest_high - lowest_low).abs()
+        abs_range = (high - low).abs()
+        rp = 0.01 * percentage * abs_range
+        print(abs_range.head())
+        print(rp.head())
+
+        # Name & Category
+        rp.name = f"RP_{length}_{percentage}"
+        rp.category = 'overlay'
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[rp.name] = rp
+        
+        return rp
+
+
     ## Aliases
+    Decreasing = decreasing
+    Increasing = increasing
     HL2 = hl2
     HLC3 = hlc3
     OHLC4 = ohlc4
-    Decreasing = decreasing
-    Increasing = increasing
     Midpoint = midpoint
+    range_percentage = rpn
+
 
 ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))
 print(f"[i] Loaded {len(ta_indicators)} TA Indicators: {', '.join(ta_indicators)}")

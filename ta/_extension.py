@@ -847,6 +847,104 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Statistics Indicators
+    def stdev(self, close=None, length=None, **kwargs):
+        """Standard Deviation
+        
+        Returns the Standard Deviations of a Series.
+
+        Args:
+            close (None, pd.Series, optional):
+                If None, uses local df column: 'high'
+            length (None, int, optional):
+                An integer of how periods to compute.  Default is None and one.
+        
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+
+        # Validate Arguments
+        length = validate_positive(int, length, minimum=1, default=1)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+
+        # Calculate Result
+        stdev = self.variance(length=length).apply(np.sqrt)
+
+        # Name & Category
+        stdev.name = f"STDEV_{length}"
+        stdev.category = 'statistics'
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[stdev.name] = stdev
+        
+        return stdev
+    
+    def variance(self, close=None, length=None, **kwargs):
+        """Variance
+        
+        Returns the Variances of a Series.
+
+        Args:
+            close (None, pd.Series, optional):
+                If None, uses local df column: 'high'
+            length (None, int, optional):
+                An integer of how periods to compute.  Default is None and one.
+            cumulative (bool):
+                Default: False.  If True, returns the cummulative returns
+            offset (None, int, optional):
+                An integer on how to shift the Series.  Default is None and zero.
+        
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+
+        # Validate Arguments
+        length = validate_positive(int, length, minimum=1, default=1)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+
+        # Calculate Result
+        variance = close.rolling(length, min_periods=min_periods).var()
+
+        # Name & Category
+        variance.name = f"VAR_{length}"
+        variance.category = 'statistics'
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[variance.name] = variance
+        
+        return variance
+
 
 
     ## Trend Indicators
@@ -1208,6 +1306,8 @@ class AnalysisIndicators(BasePandasObject):
     LogReturn = log_return
 
     # Statistics
+    StandardDeviation = stdev
+    Variance = variance
 
     # Trend
     Decreasing = decreasing

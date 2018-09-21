@@ -633,57 +633,6 @@ class AnalysisIndicators(BasePandasObject):
         return rp
 
 
-    def donchian(self, close=None, length:int = None, **kwargs):
-        """ donchian """
-        df = self._valid_df()
-
-        if df is not None:
-            # Get the correct column.
-            if isinstance(close, pd.Series):
-                close = close
-            else:
-                close = df[close] if close in df.columns else df.close
-        else:
-            return
-
-        # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=20)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-
-        # Calculate Result
-        lower = close.rolling(length, min_periods=min_periods).min()
-        upper = close.rolling(length, min_periods=min_periods).max()
-        mid = 0.5 * (lower + upper)
-    
-        # Handle fills
-        if 'fillna' in kwargs:
-            lower.fillna(kwargs['fillna'], inplace=True)
-            mid.fillna(kwargs['fillna'], inplace=True)
-            upper.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
-            lower.fillna(method=kwargs['fill_method'], inplace=True)
-            mid.fillna(method=kwargs['fill_method'], inplace=True)
-            upper.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        lower.name = f"DCL_{length}"
-        mid.name = f"DCM_{length}"
-        upper.name = f"DCU_{length}"
-        mid.category = upper.category = lower.category = 'volatility'
-        
-        # If append, then add it to the df 
-        if 'append' in kwargs and kwargs['append']:
-            df[lower.name] = lower
-            df[mid.name] = mid
-            df[upper.name] = upper
-
-        # Prepare DataFrame to return
-        data = {lower.name: lower, mid.name: mid, upper.name: upper}
-        dcdf = pd.DataFrame(data)
-            
-        return dcdf
-
-
     def midprice(self, high:str = None, low:str = None, length:int = None, **kwargs):
         """ midprice """
         df = self._valid_df()
@@ -899,6 +848,58 @@ class AnalysisIndicators(BasePandasObject):
 
 
 
+    ## Volatility Indicators
+    def donchian(self, close=None, length:int = None, **kwargs):
+        """ donchian """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=20)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+
+        # Calculate Result
+        lower = close.rolling(length, min_periods=min_periods).min()
+        upper = close.rolling(length, min_periods=min_periods).max()
+        mid = 0.5 * (lower + upper)
+    
+        # Handle fills
+        if 'fillna' in kwargs:
+            lower.fillna(kwargs['fillna'], inplace=True)
+            mid.fillna(kwargs['fillna'], inplace=True)
+            upper.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            lower.fillna(method=kwargs['fill_method'], inplace=True)
+            mid.fillna(method=kwargs['fill_method'], inplace=True)
+            upper.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        lower.name = f"DCL_{length}"
+        mid.name = f"DCM_{length}"
+        upper.name = f"DCU_{length}"
+        mid.category = upper.category = lower.category = 'volatility'
+        
+        # If append, then add it to the df 
+        if 'append' in kwargs and kwargs['append']:
+            df[lower.name] = lower
+            df[mid.name] = mid
+            df[upper.name] = upper
+
+        # Prepare DataFrame to return
+        data = {lower.name: lower, mid.name: mid, upper.name: upper}
+        dcdf = pd.DataFrame(data)
+            
+        return dcdf
+
+
     ## Indicator Aliases & Categories
     # Performance
     PctReturn = percent_return
@@ -912,13 +913,13 @@ class AnalysisIndicators(BasePandasObject):
     OHLC4 = ohlc4
     Midpoint = midpoint
     Midprice = midprice
-    range_percentage = rpn
+    RangePercentage = rpn
 
     # Momentum
+    AbsolutePriceOscillator = apo
+    BalanceOfPower = bop
     Momentum = mom
     RateOfChange = roc
-    BalanceOfPower = bop
-    AbsolutePriceOscillator = apo
 
     # Volume
 

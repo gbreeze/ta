@@ -11,6 +11,15 @@ TA_EPSILON = sflt.epsilon
 def validate_positive(fn, x, minimum, default=None):
     return fn(x) if x and default and x > minimum else fn(default)
 
+def signed_series(series:pd.Series, initial:int = None, length:int = None):
+    """Returns a Signed Series with or without an initial value"""
+    length = validate_positive(int, length, minimum=0, default=1)
+    sign = series.diff(length)
+    sign[sign > 0] = 1
+    sign[sign < 0] = -1
+    sign.iloc[0] = initial if initial else np.NaN
+    return sign
+
 
 class BasePandasObject(PandasObject):
     """Simple PandasObject Extension

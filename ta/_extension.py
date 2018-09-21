@@ -502,6 +502,65 @@ class AnalysisIndicators(BasePandasObject):
         return ohlc4
 
 
+    def median(self, close=None, length=None, cumulative:bool = False, offset:int = None, **kwargs):
+        """Median Price
+        
+        Returns the Log Return of a Series.
+
+        Args:
+            close (None, pd.Series, optional):
+                If None, uses local df column: 'high'
+            length (None, int, optional):
+                An integer of how periods to compute.  Default is None and one.
+            cumulative (bool):
+                Default: False.  If True, returns the cummulative returns
+            offset (None, int, optional):
+                An integer on how to shift the Series.  Default is None and zero.
+        
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+
+        # Validate Arguments
+        length = validate_positive(int, length, minimum=1, default=1)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        offset = offset if isinstance(offset, int) else 0
+
+        # Calculate Result
+        median = close.rolling(length, min_periods=min_periods).median()
+
+        if cumulative:
+            median = median.cumsum()
+            
+        # Offset
+        median.shift(offset)
+
+        # Name & Category
+        median.name = f"MEDIAN_{length}"
+        median.category = 'overlap'
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[median.name] = median
+        
+        return median
+
+
     def midpoint(self, close:str = None, length:int = None, offset=None, **kwargs):
         """Returns the Midpoint of a Series of a certain length.
 

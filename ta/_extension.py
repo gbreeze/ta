@@ -765,6 +765,44 @@ class AnalysisIndicators(BasePandasObject):
         return mom
 
 
+
+    def roc(self, close:str = None, length:int = None, **kwargs):
+        """ roc """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+        
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=1)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+
+        # Calculate Result
+        roc = 100 * self.mom(close=close, length=length) / close.shift(length)
+        
+        # Handle fills
+        if 'fillna' in kwargs:
+            roc.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            roc.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        roc.name = f"ROC_{length}"
+        roc.category = 'momentum'
+        
+        # If append, then add it to the df 
+        if 'append' in kwargs and kwargs['append']:
+            df[roc.name] = roc
+
+        return roc
+
+
     ## Indicator Aliases & Categories
     # Performance
     PctReturn = percent_return
@@ -782,6 +820,7 @@ class AnalysisIndicators(BasePandasObject):
 
     # Momentum
     Momentum = mom
+    RateOfChange = roc
 
     # Volume
 

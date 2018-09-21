@@ -96,7 +96,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Performance Indicators
-    def percent_return(self, close=None, length=None, cummulative=False, percentage=False, offset=None, **kwargs):
+    def percent_return(self, close=None, length=None, cummulative:bool = False, percentage:bool = False, offset:int = None, **kwargs):
         """Returns the Percent Change of a Series.
 
         Args:
@@ -153,7 +153,7 @@ class AnalysisIndicators(BasePandasObject):
         return pct_return
 
 
-    def log_return(self, close=None, length=None, cummulative=False, percentage=False, offset=None, **kwargs):
+    def log_return(self, close=None, length=None, cummulative:bool = False, percentage:bool = False, offset:int = None, **kwargs):
         """Returns the Log Return of a Series.
 
         Args:
@@ -727,7 +727,7 @@ class AnalysisIndicators(BasePandasObject):
             
         return midprice
 
-
+    ## Momentum Indicators
     def mom(self, close:str = None, length:int = None, **kwargs):
         """ mom """
         df = self._valid_df()
@@ -763,7 +763,6 @@ class AnalysisIndicators(BasePandasObject):
             df[mom.name] = mom
 
         return mom
-
 
 
     def roc(self, close:str = None, length:int = None, **kwargs):
@@ -803,6 +802,60 @@ class AnalysisIndicators(BasePandasObject):
         return roc
 
 
+    def bop(self, open_:str = None, high:str = None, low:str = None, close:str = None, percentage:bool = False, **kwargs):
+        """ bop """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(open_, pd.Series):
+                open_ = open_
+            else:
+                open_ = df[open_] if open_ in df.columns else df.open
+
+            if isinstance(high, pd.Series):
+                high_ = high
+            else:
+                high_ = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low_ = low
+            else:
+                low_ = df[low] if low in df.columns else df.low
+
+            if isinstance(close, pd.Series):
+                close_ = close
+            else:
+                close_ = df[close] if close in df.columns else df.close
+        else:
+            return
+        
+        # Validate arguments
+        # length = validate_positive(int, length, minimum=0, default=1)
+        percent = 100 if percentage else 1
+
+        # Calculate Result
+        close_open_range = close_ - open_
+        high_log_range = high_ - low_
+        bop = percent * close_open_range / high_log_range
+        
+        # Handle fills
+        if 'fillna' in kwargs:
+            bop.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            bop.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        # bop.name = f"BOP_{length}"
+        bop.name = f"BOP"
+        bop.category = 'momentum'
+        
+        # If append, then add it to the df 
+        if 'append' in kwargs and kwargs['append']:
+            df[bop.name] = bop
+
+        return bop
+
     ## Indicator Aliases & Categories
     # Performance
     PctReturn = percent_return
@@ -821,6 +874,7 @@ class AnalysisIndicators(BasePandasObject):
     # Momentum
     Momentum = mom
     RateOfChange = roc
+    BalanceOfPower = bop
 
     # Volume
 

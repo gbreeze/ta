@@ -96,7 +96,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Performance Indicators
-    def percent_return(self, close=None, length=None, offset=None, **kwargs):
+    def percent_return(self, close=None, length=None, cummulative=False, percentage=False, offset=None, **kwargs):
         """Returns the Percent Change of a Series.
 
         Args:
@@ -104,6 +104,8 @@ class AnalysisIndicators(BasePandasObject):
                 If None, uses local df column: 'high'
             length (None, int, optional):
                 An integer of how periods to compute.  Default is None and one.
+            cummulative (bool):
+                Default: False.  If True, returns the cummulative returns
             offset (None, int, optional):
                 An integer on how to shift the Series.  Default is None and zero.
         
@@ -129,9 +131,13 @@ class AnalysisIndicators(BasePandasObject):
         # Validate Arguments
         length = validate_positive(int, length, minimum=1, default=1)
         offset = offset if isinstance(offset, int) else 0
+        percent = 100 if percentage else 1
 
         # Calculate Result
-        pct_return = close.pct_change(length)
+        pct_return = percent * close.pct_change(length)
+
+        if cummulative:
+            pct_return = percent * pct_return.cumsum()
 
         # Offset
         pct_return.shift(offset)
@@ -145,6 +151,63 @@ class AnalysisIndicators(BasePandasObject):
             df[pct_return.name] = pct_return
         
         return pct_return
+
+
+    def log_return(self, close=None, length=None, cummulative=False, percentage=False, offset=None, **kwargs):
+        """Returns the Log Return of a Series.
+
+        Args:
+            close (None, pd.Series, optional):
+                If None, uses local df column: 'high'
+            length (None, int, optional):
+                An integer of how periods to compute.  Default is None and one.
+            cummulative (bool):
+                Default: False.  If True, returns the cummulative returns
+            offset (None, int, optional):
+                An integer on how to shift the Series.  Default is None and zero.
+        
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+
+        # Validate Arguments
+        length = validate_positive(int, length, minimum=1, default=1)
+        offset = offset if isinstance(offset, int) else 0
+        percent = 100 if percentage else 1
+
+        # Calculate Result
+        log_return = percent * np.log(close).diff(length)
+
+        if cummulative:
+            log_return = log_return.cumsum()
+
+        # Offset
+        log_return.shift(offset)
+
+        # Name & Category
+        log_return.name = f"LOGRET_{length}"
+        log_return.category = 'performance'
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[log_return.name] = log_return
+        
+        return log_return
 
 
 
@@ -705,6 +768,7 @@ class AnalysisIndicators(BasePandasObject):
     ## Indicator Aliases & Categories
     # Performance
     PctReturn = percent_return
+    LogReturn = log_return
 
     # Overlap
     Decreasing = decreasing
@@ -728,4 +792,5 @@ class AnalysisIndicators(BasePandasObject):
 
 
 ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))
-print(f"[i] Loaded {len(ta_indicators)} TA Indicators: {', '.join(ta_indicators)}")
+if False:
+    print(f"[i] Loaded {len(ta_indicators)} TA Indicators: {', '.join(ta_indicators)}")

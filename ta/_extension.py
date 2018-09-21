@@ -95,28 +95,9 @@ class AnalysisIndicators(BasePandasObject):
 
 
 
-    ## Performance Indicators
-    def percent_return(self, close=None, length=None, cummulative:bool = False, percentage:bool = False, offset:int = None, **kwargs):
-        """Returns the Percent Change of a Series.
-
-        Args:
-            close (None, pd.Series, optional):
-                If None, uses local df column: 'high'
-            length (None, int, optional):
-                An integer of how periods to compute.  Default is None and one.
-            cummulative (bool):
-                Default: False.  If True, returns the cummulative returns
-            offset (None, int, optional):
-                An integer on how to shift the Series.  Default is None and zero.
-        
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-        
-        Returns:
-            pd.Series: New feature
-        """
+    ## Momentum Indicators
+    def apo(self, close:str = None, fast:int = None, slow:int = None, **kwargs):
+        """ apo """
         df = self._valid_df()
 
         if df is not None:
@@ -127,88 +108,202 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
         else:
             return
-
-        # Validate Arguments
-        length = validate_positive(int, length, minimum=1, default=1)
-        offset = offset if isinstance(offset, int) else 0
-        percent = 100 if percentage else 1
+        
+        # Validate arguments
+        fast = validate_positive(int, fast, minimum=0, default=12)
+        slow = validate_positive(int, slow, minimum=0, default=26)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else fast
 
         # Calculate Result
-        pct_return = percent * close.pct_change(length)
+        fastma = close.rolling(fast, min_periods=min_periods).mean()
+        slowma = close.rolling(slow, min_periods=min_periods).mean()
+        apo = fastma - slowma
+        
+        # Handle fills
+        if 'fillna' in kwargs:
+            apo.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            apo.fillna(method=kwargs['fill_method'], inplace=True)
 
-        if cummulative:
-            pct_return = percent * pct_return.cumsum()
-
-        # Offset
-        pct_return.shift(offset)
-
-        # Name & Category
-        pct_return.name = f"PCTRET_{length}"
-        pct_return.category = 'performance'
-
-        # If 'append', then add it to the df
+        # Name and Categorize it
+        # bop.name = f"BOP_{length}"
+        apo.name = f"APO_{fast}_{slow}"
+        apo.category = 'momentum'
+        
+        # If append, then add it to the df 
         if 'append' in kwargs and kwargs['append']:
-            df[pct_return.name] = pct_return
-        
-        return pct_return
+            df[apo.name] = apo
+
+        return apo
 
 
-    def log_return(self, close=None, length=None, cummulative:bool = False, percentage:bool = False, offset:int = None, **kwargs):
-        """Returns the Log Return of a Series.
-
-        Args:
-            close (None, pd.Series, optional):
-                If None, uses local df column: 'high'
-            length (None, int, optional):
-                An integer of how periods to compute.  Default is None and one.
-            cummulative (bool):
-                Default: False.  If True, returns the cummulative returns
-            offset (None, int, optional):
-                An integer on how to shift the Series.  Default is None and zero.
-        
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-        
-        Returns:
-            pd.Series: New feature
-        """
+    def bop(self, open_:str = None, high:str = None, low:str = None, close:str = None, percentage:bool = False, **kwargs):
+        """ bop """
         df = self._valid_df()
 
         if df is not None:
             # Get the correct column.
+            if isinstance(open_, pd.Series):
+                open_ = open_
+            else:
+                open_ = df[open_] if open_ in df.columns else df.open
+
+            if isinstance(high, pd.Series):
+                high_ = high
+            else:
+                high_ = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low_ = low
+            else:
+                low_ = df[low] if low in df.columns else df.low
+
             if isinstance(close, pd.Series):
+                close_ = close
+            else:
+                close_ = df[close] if close in df.columns else df.close
+        else:
+            return
+        
+        # Validate arguments
+        # length = validate_positive(int, length, minimum=0, default=1)
+        percent = 100 if percentage else 1
+
+        # Calculate Result
+        close_open_range = close_ - open_
+        high_log_range = high_ - low_
+        bop = percent * close_open_range / high_log_range
+        
+        # Handle fills
+        if 'fillna' in kwargs:
+            bop.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            bop.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        # bop.name = f"BOP_{length}"
+        bop.name = f"BOP"
+        bop.category = 'momentum'
+        
+        # If append, then add it to the df 
+        if 'append' in kwargs and kwargs['append']:
+            df[bop.name] = bop
+
+        return bop
+
+
+    def mom(self, close:str = None, length:int = None, **kwargs):
+        """ mom """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
         else:
             return
-
-        # Validate Arguments
-        length = validate_positive(int, length, minimum=1, default=1)
-        offset = offset if isinstance(offset, int) else 0
-        percent = 100 if percentage else 1
+        
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=1)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
 
         # Calculate Result
-        log_return = percent * np.log(close).diff(length)
-
-        if cummulative:
-            log_return = log_return.cumsum()
-
-        # Offset
-        log_return.shift(offset)
-
-        # Name & Category
-        log_return.name = f"LOGRET_{length}"
-        log_return.category = 'performance'
-
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[log_return.name] = log_return
+        mom = close.diff(length)
         
-        return log_return
+        # Handle fills
+        if 'fillna' in kwargs:
+            mom.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            mom.fillna(method=kwargs['fill_method'], inplace=True)
 
+        # Name and Categorize it
+        mom.name = f"MOM_{length}"
+        mom.category = 'momentum'
+        
+        # If append, then add it to the df 
+        if 'append' in kwargs and kwargs['append']:
+            df[mom.name] = mom
+
+        return mom
+
+
+    def ppo(self, close:str = None, fast:int = None, slow:int = None, **kwargs):
+        """ ppo """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+        
+        # Validate arguments
+        fast = validate_positive(int, fast, minimum=0, default=12)
+        slow = validate_positive(int, slow, minimum=0, default=26)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else fast
+
+        # Calculate Result
+        fastma = close.rolling(fast, min_periods=min_periods).mean()
+        slowma = close.rolling(slow, min_periods=min_periods).mean()
+        ppo = 100 * (fastma - slowma) / slowma
+        
+        # Handle fills
+        if 'fillna' in kwargs:
+            ppo.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            ppo.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        ppo.name = f"PPO_{length}"
+        ppo.category = 'momentum'
+        
+        # If append, then add it to the df 
+        if 'append' in kwargs and kwargs['append']:
+            df[ppo.name] = ppo
+
+        return ppo
+
+
+    def roc(self, close:str = None, length:int = None, **kwargs):
+        """ roc """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+        
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=1)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+
+        # Calculate Result
+        roc = 100 * self.mom(close=close, length=length) / close.shift(length)
+        
+        # Handle fills
+        if 'fillna' in kwargs:
+            roc.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            roc.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        roc.name = f"ROC_{length}"
+        roc.category = 'momentum'
+        
+        # If append, then add it to the df 
+        if 'append' in kwargs and kwargs['append']:
+            df[roc.name] = roc
+
+        return roc
 
 
     ## Overlap Indicators
@@ -398,6 +493,289 @@ class AnalysisIndicators(BasePandasObject):
         return ohlc4
 
 
+    def midpoint(self, close:str = None, length:int = None, offset=None, **kwargs):
+        """Returns the Midpoint of a Series of a certain length.
+
+        Args:
+            close (None, str, pd.Series, optional):
+                pd.Series: A seperate Series not in the current DataFrame.
+                str: Looksup column in DataFrame under 'str' name.
+                None: Default.  Uses current DataFrame column 'close'.
+            length (int): Lookback length. Defaults to 1.
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column(s).
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=1, default=1)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        offset = offset if isinstance(offset, int) else 0
+
+        # Calculate Result
+        lowest = close.rolling(length, min_periods=min_periods).min()
+        highest = close.rolling(length, min_periods=min_periods).max()
+        midpoint = 0.5 * (lowest + highest)
+        
+        # Offset
+        midpoint.shift(offset)
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            midpoint.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            midpoint.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        midpoint.name = f"MIDPOINT_{length}"
+        midpoint.category = 'overlap'
+        
+        # If append, then add it to the df 
+        if 'append' in kwargs and kwargs['append']:
+            df[midpoint.name] = midpoint
+            
+        return midpoint
+
+
+    def midprice(self, high:str = None, low:str = None, length:int = None, **kwargs):
+        """ midprice """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column(s).
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+        else:
+            return
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=1)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+
+        # Calculate Result
+        lowest_low = low.rolling(length, min_periods=min_periods).min()
+        highest_high = high.rolling(length, min_periods=min_periods).max()
+        midprice = 0.5 * (lowest_low + highest_high)
+        
+        # Handle fills
+        if 'fillna' in kwargs:
+            midprice.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            midprice.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        midprice.name = f"MIDPRICE_{length}"
+        midprice.category = 'overlap'
+        
+        # If append, then add it to the df 
+        if 'append' in kwargs and kwargs['append']:
+            df[midprice.name] = midprice
+            
+        return midprice
+
+
+    def rpn(self, high=None, low=None, length=None, percentage=None, **kwargs):
+        """Returns the Series of values that are a percentage of the absolute difference of two Series.
+
+        Args:
+            high: None or a Series or DataFrame, optional
+                If None, uses local df column: 'high'
+            low: None or a Series or DataFrame, optional
+                If None, uses local df column: 'low'
+            append: bool, kwarg, optional
+                If True, appends result to current df
+        
+            **kwargs:
+                addLow (bool, optional): If true, adds low value to result
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column(s).
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+            
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+        else:
+            return
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=1)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        percentage = validate_positive(float, percentage, minimum=0.0, default=0.1)
+
+        # Calculate Result
+        highest_high = high.rolling(length, min_periods=min_periods).max()
+        lowest_low = low.rolling(length, min_periods=min_periods).min()
+        abs_range = (highest_high - lowest_low).abs()
+
+        rp = percentage * abs_range
+        if 'addLow' in kwargs and kwargs['addLow']:
+            rp += low
+
+        # Name & Category
+        rp.name = f"RP_{length}_{percentage}"
+        rp.category = 'overlap'
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[rp.name] = rp
+        
+        return rp
+
+
+    ## Performance Indicators
+    def log_return(self, close=None, length=None, cummulative:bool = False, percentage:bool = False, offset:int = None, **kwargs):
+        """Returns the Log Return of a Series.
+
+        Args:
+            close (None, pd.Series, optional):
+                If None, uses local df column: 'high'
+            length (None, int, optional):
+                An integer of how periods to compute.  Default is None and one.
+            cummulative (bool):
+                Default: False.  If True, returns the cummulative returns
+            offset (None, int, optional):
+                An integer on how to shift the Series.  Default is None and zero.
+        
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+
+        # Validate Arguments
+        length = validate_positive(int, length, minimum=1, default=1)
+        offset = offset if isinstance(offset, int) else 0
+        percent = 100 if percentage else 1
+
+        # Calculate Result
+        log_return = percent * np.log(close).diff(length)
+
+        if cummulative:
+            log_return = log_return.cumsum()
+
+        # Offset
+        log_return.shift(offset)
+
+        # Name & Category
+        log_return.name = f"LOGRET_{length}"
+        log_return.category = 'performance'
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[log_return.name] = log_return
+        
+        return log_return
+
+
+    def percent_return(self, close=None, length=None, cummulative:bool = False, percentage:bool = False, offset:int = None, **kwargs):
+        """Returns the Percent Change of a Series.
+
+        Args:
+            close (None, pd.Series, optional):
+                If None, uses local df column: 'high'
+            length (None, int, optional):
+                An integer of how periods to compute.  Default is None and one.
+            cummulative (bool):
+                Default: False.  If True, returns the cummulative returns
+            offset (None, int, optional):
+                An integer on how to shift the Series.  Default is None and zero.
+        
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+
+        # Validate Arguments
+        length = validate_positive(int, length, minimum=1, default=1)
+        offset = offset if isinstance(offset, int) else 0
+        percent = 100 if percentage else 1
+
+        # Calculate Result
+        pct_return = percent * close.pct_change(length)
+
+        if cummulative:
+            pct_return = percent * pct_return.cumsum()
+
+        # Offset
+        pct_return.shift(offset)
+
+        # Name & Category
+        pct_return.name = f"PCTRET_{length}"
+        pct_return.category = 'performance'
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[pct_return.name] = pct_return
+        
+        return pct_return
+
+
+    ## Statistics Indicators
+
+
+    ## Trend Indicators
     def decreasing(self, close:str = None, length:int = None, asint:bool = True, offset=None, **kwargs):
         """Returns if a Series is Decreasing over a certain length.
 
@@ -512,342 +890,6 @@ class AnalysisIndicators(BasePandasObject):
         return increasing
 
 
-    def midpoint(self, close:str = None, length:int = None, offset=None, **kwargs):
-        """Returns the Midpoint of a Series of a certain length.
-
-        Args:
-            close (None, str, pd.Series, optional):
-                pd.Series: A seperate Series not in the current DataFrame.
-                str: Looksup column in DataFrame under 'str' name.
-                None: Default.  Uses current DataFrame column 'close'.
-            length (int): Lookback length. Defaults to 1.
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-        
-        Returns:
-            pd.Series: New feature
-        """
-        df = self._valid_df()
-
-        if df is not None:
-            # Get the correct column(s).
-            if isinstance(close, pd.Series):
-                close = close
-            else:
-                close = df[close] if close in df.columns else df.close
-        else:
-            return
-
-        # Validate arguments
-        length = validate_positive(int, length, minimum=1, default=1)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-        offset = offset if isinstance(offset, int) else 0
-
-        # Calculate Result
-        lowest = close.rolling(length, min_periods=min_periods).min()
-        highest = close.rolling(length, min_periods=min_periods).max()
-        midpoint = 0.5 * (lowest + highest)
-        
-        # Offset
-        midpoint.shift(offset)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            midpoint.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
-            midpoint.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        midpoint.name = f"MIDPOINT_{length}"
-        midpoint.category = 'overlap'
-        
-        # If append, then add it to the df 
-        if 'append' in kwargs and kwargs['append']:
-            df[midpoint.name] = midpoint
-            
-        return midpoint
-
-
-    ## Overlap Indicators
-    def rpn(self, high=None, low=None, length=None, percentage=None, **kwargs):
-        """Returns the Series of values that are a percentage of the absolute difference of two Series.
-
-        Args:
-            high: None or a Series or DataFrame, optional
-                If None, uses local df column: 'high'
-            low: None or a Series or DataFrame, optional
-                If None, uses local df column: 'low'
-            append: bool, kwarg, optional
-                If True, appends result to current df
-        
-            **kwargs:
-                addLow (bool, optional): If true, adds low value to result
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-        
-        Returns:
-            pd.Series: New feature
-        """
-        df = self._valid_df()
-
-        if df is not None:
-            # Get the correct column(s).
-            if isinstance(high, pd.Series):
-                high = high
-            else:
-                high = df[high] if high in df.columns else df.high
-            
-            if isinstance(low, pd.Series):
-                low = low
-            else:
-                low = df[low] if low in df.columns else df.low
-        else:
-            return
-
-        # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=1)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-        percentage = validate_positive(float, percentage, minimum=0.0, default=0.1)
-
-        # Calculate Result
-        highest_high = high.rolling(length, min_periods=min_periods).max()
-        lowest_low = low.rolling(length, min_periods=min_periods).min()
-        abs_range = (highest_high - lowest_low).abs()
-
-        rp = percentage * abs_range
-        if 'addLow' in kwargs and kwargs['addLow']:
-            rp += low
-
-        # Name & Category
-        rp.name = f"RP_{length}_{percentage}"
-        rp.category = 'overlap'
-
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[rp.name] = rp
-        
-        return rp
-
-
-    def midprice(self, high:str = None, low:str = None, length:int = None, **kwargs):
-        """ midprice """
-        df = self._valid_df()
-
-        if df is not None:
-            # Get the correct column(s).
-            if isinstance(low, pd.Series):
-                low = low
-            else:
-                low = df[low] if low in df.columns else df.low
-
-            if isinstance(high, pd.Series):
-                high = high
-            else:
-                high = df[high] if high in df.columns else df.high
-        else:
-            return
-
-        # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=1)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-
-        # Calculate Result
-        lowest_low = low.rolling(length, min_periods=min_periods).min()
-        highest_high = high.rolling(length, min_periods=min_periods).max()
-        midprice = 0.5 * (lowest_low + highest_high)
-        
-        # Handle fills
-        if 'fillna' in kwargs:
-            midprice.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
-            midprice.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        midprice.name = f"MIDPRICE_{length}"
-        midprice.category = 'overlap'
-        
-        # If append, then add it to the df 
-        if 'append' in kwargs and kwargs['append']:
-            df[midprice.name] = midprice
-            
-        return midprice
-
-    ## Momentum Indicators
-    def apo(self, close:str = None, fast:int = None, slow:int = None, **kwargs):
-        """ apo """
-        df = self._valid_df()
-
-        if df is not None:
-            # Get the correct column.
-            if isinstance(close, pd.Series):
-                close = close
-            else:
-                close = df[close] if close in df.columns else df.close
-        else:
-            return
-        
-        # Validate arguments
-        fast = validate_positive(int, fast, minimum=0, default=12)
-        slow = validate_positive(int, slow, minimum=0, default=26)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else fast
-
-        # Calculate Result
-        fastma = close.rolling(fast, min_periods=min_periods).mean()
-        slowma = close.rolling(slow, min_periods=min_periods).mean()
-        apo = fastma - slowma
-        
-        # Handle fills
-        if 'fillna' in kwargs:
-            apo.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
-            apo.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        # bop.name = f"BOP_{length}"
-        apo.name = f"APO_{fast}_{slow}"
-        apo.category = 'momentum'
-        
-        # If append, then add it to the df 
-        if 'append' in kwargs and kwargs['append']:
-            df[apo.name] = apo
-
-        return apo
-
-
-    def bop(self, open_:str = None, high:str = None, low:str = None, close:str = None, percentage:bool = False, **kwargs):
-        """ bop """
-        df = self._valid_df()
-
-        if df is not None:
-            # Get the correct column.
-            if isinstance(open_, pd.Series):
-                open_ = open_
-            else:
-                open_ = df[open_] if open_ in df.columns else df.open
-
-            if isinstance(high, pd.Series):
-                high_ = high
-            else:
-                high_ = df[high] if high in df.columns else df.high
-
-            if isinstance(low, pd.Series):
-                low_ = low
-            else:
-                low_ = df[low] if low in df.columns else df.low
-
-            if isinstance(close, pd.Series):
-                close_ = close
-            else:
-                close_ = df[close] if close in df.columns else df.close
-        else:
-            return
-        
-        # Validate arguments
-        # length = validate_positive(int, length, minimum=0, default=1)
-        percent = 100 if percentage else 1
-
-        # Calculate Result
-        close_open_range = close_ - open_
-        high_log_range = high_ - low_
-        bop = percent * close_open_range / high_log_range
-        
-        # Handle fills
-        if 'fillna' in kwargs:
-            bop.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
-            bop.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        # bop.name = f"BOP_{length}"
-        bop.name = f"BOP"
-        bop.category = 'momentum'
-        
-        # If append, then add it to the df 
-        if 'append' in kwargs and kwargs['append']:
-            df[bop.name] = bop
-
-        return bop
-
-
-    def mom(self, close:str = None, length:int = None, **kwargs):
-        """ mom """
-        df = self._valid_df()
-
-        if df is not None:
-            # Get the correct column.
-            if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
-                close = close
-            else:
-                close = df[close] if close in df.columns else df.close
-        else:
-            return
-        
-        # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=1)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-
-        # Calculate Result
-        mom = close.diff(length)
-        
-        # Handle fills
-        if 'fillna' in kwargs:
-            mom.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
-            mom.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        mom.name = f"MOM_{length}"
-        mom.category = 'momentum'
-        
-        # If append, then add it to the df 
-        if 'append' in kwargs and kwargs['append']:
-            df[mom.name] = mom
-
-        return mom
-
-
-    def roc(self, close:str = None, length:int = None, **kwargs):
-        """ roc """
-        df = self._valid_df()
-
-        if df is not None:
-            # Get the correct column.
-            if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
-                close = close
-            else:
-                close = df[close] if close in df.columns else df.close
-        else:
-            return
-        
-        # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=1)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-
-        # Calculate Result
-        roc = 100 * self.mom(close=close, length=length) / close.shift(length)
-        
-        # Handle fills
-        if 'fillna' in kwargs:
-            roc.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
-            roc.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        roc.name = f"ROC_{length}"
-        roc.category = 'momentum'
-        
-        # If append, then add it to the df 
-        if 'append' in kwargs and kwargs['append']:
-            df[roc.name] = roc
-
-        return roc
-
-
-
     ## Volatility Indicators
     def donchian(self, close=None, length:int = None, **kwargs):
         """ donchian """
@@ -896,18 +938,29 @@ class AnalysisIndicators(BasePandasObject):
         # Prepare DataFrame to return
         data = {lower.name: lower, mid.name: mid, upper.name: upper}
         dcdf = pd.DataFrame(data)
+        dcdf.name = f"DC{length}"
+        dcdf.category = 'volatility'
             
         return dcdf
 
 
+    ## Volume Indicators
+
+
+
     ## Indicator Aliases & Categories
+    # Momentum
+    AbsolutePriceOscillator = apo
+    BalanceOfPower = bop
+    Momentum = mom
+    PricePointOscillator = ppo ##
+    RateOfChange = roc
+
     # Performance
     PctReturn = percent_return
     LogReturn = log_return
 
     # Overlap
-    Decreasing = decreasing
-    Increasing = increasing
     HL2 = hl2
     HLC3 = hlc3
     OHLC4 = ohlc4
@@ -915,18 +968,18 @@ class AnalysisIndicators(BasePandasObject):
     Midprice = midprice
     RangePercentage = rpn
 
-    # Momentum
-    AbsolutePriceOscillator = apo
-    BalanceOfPower = bop
-    Momentum = mom
-    RateOfChange = roc
+    # Statistics
 
-    # Volume
+
+    # Trend
+    Decreasing = decreasing
+    Increasing = increasing
 
     # Volatility
     Donchian = donchian
-
-    # Statistics
+    
+    # Volume
+    AccumDist = ad
 
 
 ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))

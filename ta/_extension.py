@@ -606,7 +606,9 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def rpn(self, high=None, low=None, length=None, percentage=None, **kwargs):
-        """Returns the Series of values that are a percentage of the absolute difference of two Series.
+        """
+        
+        Returns the Series of values that are a percentage of the absolute difference of two Series.
 
         Args:
             high: None or a Series or DataFrame, optional
@@ -668,7 +670,9 @@ class AnalysisIndicators(BasePandasObject):
 
     ## Performance Indicators
     def log_return(self, close=None, length=None, cummulative:bool = False, percentage:bool = False, offset:int = None, **kwargs):
-        """Returns the Log Return of a Series.
+        """Log Return with 
+        
+        Returns the Log Return of a Series.
 
         Args:
             close (None, pd.Series, optional):
@@ -725,7 +729,9 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def percent_return(self, close=None, length=None, cummulative:bool = False, percentage:bool = False, offset:int = None, **kwargs):
-        """Returns the Percent Change of a Series.
+        """Percent Return with Length, Cummulation, Percentage and Offset Attributes
+        
+        Returns the Percent Change of a Series.
 
         Args:
             close (None, pd.Series, optional):
@@ -786,7 +792,9 @@ class AnalysisIndicators(BasePandasObject):
 
     ## Trend Indicators
     def decreasing(self, close:str = None, length:int = None, asint:bool = True, offset=None, **kwargs):
-        """Returns if a Series is Decreasing over a certain length.
+        """Decreasing Trend
+        
+        Returns if a Series is Decreasing over a certain length.
 
         Args:
             close(None,pd.Series,pd.DataFrame): optional. If None, uses local df column: 'close'
@@ -842,7 +850,9 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def increasing(self, close:str = None, length:int = None, asint:bool = True, offset=None, **kwargs):
-        """Returns if a Series is Increasing over a certain length.
+        """Increasing Trend
+        
+        Returns if a Series is Increasing over a certain length.
 
         Args:
             close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
@@ -901,7 +911,10 @@ class AnalysisIndicators(BasePandasObject):
 
     ## Volatility Indicators
     def donchian(self, close=None, length:int = None, **kwargs):
-        """ donchian """
+        """Donchian Channels
+
+
+        """
         df = self._valid_df()
 
         if df is not None:
@@ -954,7 +967,72 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Volume Indicators
+    def pvol(self, close:str = None, volume:str = None, signed:bool = True, offset:int = None, **kwargs):
+        """Price Volume
+        
+        Returns a Series of the product of Price and Volume.
 
+        Args:
+            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+            signed (bool): True.  Returns zeros and ones.
+            length (int): How many 
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column(s).
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+            if isinstance(volume, pd.Series):
+                volume = volume
+            else:
+                volume = df[volume] if volume in df.columns else df.volume
+        else:
+            return
+
+        # Validate arguments
+        offset = validate_positive(int, offset, minimum=0, default=0)
+        # min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else offset
+
+        print(f"offset: {offset}")
+        # Calculate Result
+        if signed:
+            pvol = signed_series(close, 1) * close * volume
+        else:
+            pvol = close * volume
+
+        # Offset
+        pvol.shift(offset)
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            pvol.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            pvol.fillna(method=kwargs['fill_method'], inplace=True)
+        
+        # Name and Categorize it
+        pvol.name = f"PVOL"
+        pvol.category = 'trend'
+        
+        # If append, then add it to the df 
+        if 'append' in kwargs and kwargs['append']:
+            df[pvol.name] = pvol
+
+        return pvol
 
 
     ## Indicator Aliases & Categories
@@ -988,7 +1066,8 @@ class AnalysisIndicators(BasePandasObject):
     Donchian = donchian
     
     # Volume
-    AccumDist = ad
+    # AccumDist = ad
+    PriceVolume = pvol
 
 
 ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))

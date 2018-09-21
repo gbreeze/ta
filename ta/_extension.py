@@ -606,7 +606,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def rpn(self, high=None, low=None, length=None, percentage=None, **kwargs):
-        """
+        """Range Percentage
         
         Returns the Series of values that are a percentage of the absolute difference of two Series.
 
@@ -669,7 +669,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Performance Indicators
-    def log_return(self, close=None, length=None, cummulative:bool = False, percentage:bool = False, offset:int = None, **kwargs):
+    def log_return(self, close=None, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
         """Log Return with 
         
         Returns the Log Return of a Series.
@@ -679,7 +679,7 @@ class AnalysisIndicators(BasePandasObject):
                 If None, uses local df column: 'high'
             length (None, int, optional):
                 An integer of how periods to compute.  Default is None and one.
-            cummulative (bool):
+            cumulative (bool):
                 Default: False.  If True, returns the cummulative returns
             offset (None, int, optional):
                 An integer on how to shift the Series.  Default is None and zero.
@@ -706,12 +706,12 @@ class AnalysisIndicators(BasePandasObject):
         # Validate Arguments
         length = validate_positive(int, length, minimum=1, default=1)
         offset = offset if isinstance(offset, int) else 0
-        percent = 100 if percentage else 1
+        percent = 100 if percent else 1
 
         # Calculate Result
         log_return = percent * np.log(close).diff(length)
 
-        if cummulative:
+        if cumulative:
             log_return = log_return.cumsum()
 
         # Offset
@@ -728,8 +728,8 @@ class AnalysisIndicators(BasePandasObject):
         return log_return
 
 
-    def percent_return(self, close=None, length=None, cummulative:bool = False, percentage:bool = False, offset:int = None, **kwargs):
-        """Percent Return with Length, Cummulation, Percentage and Offset Attributes
+    def percent_return(self, close=None, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
+        """Percent Return with Length, Cumulation, Percentage and Offset Attributes
         
         Returns the Percent Change of a Series.
 
@@ -738,7 +738,7 @@ class AnalysisIndicators(BasePandasObject):
                 If None, uses local df column: 'high'
             length (None, int, optional):
                 An integer of how periods to compute.  Default is None and one.
-            cummulative (bool):
+            cumulative (bool):
                 Default: False.  If True, returns the cummulative returns
             offset (None, int, optional):
                 An integer on how to shift the Series.  Default is None and zero.
@@ -765,12 +765,12 @@ class AnalysisIndicators(BasePandasObject):
         # Validate Arguments
         length = validate_positive(int, length, minimum=1, default=1)
         offset = offset if isinstance(offset, int) else 0
-        percent = 100 if percentage else 1
+        percent = 100 if percent else 1
 
         # Calculate Result
         pct_return = percent * close.pct_change(length)
 
-        if cummulative:
+        if cumulative:
             pct_return = percent * pct_return.cumsum()
 
         # Offset
@@ -967,6 +967,98 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Volume Indicators
+    def ad(self, high=None, low=None, close=None, volume=None, open_=None, signed:bool = True, offset:int = None, **kwargs):
+        """Accumulation/Distribution
+        
+        Returns a Series of the product of Price and Volume.
+
+        Args:
+            high (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'high'
+            low (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'low'
+            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+            open_ (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'open_'
+            signed (bool): True.  Returns zeros and ones.
+            offset (int): How many 
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column(s).
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+            if isinstance(volume, pd.Series):
+                volume = volume
+            else:
+                volume = df[volume] if volume in df.columns else df.volume
+
+            if open_ is not None:
+                if isinstance(open_, pd.Series):
+                    open_ = open_
+                else:
+                    open_ = df[open_] if open_ in df.columns else df.open
+            
+                # AD with Open
+                ad - close - open_
+            else:
+                # AD with High, Low, Close
+                ad = 2 * close - high - low
+        else:
+            return
+
+        # Validate arguments
+        offset = offset if isinstance(offset, int) else 0
+        # min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else offset
+
+        print(f"offset: {offset}")
+        # Calculate Result
+        hl_range = high - low
+        ad *= volume / hl_range
+        ad = ad.cumsum()
+
+        # Offset
+        ad.shift(offset)
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            ad.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            ad.fillna(method=kwargs['fill_method'], inplace=True)
+        
+        # Name and Categorize it
+        ad.name = f"AD"
+        ad.category = 'volume'
+        
+        # If append, then add it to the df 
+        if 'append' in kwargs and kwargs['append']:
+            df[ad.name] = ad
+
+        return ad
+
+
     def pvol(self, close:str = None, volume:str = None, signed:bool = True, offset:int = None, **kwargs):
         """Price Volume
         
@@ -976,7 +1068,7 @@ class AnalysisIndicators(BasePandasObject):
             close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
             volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
             signed (bool): True.  Returns zeros and ones.
-            length (int): How many 
+            offset (int): How many 
 
             append(bool): kwarg, optional.  If True, appends result to current df
 
@@ -1005,7 +1097,7 @@ class AnalysisIndicators(BasePandasObject):
             return
 
         # Validate arguments
-        offset = validate_positive(int, offset, minimum=0, default=0)
+        offset = offset if isinstance(offset, int) else 0
         # min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else offset
 
         print(f"offset: {offset}")
@@ -1026,7 +1118,7 @@ class AnalysisIndicators(BasePandasObject):
         
         # Name and Categorize it
         pvol.name = f"PVOL"
-        pvol.category = 'trend'
+        pvol.category = 'volume'
         
         # If append, then add it to the df 
         if 'append' in kwargs and kwargs['append']:
@@ -1043,20 +1135,20 @@ class AnalysisIndicators(BasePandasObject):
     PricePointOscillator = ppo ##
     RateOfChange = roc
 
-    # Performance
-    PctReturn = percent_return
-    LogReturn = log_return
-
     # Overlap
     HL2 = hl2
     HLC3 = hlc3
     OHLC4 = ohlc4
+    Median = median
     Midpoint = midpoint
     Midprice = midprice
     RangePercentage = rpn
 
-    # Statistics
+    # Performance
+    PctReturn = percent_return
+    LogReturn = log_return
 
+    # Statistics
 
     # Trend
     Decreasing = decreasing
@@ -1066,7 +1158,7 @@ class AnalysisIndicators(BasePandasObject):
     Donchian = donchian
     
     # Volume
-    # AccumDist = ad
+    AccumDist = ad
     PriceVolume = pvol
 
 

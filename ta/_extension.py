@@ -8,8 +8,9 @@ from sys import float_info as sflt
 
 TA_EPSILON = sflt.epsilon
 
-def validate_positive(fn, x, minimum, default=None):
-    return fn(x) if x and default and x > minimum else fn(default)
+def validate_positive(fn, x, minimum, default):
+    return fn(x) if x and default and x > minimum and default > minimum else fn(default)
+
 
 def signed_series(series:pd.Series, initial:int = None, length:int = None):
     """Returns a Signed Series with or without an initial value"""
@@ -91,6 +92,7 @@ class AnalysisIndicators(BasePandasObject):
             return
         else:
             return df
+
 
     # @property
     def defaults(self, value, min_range:int= 0, max_range:int = 100, every:int = 10):
@@ -201,6 +203,87 @@ class AnalysisIndicators(BasePandasObject):
         return bop
 
 
+    def macd(self, close=None, fast:int = None, slow:int = None, signal:int = None, **kwargs):
+        """Moving Average Convergence Divergence
+
+        Returns a DataFrame with high, mid, and low values.  The high channel is max()
+        and the low channel is the min() over a rolling period length of the source.
+        The mid is the average of the high and low channels.
+
+        Args:
+            close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+            length(int): How many
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+
+        # Validate arguments
+        fast = validate_positive(int, fast, minimum=0, default=12)
+        fast_min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else fast
+
+        slow = validate_positive(int, slow, minimum=0, default=26)
+        slow_min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else slow
+
+        signal = validate_positive(int, signal, minimum=0, default=9)
+        signal_min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else signal
+
+        # Calculate Result
+        fastma = close.ewm(span=fast, min_periods=fast_min_periods).mean()
+        slowma = close.ewm(span=slow, min_periods=slow_min_periods).mean()
+        macd = fastma - slowma
+
+        signalma = macd.ewm(span=signal, min_periods=signal_min_periods).mean()
+        histogram = macd - signalma
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            macd.fillna(kwargs['fillna'], inplace=True)
+            histogram.fillna(kwargs['fillna'], inplace=True)
+            signalma.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            macd.fillna(method=kwargs['fill_method'], inplace=True)
+            histogram.fillna(method=kwargs['fill_method'], inplace=True)
+            signalma.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        macd.name = f"MACD_{fast}_{slow}_{signal}"
+        histogram.name = f"MACDH_{fast}_{slow}_{signal}"
+        signalma.name = f"MACDS_{fast}_{slow}_{signal}"
+        macd.category = histogram.category = signalma.category = 'momentum'
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[macd.name] = macd
+            df[histogram.name] = histogram
+            df[signalma.name] = signalma
+
+        # Prepare DataFrame to return
+        data = {macd.name: macd, histogram.name: histogram, signalma.name: signalma}
+        macddf = pd.DataFrame(data)
+        macddf.name = f"MACD{fast}_{slow}_{signal}"
+        macddf.category = 'momentum'
+
+        return macddf
+
+
     def mom(self, close:str = None, length:int = None, **kwargs):
         """ mom """
         df = self._valid_df()
@@ -268,7 +351,7 @@ class AnalysisIndicators(BasePandasObject):
             ppo.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
-        ppo.name = f"PPO_{length}"
+        ppo.name = f"PPO_{fast}_{slow}"
         ppo.category = 'momentum'
 
         # If append, then add it to the df
@@ -1590,8 +1673,9 @@ class AnalysisIndicators(BasePandasObject):
     # Momentum
     AbsolutePriceOscillator = apo
     BalanceOfPower = bop
+    MACD = macd
     Momentum = mom
-    PricePointOscillator = ppo ##
+    PercentagePriceOscillator = ppo
     RateOfChange = roc
 
     # Overlap

@@ -23,22 +23,22 @@ def signed_series(series:pd.Series, initial:int = None, length:int = None):
 
 class BasePandasObject(PandasObject):
     """Simple PandasObject Extension
-    
+
     Ensures the DataFrame is not empty and has columns.
 
     Args:
-        df (pd.DataFrame): Extends Pandas DataFrame 
+        df (pd.DataFrame): Extends Pandas DataFrame
     """
     def __init__(self, df, **kwargs):
         if df.empty:
             return None
-        
+
         total_columns = len(df.columns)
         if total_columns > 0:
             self._df = df
         else:
             raise AttributeError(f"[X] No columns!")
-    
+
     def __call__(self, kind, *args, **kwargs):
         raise NotImplementedError()
 
@@ -51,7 +51,7 @@ class AnalysisIndicators(BasePandasObject):
     Args:
         kind(str): Name of the indicator.  Converts kind to lowercase.
         kwargs(dict): Method specific modifiers
-    
+
     Returns:
         Either a Pandas Series or DataFrame of the results of the called indicator.
 
@@ -77,7 +77,7 @@ class AnalysisIndicators(BasePandasObject):
             indicator = getattr(self, kind.lower())
         except AttributeError:
             raise ValueError(f"kind='{kind.lower()}' is not valid for {self.__class__.__name__}")
-        
+
         return indicator(**kwargs)
 
 
@@ -117,7 +117,7 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
         else:
             return
-        
+
         # Validate arguments
         fast = validate_positive(int, fast, minimum=0, default=12)
         slow = validate_positive(int, slow, minimum=0, default=26)
@@ -127,7 +127,7 @@ class AnalysisIndicators(BasePandasObject):
         fastma = close.rolling(fast, min_periods=min_periods).mean()
         slowma = close.rolling(slow, min_periods=min_periods).mean()
         apo = fastma - slowma
-        
+
         # Handle fills
         if 'fillna' in kwargs:
             apo.fillna(kwargs['fillna'], inplace=True)
@@ -138,8 +138,8 @@ class AnalysisIndicators(BasePandasObject):
         # bop.name = f"BOP_{length}"
         apo.name = f"APO_{fast}_{slow}"
         apo.category = 'momentum'
-        
-        # If append, then add it to the df 
+
+        # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[apo.name] = apo
 
@@ -173,7 +173,7 @@ class AnalysisIndicators(BasePandasObject):
                 close_ = df[close] if close in df.columns else df.close
         else:
             return
-        
+
         # Validate arguments
         # length = validate_positive(int, length, minimum=0, default=1)
         percent = 100 if percentage else 1
@@ -182,7 +182,7 @@ class AnalysisIndicators(BasePandasObject):
         close_open_range = close_ - open_
         high_log_range = high_ - low_
         bop = percent * close_open_range / high_log_range
-        
+
         # Handle fills
         if 'fillna' in kwargs:
             bop.fillna(kwargs['fillna'], inplace=True)
@@ -193,8 +193,8 @@ class AnalysisIndicators(BasePandasObject):
         # bop.name = f"BOP_{length}"
         bop.name = f"BOP"
         bop.category = 'momentum'
-        
-        # If append, then add it to the df 
+
+        # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[bop.name] = bop
 
@@ -213,14 +213,14 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
         else:
             return
-        
+
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=1)
         min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
 
         # Calculate Result
         mom = close.diff(length)
-        
+
         # Handle fills
         if 'fillna' in kwargs:
             mom.fillna(kwargs['fillna'], inplace=True)
@@ -230,8 +230,8 @@ class AnalysisIndicators(BasePandasObject):
         # Name and Categorize it
         mom.name = f"MOM_{length}"
         mom.category = 'momentum'
-        
-        # If append, then add it to the df 
+
+        # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[mom.name] = mom
 
@@ -250,7 +250,7 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
         else:
             return
-        
+
         # Validate arguments
         fast = validate_positive(int, fast, minimum=0, default=12)
         slow = validate_positive(int, slow, minimum=0, default=26)
@@ -260,7 +260,7 @@ class AnalysisIndicators(BasePandasObject):
         fastma = close.rolling(fast, min_periods=min_periods).mean()
         slowma = close.rolling(slow, min_periods=min_periods).mean()
         ppo = 100 * (fastma - slowma) / slowma
-        
+
         # Handle fills
         if 'fillna' in kwargs:
             ppo.fillna(kwargs['fillna'], inplace=True)
@@ -270,8 +270,8 @@ class AnalysisIndicators(BasePandasObject):
         # Name and Categorize it
         ppo.name = f"PPO_{length}"
         ppo.category = 'momentum'
-        
-        # If append, then add it to the df 
+
+        # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[ppo.name] = ppo
 
@@ -290,14 +290,14 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
         else:
             return
-        
+
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=1)
         min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
 
         # Calculate Result
         roc = 100 * self.mom(close=close, length=length) / close.shift(length)
-        
+
         # Handle fills
         if 'fillna' in kwargs:
             roc.fillna(kwargs['fillna'], inplace=True)
@@ -307,8 +307,8 @@ class AnalysisIndicators(BasePandasObject):
         # Name and Categorize it
         roc.name = f"ROC_{length}"
         roc.category = 'momentum'
-        
-        # If append, then add it to the df 
+
+        # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[roc.name] = roc
 
@@ -326,12 +326,12 @@ class AnalysisIndicators(BasePandasObject):
                 If None, uses local df column: 'low'
             append: bool, kwarg, optional
                 If True, appends result to current df
-        
+
             **kwargs:
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
-        
+
         Returns:
             pd.Series: New feature
         """
@@ -343,7 +343,7 @@ class AnalysisIndicators(BasePandasObject):
                 high = high
             else:
                 high = df[high] if high in df.columns else df.high
-            
+
             if isinstance(low, pd.Series):
                 low = low
             else:
@@ -367,7 +367,7 @@ class AnalysisIndicators(BasePandasObject):
         # If 'append', then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[hl2.name] = hl2
-        
+
         return hl2
 
 
@@ -383,12 +383,12 @@ class AnalysisIndicators(BasePandasObject):
                 If None, uses local df column: 'close'
             append: bool, kwarg, optional
                 If True, appends result to current df
-        
+
             **kwargs:
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
-        
+
         Returns:
             pd.Series: New feature
         """
@@ -400,7 +400,7 @@ class AnalysisIndicators(BasePandasObject):
                 high = high
             else:
                 high = df[high] if high in df.columns else df.high
-            
+
             if isinstance(low, pd.Series):
                 low = low
             else:
@@ -429,7 +429,7 @@ class AnalysisIndicators(BasePandasObject):
         # If 'append', then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[hlc3.name] = hlc3
-        
+
         return hlc3
 
 
@@ -447,12 +447,12 @@ class AnalysisIndicators(BasePandasObject):
                 If None, uses local df column: 'close'
             append: bool, kwarg, optional
                 If True, appends result to current df
-        
+
             **kwargs:
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
-        
+
         Returns:
             pd.Series: New feature
         """
@@ -469,7 +469,7 @@ class AnalysisIndicators(BasePandasObject):
                 high = high
             else:
                 high = df[high] if high in df.columns else df.high
-            
+
             if isinstance(low, pd.Series):
                 low = low
             else:
@@ -498,13 +498,13 @@ class AnalysisIndicators(BasePandasObject):
         # If 'append', then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[ohlc4.name] = ohlc4
-        
+
         return ohlc4
 
 
     def median(self, close=None, length=None, cumulative:bool = False, offset:int = None, **kwargs):
         """Median Price
-        
+
         Returns the Log Return of a Series.
 
         Args:
@@ -516,12 +516,12 @@ class AnalysisIndicators(BasePandasObject):
                 Default: False.  If True, returns the cummulative returns
             offset (None, int, optional):
                 An integer on how to shift the Series.  Default is None and zero.
-        
+
             **kwargs:
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
-        
+
         Returns:
             pd.Series: New feature
         """
@@ -546,7 +546,7 @@ class AnalysisIndicators(BasePandasObject):
 
         if cumulative:
             median = median.cumsum()
-            
+
         # Offset
         median.shift(offset)
 
@@ -557,7 +557,7 @@ class AnalysisIndicators(BasePandasObject):
         # If 'append', then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[median.name] = median
-        
+
         return median
 
 
@@ -575,7 +575,7 @@ class AnalysisIndicators(BasePandasObject):
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
-        
+
         Returns:
             pd.Series: New feature
         """
@@ -599,7 +599,7 @@ class AnalysisIndicators(BasePandasObject):
         lowest = close.rolling(length, min_periods=min_periods).min()
         highest = close.rolling(length, min_periods=min_periods).max()
         midpoint = 0.5 * (lowest + highest)
-        
+
         # Offset
         midpoint.shift(offset)
 
@@ -612,11 +612,11 @@ class AnalysisIndicators(BasePandasObject):
         # Name and Categorize it
         midpoint.name = f"MIDPOINT_{length}"
         midpoint.category = 'overlap'
-        
-        # If append, then add it to the df 
+
+        # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[midpoint.name] = midpoint
-            
+
         return midpoint
 
 
@@ -646,7 +646,7 @@ class AnalysisIndicators(BasePandasObject):
         lowest_low = low.rolling(length, min_periods=min_periods).min()
         highest_high = high.rolling(length, min_periods=min_periods).max()
         midprice = 0.5 * (lowest_low + highest_high)
-        
+
         # Handle fills
         if 'fillna' in kwargs:
             midprice.fillna(kwargs['fillna'], inplace=True)
@@ -656,17 +656,17 @@ class AnalysisIndicators(BasePandasObject):
         # Name and Categorize it
         midprice.name = f"MIDPRICE_{length}"
         midprice.category = 'overlap'
-        
-        # If append, then add it to the df 
+
+        # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[midprice.name] = midprice
-            
+
         return midprice
 
 
     def rpn(self, high=None, low=None, length=None, percentage=None, **kwargs):
         """Range Percentage
-        
+
         Returns the Series of values that are a percentage of the absolute difference of two Series.
 
         Args:
@@ -676,13 +676,13 @@ class AnalysisIndicators(BasePandasObject):
                 If None, uses local df column: 'low'
             append: bool, kwarg, optional
                 If True, appends result to current df
-        
+
             **kwargs:
                 addLow (bool, optional): If true, adds low value to result
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
-        
+
         Returns:
             pd.Series: New feature
         """
@@ -694,7 +694,7 @@ class AnalysisIndicators(BasePandasObject):
                 high = high
             else:
                 high = df[high] if high in df.columns else df.high
-            
+
             if isinstance(low, pd.Series):
                 low = low
             else:
@@ -723,14 +723,14 @@ class AnalysisIndicators(BasePandasObject):
         # If 'append', then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[rp.name] = rp
-        
+
         return rp
 
 
     ## Performance Indicators
     def log_return(self, close=None, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
-        """Log Return with 
-        
+        """Log Return with cumulative and offset
+
         Returns the Log Return of a Series.
 
         Args:
@@ -742,12 +742,12 @@ class AnalysisIndicators(BasePandasObject):
                 Default: False.  If True, returns the cummulative returns
             offset (None, int, optional):
                 An integer on how to shift the Series.  Default is None and zero.
-        
+
             **kwargs:
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
-        
+
         Returns:
             pd.Series: New feature
         """
@@ -783,13 +783,13 @@ class AnalysisIndicators(BasePandasObject):
         # If 'append', then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[log_return.name] = log_return
-        
+
         return log_return
 
 
     def percent_return(self, close=None, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
         """Percent Return with Length, Cumulation, Percentage and Offset Attributes
-        
+
         Returns the Percent Change of a Series.
 
         Args:
@@ -801,12 +801,12 @@ class AnalysisIndicators(BasePandasObject):
                 Default: False.  If True, returns the cummulative returns
             offset (None, int, optional):
                 An integer on how to shift the Series.  Default is None and zero.
-        
+
             **kwargs:
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
-        
+
         Returns:
             pd.Series: New feature
         """
@@ -842,14 +842,14 @@ class AnalysisIndicators(BasePandasObject):
         # If 'append', then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[pct_return.name] = pct_return
-        
+
         return pct_return
 
 
     ## Statistics Indicators
     def skew(self, close=None, length=None, **kwargs):
         """Skew
-        
+
         Returns the Skew of a Series.
 
         Args:
@@ -857,12 +857,12 @@ class AnalysisIndicators(BasePandasObject):
                 If None, uses local df column: 'high'
             length (None, int, optional):
                 An integer of how periods to compute.  Default is None and one.
-        
+
             **kwargs:
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
-        
+
         Returns:
             pd.Series: New feature
         """
@@ -891,13 +891,13 @@ class AnalysisIndicators(BasePandasObject):
         # If 'append', then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[skew.name] = skew
-        
+
         return skew
 
 
     def stdev(self, close=None, length=None, **kwargs):
         """Standard Deviation
-        
+
         Returns the Standard Deviations of a Series.
 
         Args:
@@ -905,12 +905,12 @@ class AnalysisIndicators(BasePandasObject):
                 If None, uses local df column: 'high'
             length (None, int, optional):
                 An integer of how periods to compute.  Default is None and one.
-        
+
             **kwargs:
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
-        
+
         Returns:
             pd.Series: New feature
         """
@@ -939,13 +939,13 @@ class AnalysisIndicators(BasePandasObject):
         # If 'append', then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[stdev.name] = stdev
-        
+
         return stdev
-    
+
 
     def variance(self, close=None, length=None, **kwargs):
         """Variance
-        
+
         Returns the Variances of a Series.
 
         Args:
@@ -957,12 +957,12 @@ class AnalysisIndicators(BasePandasObject):
                 Default: False.  If True, returns the cummulative returns
             offset (None, int, optional):
                 An integer on how to shift the Series.  Default is None and zero.
-        
+
             **kwargs:
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
-        
+
         Returns:
             pd.Series: New feature
         """
@@ -991,7 +991,7 @@ class AnalysisIndicators(BasePandasObject):
         # If 'append', then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[variance.name] = variance
-        
+
         return variance
 
 
@@ -999,7 +999,7 @@ class AnalysisIndicators(BasePandasObject):
     ## Trend Indicators
     def decreasing(self, close:str = None, length:int = None, asint:bool = True, offset=None, **kwargs):
         """Decreasing Trend
-        
+
         Returns if a Series is Decreasing over a certain length.
 
         Args:
@@ -1011,7 +1011,7 @@ class AnalysisIndicators(BasePandasObject):
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
-        
+
         Returns:
             pd.Series: New feature
         """
@@ -1034,7 +1034,7 @@ class AnalysisIndicators(BasePandasObject):
         decreasing = close.diff(length) < 0
         if asint:
             decreasing = decreasing.astype(int)
-        
+
         # Offset
         decreasing.shift(offset)
 
@@ -1043,12 +1043,12 @@ class AnalysisIndicators(BasePandasObject):
             decreasing.fillna(kwargs['fillna'], inplace=True)
         elif 'fill_method' in kwargs:
             decreasing.fillna(method=kwargs['fill_method'], inplace=True)
-        
+
         # Name and Categorize it
         decreasing.name = f"DEC_{length}"
         decreasing.category = 'trend'
-        
-        # If append, then add it to the df 
+
+        # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[decreasing.name] = decreasing
 
@@ -1057,12 +1057,12 @@ class AnalysisIndicators(BasePandasObject):
 
     def increasing(self, close:str = None, length:int = None, asint:bool = True, offset=None, **kwargs):
         """Increasing Trend
-        
+
         Returns if a Series is Increasing over a certain length.
 
         Args:
             close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            length(int): How many 
+            length(int): How many
             asint(bool): True.  Returns zeros and ones.
 
             append(bool): kwarg, optional.  If True, appends result to current df
@@ -1071,7 +1071,7 @@ class AnalysisIndicators(BasePandasObject):
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
-        
+
         Returns:
             pd.Series: New feature
         """
@@ -1094,7 +1094,7 @@ class AnalysisIndicators(BasePandasObject):
         increasing = close.diff(length) > 0
         if asint:
             increasing = increasing.astype(int)
-        
+
         # Offset
         increasing.shift(offset)
 
@@ -1103,12 +1103,12 @@ class AnalysisIndicators(BasePandasObject):
             increasing.fillna(kwargs['fillna'], inplace=True)
         elif 'fill_method' in kwargs:
             increasing.fillna(method=kwargs['fill_method'], inplace=True)
-        
+
         # Name and Categorize it
         increasing.name = f"INC_{length}"
         increasing.category = 'trend'
-        
-        # If append, then add it to the df 
+
+        # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[increasing.name] = increasing
 
@@ -1125,7 +1125,7 @@ class AnalysisIndicators(BasePandasObject):
 
         Args:
             close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            length(int): How many 
+            length(int): How many
 
             append(bool): kwarg, optional.  If True, appends result to current df
 
@@ -1133,7 +1133,7 @@ class AnalysisIndicators(BasePandasObject):
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
-        
+
         Returns:
             pd.Series: New feature
         """
@@ -1156,7 +1156,7 @@ class AnalysisIndicators(BasePandasObject):
         lower = close.rolling(length, min_periods=min_periods).min()
         upper = close.rolling(length, min_periods=min_periods).max()
         mid = 0.5 * (lower + upper)
-    
+
         # Handle fills
         if 'fillna' in kwargs:
             lower.fillna(kwargs['fillna'], inplace=True)
@@ -1172,8 +1172,8 @@ class AnalysisIndicators(BasePandasObject):
         mid.name = f"DCM_{length}"
         upper.name = f"DCU_{length}"
         mid.category = upper.category = lower.category = 'volatility'
-        
-        # If append, then add it to the df 
+
+        # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[lower.name] = lower
             df[mid.name] = mid
@@ -1184,14 +1184,14 @@ class AnalysisIndicators(BasePandasObject):
         dcdf = pd.DataFrame(data)
         dcdf.name = f"DC{length}"
         dcdf.category = 'volatility'
-            
+
         return dcdf
 
 
     ## Volume Indicators
     def ad(self, high=None, low=None, close=None, volume=None, open_=None, signed:bool = True, offset:int = None, **kwargs):
         """Accumulation/Distribution
-        
+
         Returns a Series of the product of Price and Volume.
 
         Args:
@@ -1201,7 +1201,7 @@ class AnalysisIndicators(BasePandasObject):
             volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
             open_ (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'open_'
             signed (bool): True.  Returns zeros and ones.
-            offset (int): How many 
+            offset (int): How many
 
             append(bool): kwarg, optional.  If True, appends result to current df
 
@@ -1209,7 +1209,7 @@ class AnalysisIndicators(BasePandasObject):
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
-        
+
         Returns:
             pd.Series: New feature
         """
@@ -1242,7 +1242,7 @@ class AnalysisIndicators(BasePandasObject):
                     open_ = open_
                 else:
                     open_ = df[open_] if open_ in df.columns else df.open
-            
+
                 # AD with Open
                 ad - close - open_
             else:
@@ -1269,12 +1269,12 @@ class AnalysisIndicators(BasePandasObject):
             ad.fillna(kwargs['fillna'], inplace=True)
         elif 'fill_method' in kwargs:
             ad.fillna(method=kwargs['fill_method'], inplace=True)
-        
+
         # Name and Categorize it
         ad.name = f"AD"
         ad.category = 'volume'
-        
-        # If append, then add it to the df 
+
+        # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[ad.name] = ad
 
@@ -1283,14 +1283,14 @@ class AnalysisIndicators(BasePandasObject):
 
     def pvol(self, close:str = None, volume:str = None, signed:bool = True, offset:int = None, **kwargs):
         """Price Volume
-        
+
         Returns a Series of the product of Price and Volume.
 
         Args:
             close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
             volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
             signed (bool): True.  Returns zeros and ones.
-            offset (int): How many 
+            offset (int): How many
 
             append(bool): kwarg, optional.  If True, appends result to current df
 
@@ -1298,7 +1298,7 @@ class AnalysisIndicators(BasePandasObject):
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
-        
+
         Returns:
             pd.Series: New feature
         """
@@ -1337,12 +1337,12 @@ class AnalysisIndicators(BasePandasObject):
             pvol.fillna(kwargs['fillna'], inplace=True)
         elif 'fill_method' in kwargs:
             pvol.fillna(method=kwargs['fill_method'], inplace=True)
-        
+
         # Name and Categorize it
         pvol.name = f"PVOL"
         pvol.category = 'volume'
-        
-        # If append, then add it to the df 
+
+        # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
             df[pvol.name] = pvol
 
@@ -1381,7 +1381,7 @@ class AnalysisIndicators(BasePandasObject):
 
     # Volatility
     Donchian = donchian
-    
+
     # Volume
     AccumDist = ad
     PriceVolume = pvol

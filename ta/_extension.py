@@ -230,12 +230,12 @@ class AnalysisIndicators(BasePandasObject):
         length = validate_positive(int, length, minimum=0, default=20)
         min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
         c = validate_positive(float, c, minimum=0, default=0.015)
-        # c = float(c) if c and c > 0 else 0.015
-
-        def mad(series):
-            return np.fabs(series - series.mean()).mean()
 
         # Calculate Result
+        def mad(series):
+            """Mean Absolute Deviation"""
+            return np.fabs(series - series.mean()).mean()
+
         typical_price = self.hlc3(high=high, low=low, close=close)
         mean_typical_price = typical_price.rolling(length, min_periods=min_periods).mean()
         mad_typical_price = typical_price.rolling(length).apply(mad, raw=True)
@@ -453,6 +453,56 @@ class AnalysisIndicators(BasePandasObject):
             df[roc.name] = roc
 
         return roc
+
+
+    def willr(self, high:str = None, low:str = None, close:str = None, length:int = None, **kwargs):
+        """ willr """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=14)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+
+        # Calculate Result
+        lowest_low = low.rolling(length, min_periods=min_periods).min()
+        highest_high = high.rolling(length, min_periods=min_periods).max()
+
+        willr = 100 * ((close - lowest_low) / (highest_high - lowest_low) - 1)
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            willr.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            willr.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        willr.name = f"WILLR_{length}"
+        willr.category = 'momentum'
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[willr.name] = willr
+
+        return willr
 
 
     ## Overlap Indicators
@@ -1735,6 +1785,7 @@ class AnalysisIndicators(BasePandasObject):
     Momentum = mom
     PercentagePriceOscillator = ppo
     RateOfChange = roc
+    WilliamsR = willr
 
     # Overlap
     HL2 = hl2

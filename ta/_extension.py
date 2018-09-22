@@ -203,6 +203,63 @@ class AnalysisIndicators(BasePandasObject):
         return bop
 
 
+    def cci(self, high:str = None, low:str = None, close:str = None, length:int = None, c:float = None, **kwargs):
+        """ cci """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=20)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        c = validate_positive(float, c, minimum=0, default=0.015)
+        # c = float(c) if c and c > 0 else 0.015
+
+        def mad(series):
+            return np.fabs(series - series.mean()).mean()
+
+        # Calculate Result
+        typical_price = self.hlc3(high=high, low=low, close=close)
+        mean_typical_price = typical_price.rolling(length, min_periods=min_periods).mean()
+        mad_typical_price = typical_price.rolling(length).apply(mad, raw=True)
+
+        cci = (typical_price - mean_typical_price) / (c * mad_typical_price)
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            cci.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            cci.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        # bop.name = f"BOP_{length}"
+        cci.name = f"CCI_{length}_{c}"
+        cci.category = 'momentum'
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[cci.name] = cci
+
+        return cci
+
+
     def macd(self, close=None, fast:int = None, slow:int = None, signal:int = None, **kwargs):
         """Moving Average Convergence Divergence
 
@@ -1673,6 +1730,7 @@ class AnalysisIndicators(BasePandasObject):
     # Momentum
     AbsolutePriceOscillator = apo
     BalanceOfPower = bop
+    CommodityChannelIndex = cci
     MACD = macd
     Momentum = mom
     PercentagePriceOscillator = ppo

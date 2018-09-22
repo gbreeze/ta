@@ -877,8 +877,9 @@ class AnalysisIndicators(BasePandasObject):
         else:
             return
 
+
         # Validate Arguments
-        length = validate_positive(int, length, minimum=4, default=30)
+        length = validate_positive(int, length, minimum=3, default=30)
         min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
 
         # Calculate Result
@@ -893,6 +894,56 @@ class AnalysisIndicators(BasePandasObject):
             df[kurtosis.name] = kurtosis
 
         return kurtosis
+
+
+    def quantile(self, close=None, length=None, q:float = None, **kwargs):
+        """quantile
+
+        Returns the quantile of a Series.
+
+        Args:
+            close (None, pd.Series, optional):
+                If None, uses local df column: 'high'
+            length (None, int, optional):
+                An integer of how periods to compute.  Default is None and one.
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+
+        # Validate Arguments
+        length = validate_positive(int, length, minimum=3, default=30)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        q = validate_positive(float, q, minimum=0, default=0.5) and float(q) <= 1.0
+
+        # Calculate Result
+        quantile = close.rolling(length, min_periods=min_periods).quantile(q)
+
+        # Name & Category
+        quantile.name = f"QTL_{length}"
+        quantile.category = 'statistics'
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[quantile.name] = quantile
+
+        return quantile
+
 
     def skew(self, close=None, length=None, **kwargs):
         """Skew
@@ -1419,6 +1470,7 @@ class AnalysisIndicators(BasePandasObject):
 
     # Statistics
     Kurtosis = kurtosis
+    Quantile = quantile
     Skew = skew
     StandardDeviation = stdev
     Variance = variance

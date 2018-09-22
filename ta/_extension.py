@@ -1286,6 +1286,80 @@ class AnalysisIndicators(BasePandasObject):
         return dcdf
 
 
+    def true_range(self, high=None, low=None, close=None, length=None, offset:int = None, **kwargs):
+        """True Range
+
+        Returns a Series of the product of Price and Volume.
+
+        Args:
+            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+            signed (bool): True.  Returns zeros and ones.
+            offset (int): How many
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column(s).
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        else:
+            return
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=1)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else offset
+        offset = offset if isinstance(offset, int) else 0
+
+        # Calculate Result
+        prev_close = close.shift(1)
+        ranges = [high - low, high - prev_close, low - prev_close]
+        true_range = pd.DataFrame(ranges).T
+        true_range = true_range.abs().max(axis=1)
+
+        # Offset
+        true_range.shift(offset)
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            true_range.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            true_range.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        true_range.name = f"TRUERANGE_{length}"
+        true_range.category = 'volatility'
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[true_range.name] = true_range
+
+        return true_range
+
+
     ## Volume Indicators
     def ad(self, high=None, low=None, close=None, volume=None, open_=None, signed:bool = True, offset:int = None, **kwargs):
         """Accumulation/Distribution
@@ -1353,7 +1427,6 @@ class AnalysisIndicators(BasePandasObject):
         offset = offset if isinstance(offset, int) else 0
         # min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else offset
 
-        print(f"offset: {offset}")
         # Calculate Result
         hl_range = high - low
         ad *= volume / hl_range
@@ -1418,9 +1491,7 @@ class AnalysisIndicators(BasePandasObject):
 
         # Validate arguments
         offset = offset if isinstance(offset, int) else 0
-        # min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else offset
 
-        print(f"offset: {offset}")
         # Calculate Result
         if signed:
             pvol = signed_series(close, 1) * close * volume
@@ -1481,6 +1552,7 @@ class AnalysisIndicators(BasePandasObject):
 
     # Volatility
     Donchian = donchian
+    TrueRange = true_range
 
     # Volume
     AccumDist = ad

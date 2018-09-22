@@ -1214,6 +1214,78 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Volatility Indicators
+    def atr(self, high=None, low=None, close=None, length=None, mamode:str = None, **kwargs):
+        """Average True Range
+
+        Returns a Series of the Average True Range.
+
+        Args:
+            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+            signed (bool): True.  Returns zeros and ones.
+            offset (int): How many
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column(s).
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        else:
+            return
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=14)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        mamode = mamode.lower() if mamode else 'ema'
+
+        # Calculate Result
+        true_range = self.true_range(high=high, low=low, close=close, length=length)
+        if mamode == 'ema':
+            atr = true_range.ewm(span=length, min_periods=min_periods).mean()
+        else:
+            atr = true_range.rolling(length, min_periods=min_periods).mean()
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            atr.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            atr.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        atr.name = f"ATR_{length}"
+        atr.category = 'volatility'
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[atr.name] = atr
+
+        return atr
+
+
     def donchian(self, close=None, length:int = None, **kwargs):
         """Donchian Channels
 
@@ -1286,7 +1358,7 @@ class AnalysisIndicators(BasePandasObject):
         return dcdf
 
 
-    def true_range(self, high=None, low=None, close=None, length=None, offset:int = None, **kwargs):
+    def true_range(self, high=None, low=None, close=None, length=None, **kwargs):
         """True Range
 
         Returns a Series of the product of Price and Volume.
@@ -1331,17 +1403,13 @@ class AnalysisIndicators(BasePandasObject):
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=1)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else offset
-        offset = offset if isinstance(offset, int) else 0
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
 
         # Calculate Result
         prev_close = close.shift(1)
         ranges = [high - low, high - prev_close, low - prev_close]
         true_range = pd.DataFrame(ranges).T
         true_range = true_range.abs().max(axis=1)
-
-        # Offset
-        true_range.shift(offset)
 
         # Handle fills
         if 'fillna' in kwargs:
@@ -1551,6 +1619,7 @@ class AnalysisIndicators(BasePandasObject):
     Increasing = increasing
 
     # Volatility
+    AverageTrueRange = atr
     Donchian = donchian
     TrueRange = true_range
 

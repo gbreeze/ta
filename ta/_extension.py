@@ -847,6 +847,54 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Statistics Indicators
+    def skew(self, close=None, length=None, **kwargs):
+        """Skew
+        
+        Returns the Skew of a Series.
+
+        Args:
+            close (None, pd.Series, optional):
+                If None, uses local df column: 'high'
+            length (None, int, optional):
+                An integer of how periods to compute.  Default is None and one.
+        
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+
+        # Validate Arguments
+        length = validate_positive(int, length, minimum=3, default=30)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+
+        # Calculate Result
+        skew = close.rolling(length, min_periods=min_periods).skew()
+
+        # Name & Category
+        skew.name = f"SKEW_{length}"
+        skew.category = 'statistics'
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[skew.name] = skew
+        
+        return skew
+
+
     def stdev(self, close=None, length=None, **kwargs):
         """Standard Deviation
         
@@ -878,7 +926,7 @@ class AnalysisIndicators(BasePandasObject):
             return
 
         # Validate Arguments
-        length = validate_positive(int, length, minimum=1, default=1)
+        length = validate_positive(int, length, minimum=2, default=30)
         min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
 
         # Calculate Result
@@ -894,6 +942,7 @@ class AnalysisIndicators(BasePandasObject):
         
         return stdev
     
+
     def variance(self, close=None, length=None, **kwargs):
         """Variance
         
@@ -929,7 +978,7 @@ class AnalysisIndicators(BasePandasObject):
             return
 
         # Validate Arguments
-        length = validate_positive(int, length, minimum=1, default=1)
+        length = validate_positive(int, length, minimum=2, default=30)
         min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
 
         # Calculate Result
@@ -1070,7 +1119,23 @@ class AnalysisIndicators(BasePandasObject):
     def donchian(self, close=None, length:int = None, **kwargs):
         """Donchian Channels
 
+        Returns a DataFrame with high, mid, and low values.  The high channel is max()
+        and the low channel is the min() over a rolling period length of the source.
+        The mid is the average of the high and low channels.
 
+        Args:
+            close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+            length(int): How many 
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+        
+        Returns:
+            pd.Series: New feature
         """
         df = self._valid_df()
 
@@ -1306,6 +1371,7 @@ class AnalysisIndicators(BasePandasObject):
     LogReturn = log_return
 
     # Statistics
+    Skew = skew
     StandardDeviation = stdev
     Variance = variance
 

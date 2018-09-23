@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 import math
 import numpy as np
 import pandas as pd
@@ -73,13 +74,24 @@ class AnalysisIndicators(BasePandasObject):
     * append: Default: False.  If True, appends the indicator result to the df.
     """
 
-    def __call__(self, kind=None, **kwargs):
+    def __call__(self, kind=None, alias=None, timed=False, **kwargs):
         try:
-            indicator = getattr(self, kind.lower())
+            kind = kind.lower() if isinstance(kind, str) else None
+            fn = getattr(self, kind.lower())
         except AttributeError:
             raise ValueError(f"kind='{kind.lower()}' is not valid for {self.__class__.__name__}")
 
-        return indicator(**kwargs)
+        # Run the indicator
+        if timed:
+            stime = time.time()
+        indicator = fn(**kwargs)
+        if timed:
+            time_diff = time.time() - stime
+            ms = time_diff * 1000
+            indicator.timed = f"{ms:2.3f} ms ({time_diff:2.3f} s)"
+        if alias:
+            indicator.alias = f"{alias}"
+        return indicator
 
 
     ## Private Methods
@@ -501,6 +513,53 @@ class AnalysisIndicators(BasePandasObject):
             df[roc.name] = roc
 
         return roc
+
+
+    def rsi(self, close:str = None, length:int = None, drift:int = None, **kwargs):
+        """Relative Strength Index
+        
+        """
+        df = self._valid_df()
+
+        # Get the correct column.
+        if df is None: return
+        else:
+            if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=14)
+        drift = validate_positive(int, drift, minimum=0, default=1)
+
+        # Calculate Result
+        negative = close.diff(drift)
+        positive = negative.copy()
+
+        positive[positive < 0] = 0  # Make negatives 0 for the postive series
+        negative[negative > 0] = 0  # Make postives 0 for the negative series
+
+        positive_avg = positive.ewm(com=length, adjust=False).mean()
+        negative_avg = negative.ewm(com=length, adjust=False).mean().abs()
+
+        rsi = 100 * positive_avg / (positive_avg + negative_avg)
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            rsi.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            rsi.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        rsi.name = f"RSI_{length}"
+        rsi.category = 'momentum'
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[rsi.name] = rsi
+
+        return rsi
 
 
     def willr(self, high:str = None, low:str = None, close:str = None, length:int = None, **kwargs):
@@ -1829,10 +1888,10 @@ class AnalysisIndicators(BasePandasObject):
     CommodityChannelIndex = cci
     MACD = macd
     MassIndex = massi
-    
     Momentum = mom
     PercentagePriceOscillator = ppo
     RateOfChange = roc
+    RelativeStrengthIndex = rsi
     WilliamsR = willr
 
     # Overlap

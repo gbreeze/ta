@@ -115,3 +115,4 @@ ta/_wrapper.py
 data/AAPL_D.csv
 driver.py
 doc.py
+ta_extension.ipynb

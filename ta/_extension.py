@@ -341,6 +341,54 @@ class AnalysisIndicators(BasePandasObject):
         return macddf
 
 
+    def massi(self, high:str = None, low:str = None, single=None, double=None, **kwargs):
+        """ massi """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+        else:
+            return
+
+        # Validate arguments
+        single = validate_positive(int, single, minimum=0, default=9)
+        double = validate_positive(int, double, minimum=0, default=25)
+
+        # Calculate Result
+        hl_range = high - low
+        hl_ema1 = hl_range.ewm(span=single, min_periods=single).mean()
+        hl_ema2 =  hl_ema1.ewm(span=single, min_periods=single).mean()
+
+        mass = hl_ema1 / hl_ema2
+        massi = mass.rolling(double, min_periods=double).sum()
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            massi.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            massi.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        # bop.name = f"BOP_{length}"
+        massi.name = f"MASSI_{single}_{double}"
+        massi.category = 'momentum'
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[massi.name] = massi
+
+        return massi
+
+
     def mom(self, close:str = None, length:int = None, **kwargs):
         """ mom """
         df = self._valid_df()
@@ -727,15 +775,12 @@ class AnalysisIndicators(BasePandasObject):
             return
 
         # Validate Arguments
-        length = validate_positive(int, length, minimum=1, default=1)
+        length = validate_positive(int, length, minimum=1, default=5)
         min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
         offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
         median = close.rolling(length, min_periods=min_periods).median()
-
-        if cumulative:
-            median = median.cumsum()
 
         # Offset
         median.shift(offset)
@@ -751,7 +796,8 @@ class AnalysisIndicators(BasePandasObject):
         return median
 
 
-    def midpoint(self, close:str = None, length:int = None, offset=None, **kwargs):
+    # def midpoint(self, close:str = None, length:int = None, offset=None, **kwargs):
+    def midpoint(self, close:str = None, length:int = None, **kwargs):
         """Returns the Midpoint of a Series of a certain length.
 
         Args:
@@ -781,9 +827,9 @@ class AnalysisIndicators(BasePandasObject):
             return
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=1, default=1)
+        length = validate_positive(int, length, minimum=0, default=1)
         min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-        offset = offset if isinstance(offset, int) else 0
+        # offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
         lowest = close.rolling(length, min_periods=min_periods).min()
@@ -791,7 +837,7 @@ class AnalysisIndicators(BasePandasObject):
         midpoint = 0.5 * (lowest + highest)
 
         # Offset
-        midpoint.shift(offset)
+        # midpoint.shift(offset)
 
         # Handle fills
         if 'fillna' in kwargs:
@@ -953,12 +999,12 @@ class AnalysisIndicators(BasePandasObject):
             return
 
         # Validate Arguments
-        length = validate_positive(int, length, minimum=1, default=1)
+        length = validate_positive(int, length, minimum=0, default=1)
         offset = offset if isinstance(offset, int) else 0
         percent = 100 if percent else 1
 
         # Calculate Result
-        log_return = percent * np.log(close).diff(length)
+        log_return = percent * np.log(close).diff(periods=length)
 
         if cumulative:
             log_return = log_return.cumsum()
@@ -1012,7 +1058,7 @@ class AnalysisIndicators(BasePandasObject):
             return
 
         # Validate Arguments
-        length = validate_positive(int, length, minimum=1, default=1)
+        length = validate_positive(int, length, minimum=0, default=1)
         offset = offset if isinstance(offset, int) else 0
         percent = 100 if percent else 1
 
@@ -1067,7 +1113,6 @@ class AnalysisIndicators(BasePandasObject):
         else:
             return
 
-
         # Validate Arguments
         length = validate_positive(int, length, minimum=3, default=30)
         min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
@@ -1119,7 +1164,8 @@ class AnalysisIndicators(BasePandasObject):
         # Validate Arguments
         length = validate_positive(int, length, minimum=3, default=30)
         min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-        q = validate_positive(float, q, minimum=0, default=0.5) and float(q) <= 1.0
+        q = float(q) if q and q > 0 and q <= 1 else 0.5
+        # q = validate_positive(float, q, minimum=0, default=0.5) and float(q) <= 1.0
 
         # Calculate Result
         quantile = close.rolling(length, min_periods=min_periods).quantile(q)
@@ -1782,6 +1828,8 @@ class AnalysisIndicators(BasePandasObject):
     BalanceOfPower = bop
     CommodityChannelIndex = cci
     MACD = macd
+    MassIndex = massi
+    
     Momentum = mom
     PercentagePriceOscillator = ppo
     RateOfChange = roc
@@ -1797,8 +1845,8 @@ class AnalysisIndicators(BasePandasObject):
     RangePercentage = rpn
 
     # Performance
-    PctReturn = percent_return
     LogReturn = log_return
+    PctReturn = percent_return
 
     # Statistics
     Kurtosis = kurtosis

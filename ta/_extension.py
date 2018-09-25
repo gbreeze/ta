@@ -1869,7 +1869,7 @@ class AnalysisIndicators(BasePandasObject):
         ad = ad.cumsum()
 
         # Offset
-        ad.shift(offset)
+        ad = ad.shift(offset)
 
         # Handle fills
         if 'fillna' in kwargs:
@@ -1886,6 +1886,72 @@ class AnalysisIndicators(BasePandasObject):
             df[ad.name] = ad
 
         return ad
+
+
+
+    def obv(self, close=None, volume=None, offset:int = None, **kwargs):
+        """On Balance Volume
+
+        Returns a Series of the product of Price and Volume.
+
+        Args:
+            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+            signed (bool): True.  Returns zeros and ones.
+            offset (int): How many
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column(s).
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+            if isinstance(volume, pd.Series):
+                volume = volume
+            else:
+                volume = df[volume] if volume in df.columns else df.volume
+        else:
+            return
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=1)
+        offset = offset if isinstance(offset, int) else 0
+
+        # Calculate Result
+        signed_volume = signed_series(close, initial=1) * volume
+        obv = signed_volume.cumsum()
+
+        # Offset
+        obv = obv.shift(offset)
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            obv.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            obv.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        obv.name = f"OBV"
+        obv.category = 'volume'
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[pvt.name] = obv
+
+        return obv
 
 
     def pvol(self, close:str = None, volume:str = None, signed:bool = True, offset:int = None, **kwargs):
@@ -1935,7 +2001,7 @@ class AnalysisIndicators(BasePandasObject):
             pvol = close * volume
 
         # Offset
-        pvol.shift(offset)
+        pvol = pvol.shift(offset)
 
         # Handle fills
         if 'fillna' in kwargs:
@@ -1994,10 +2060,9 @@ class AnalysisIndicators(BasePandasObject):
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=1)
         offset = offset if isinstance(offset, int) else 0
-        print(offset)
 
         # Calculate Result
-        pv = self.roc(close=close) * volume
+        pv = self.roc(close=close, length=length) * volume
         pvt = pv.cumsum()
 
         # Offset
@@ -2064,6 +2129,9 @@ class AnalysisIndicators(BasePandasObject):
 
     # Volume
     AccumDist = ad
+    # EldersForceIndex = efi
+    # EaseOfMovement = eom
+    OnBalanceVolume = obv
     PriceVolume = pvol
     PriceVolumeTrend = pv_trend
 

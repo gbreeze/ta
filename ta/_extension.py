@@ -13,13 +13,12 @@ def validate_positive(fn, x, minimum, default):
     return fn(x) if x and default and x > minimum and default > minimum else fn(default)
 
 
-def signed_series(series:pd.Series, initial:int = None, length:int = None):
+def signed_series(series:pd.Series, initial:int = None):
     """Returns a Signed Series with or without an initial value"""
-    length = validate_positive(int, length, minimum=0, default=1)
-    sign = series.diff(length)
+    sign = series.diff(1)
     sign[sign > 0] = 1
     sign[sign < 0] = -1
-    sign.iloc[0] = initial if initial else np.NaN
+    sign.iloc[0] = initial
     return sign
 
 
@@ -354,7 +353,11 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def massi(self, high:str = None, low:str = None, single=None, double=None, **kwargs):
-        """ massi """
+        """Mass Index
+        
+        Incorrect
+
+        """
         df = self._valid_df()
 
         if df is not None:
@@ -399,6 +402,76 @@ class AnalysisIndicators(BasePandasObject):
             df[massi.name] = massi
 
         return massi
+
+
+    def mfi(self, high:str = None, low:str = None, close:str = None, volume:str = None, length:int = None, drift:int = None, **kwargs):
+        """Money Flow Index
+
+        Incorrect
+        
+        """
+        df = self._valid_df()
+
+        # Get the correct column.
+        if df is None: return
+        else:
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+            
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+            if isinstance(volume, pd.Series):
+                volume = volume
+            else:
+                volume = df[volume] if volume in df.columns else df.volume
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=14)
+        drift = validate_positive(int, drift, minimum=0, default=1)
+
+        # Calculate Result
+        typical_price = self.hlc3(high=high, low=low, close=close)
+        raw_money_flow = typical_price * volume
+
+        tdf = pd.DataFrame({'diff': 0, 'rmf': raw_money_flow, '+mf': 0, '-mf': 0})
+
+        tdf.loc[(typical_price.diff(drift) > 0), 'diff'] =  1
+        tdf.loc[tdf['diff'] ==  1, '+mf'] = raw_money_flow
+
+        tdf.loc[(typical_price.diff(drift) < 0), 'diff'] = -1
+        tdf.loc[tdf['diff'] == -1, '-mf'] = raw_money_flow
+
+        psum = tdf['+mf'].rolling(length).sum()
+        nsum = tdf['-mf'].rolling(length).sum()
+        tdf['mr'] = psum / nsum
+        mfi = 100 * psum / (psum + nsum)
+        tdf['mfi'] = mfi
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            mfi.fillna(kwargs['fillna'], inplace=True)
+        elif 'fill_method' in kwargs:
+            mfi.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        mfi.name = f"MFI_{length}"
+        mfi.category = 'momentum'
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[mfi.name] = mfi
+
+        return mfi
 
 
     def mom(self, close:str = None, length:int = None, **kwargs):

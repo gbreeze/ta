@@ -144,7 +144,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             apo.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             apo.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -199,7 +199,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             bop.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             bop.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -256,7 +256,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             cci.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             cci.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -326,7 +326,7 @@ class AnalysisIndicators(BasePandasObject):
             macd.fillna(kwargs['fillna'], inplace=True)
             histogram.fillna(kwargs['fillna'], inplace=True)
             signalma.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             macd.fillna(method=kwargs['fill_method'], inplace=True)
             histogram.fillna(method=kwargs['fill_method'], inplace=True)
             signalma.fillna(method=kwargs['fill_method'], inplace=True)
@@ -389,7 +389,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             massi.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             massi.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -460,7 +460,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             mfi.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             mfi.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -497,7 +497,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             mom.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             mom.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -537,7 +537,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             ppo.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             ppo.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -574,7 +574,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             roc.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             roc.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -621,7 +621,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             rsi.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             rsi.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -671,7 +671,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             willr.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             willr.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -974,7 +974,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             midpoint.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             midpoint.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -1018,7 +1018,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             midprice.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             midprice.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -1507,7 +1507,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             decreasing.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             decreasing.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -1567,7 +1567,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             increasing.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             increasing.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -1640,7 +1640,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             atr.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             atr.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -1700,7 +1700,7 @@ class AnalysisIndicators(BasePandasObject):
             lower.fillna(kwargs['fillna'], inplace=True)
             mid.fillna(kwargs['fillna'], inplace=True)
             upper.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             lower.fillna(method=kwargs['fill_method'], inplace=True)
             mid.fillna(method=kwargs['fill_method'], inplace=True)
             upper.fillna(method=kwargs['fill_method'], inplace=True)
@@ -1782,7 +1782,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             true_range.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             true_range.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -1874,7 +1874,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             ad.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             ad.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -1887,6 +1887,77 @@ class AnalysisIndicators(BasePandasObject):
 
         return ad
 
+
+    def efi(self, close=None, volume=None, length=None, mamode:str = None, offset:int = None, drift:int = None, **kwargs):
+        """Elder's Force Index
+
+        Returns a Series of the product of Price and Volume.
+
+        Args:
+            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+            signed (bool): True.  Returns zeros and ones.
+            offset (int): How many
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column(s).
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+            if isinstance(volume, pd.Series):
+                volume = volume
+            else:
+                volume = df[volume] if volume in df.columns else df.volume
+        else:
+            return
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=1)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        drift = validate_positive(int, drift, minimum=0, default=1)
+        offset = offset if isinstance(offset, int) else 0
+
+        # Calculate Result
+        pv_diff = close.diff(drift) * volume
+
+        if mamode is None or mamode == 'alexander':
+            efi = pv_diff.ewm(span=length, min_periods=min_periods).mean()
+        else:
+            efi = pv_diff.rolling(length, min_periods=min_periods).mean()
+
+        # Offset
+        efi = efi.shift(offset)
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            efi.fillna(kwargs['fillna'], inplace=True)
+        if 'fill_method' in kwargs:
+            efi.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        efi.name = f"EFI_{length}"
+        efi.category = 'volume'
+
+        # If append, then add it to the df
+        # if 'append' in kwargs and kwargs['append']:
+        if kwargs.pop('append', False):
+            df[efi.name] = efi
+
+        return efi
 
 
     def obv(self, close=None, volume=None, offset:int = None, **kwargs):
@@ -1927,7 +1998,6 @@ class AnalysisIndicators(BasePandasObject):
             return
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=1)
         offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
@@ -1940,7 +2010,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             obv.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             obv.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -2006,7 +2076,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             pvol.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             pvol.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
@@ -2071,7 +2141,7 @@ class AnalysisIndicators(BasePandasObject):
         # Handle fills
         if 'fillna' in kwargs:
             pvt.fillna(kwargs['fillna'], inplace=True)
-        elif 'fill_method' in kwargs:
+        if 'fill_method' in kwargs:
             pvt.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it

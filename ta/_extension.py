@@ -178,18 +178,6 @@ class AnalysisIndicators(BasePandasObject):
         return indicator
 
 
-    ## Private Methods
-    def _valid_df(self):
-        """Validates and returns self._df   ** May be overkill."""
-        try:
-            df = self._df
-        except AttributeError:
-            print(f"[X] Not a valid DataFrame.")
-            return
-        else:
-            return df
-
-
     # @property
     def defaults(self, value, min_range:int= 0, max_range:int = 100, every:int = 10):
         _levels = [x for x in range(min_range, max_range + 1) if x % every == 0]
@@ -203,18 +191,17 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Momentum Indicators
-    def apo(self, close:str = None, fast:int = None, slow:int = None, **kwargs):
+    def apo(self, close=None, fast:int = None, slow:int = None, **kwargs):
         """ apo """
-        df = self._valid_df()
+        df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate arguments
         fast = validate_positive(int, fast, minimum=0, default=12)
@@ -245,10 +232,11 @@ class AnalysisIndicators(BasePandasObject):
 
     def bop(self, open_:str = None, high:str = None, low:str = None, close:str = None, percentage:bool = False, **kwargs):
         """ bop """
-        df = self._valid_df()
+        df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(open_, pd.Series):
                 open_ = open_
             else:
@@ -268,8 +256,6 @@ class AnalysisIndicators(BasePandasObject):
                 close_ = close
             else:
                 close_ = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate arguments
         # length = validate_positive(int, length, minimum=0, default=1)
@@ -299,10 +285,11 @@ class AnalysisIndicators(BasePandasObject):
 
     def cci(self, high:str = None, low:str = None, close:str = None, length:int = None, c:float = None, **kwargs):
         """ cci """
-        df = self._valid_df()
+        df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(high, pd.Series):
                 high = high
             else:
@@ -317,8 +304,6 @@ class AnalysisIndicators(BasePandasObject):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=20)
@@ -375,7 +360,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column.
@@ -441,7 +426,7 @@ class AnalysisIndicators(BasePandasObject):
         Incorrect
 
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column.
@@ -493,7 +478,7 @@ class AnalysisIndicators(BasePandasObject):
         Incorrect
         
         """
-        df = self._valid_df()
+        df = self._df
 
         # Get the correct column.
         if df is None: return
@@ -559,7 +544,7 @@ class AnalysisIndicators(BasePandasObject):
 
     def mom(self, close:str = None, length:int = None, **kwargs):
         """ mom """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column.
@@ -596,7 +581,7 @@ class AnalysisIndicators(BasePandasObject):
 
     def ppo(self, close:str = None, fast:int = None, slow:int = None, **kwargs):
         """ ppo """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column.
@@ -636,7 +621,7 @@ class AnalysisIndicators(BasePandasObject):
 
     def roc(self, close:str = None, length:int = None, **kwargs):
         """ roc """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column.
@@ -675,7 +660,7 @@ class AnalysisIndicators(BasePandasObject):
         """Relative Strength Index
         
         """
-        df = self._valid_df()
+        df = self._df
 
         # Get the correct column.
         if df is None: return
@@ -720,7 +705,7 @@ class AnalysisIndicators(BasePandasObject):
 
     def willr(self, high:str = None, low:str = None, close:str = None, length:int = None, **kwargs):
         """ willr """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column.
@@ -788,7 +773,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column(s).
@@ -845,7 +830,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column(s).
@@ -909,7 +894,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column(s).
@@ -978,7 +963,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column.
@@ -1030,7 +1015,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column(s).
@@ -1073,7 +1058,7 @@ class AnalysisIndicators(BasePandasObject):
 
     def midprice(self, high:str = None, low:str = None, length:int = None, **kwargs):
         """ midprice """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column(s).
@@ -1137,7 +1122,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column(s).
@@ -1180,7 +1165,7 @@ class AnalysisIndicators(BasePandasObject):
 
     # def wma(self, close:str = None, length:int = None, asc:bool = True, **kwargs):
     #     """ wma """
-    #     df = self._valid_df()
+    #     df = self._df
         
     #     length = length if length and length > 0 else 1
 
@@ -1233,7 +1218,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column.
@@ -1292,7 +1277,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column.
@@ -1348,7 +1333,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column.
@@ -1396,7 +1381,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column.
@@ -1446,7 +1431,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column.
@@ -1494,7 +1479,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column.
@@ -1546,7 +1531,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column.
@@ -1595,7 +1580,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column(s).
@@ -1655,7 +1640,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column(s).
@@ -1717,7 +1702,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column(s).
@@ -1789,7 +1774,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column.
@@ -1868,7 +1853,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column.
@@ -1940,7 +1925,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is None: return
         else:
@@ -2013,7 +1998,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def stoch(self, high:str = None, low:str = None, close:str = None, fast_k:int = None, slow_k:int = None, slow_d:int = None, **kwargs):
-        df = self._valid_df()
+        df = self._df
         
         # if df is None: return
         # else:
@@ -2057,7 +2042,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column(s).
@@ -2131,7 +2116,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column(s).
@@ -2219,7 +2204,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column(s).
@@ -2291,7 +2276,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is None: return
         else:
@@ -2377,7 +2362,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is None: return
         else:
@@ -2457,7 +2442,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is None: return
         else:
@@ -2526,7 +2511,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column(s).
@@ -2590,7 +2575,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column(s).
@@ -2656,7 +2641,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._valid_df()
+        df = self._df
 
         if df is not None:
             # Get the correct column(s).

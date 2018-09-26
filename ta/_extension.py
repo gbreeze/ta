@@ -362,14 +362,13 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate arguments
         fast = validate_positive(int, fast, minimum=0, default=12)
@@ -428,8 +427,9 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(high, pd.Series):
                 high = high
             else:
@@ -439,8 +439,6 @@ class AnalysisIndicators(BasePandasObject):
                 low = low
             else:
                 low = df[low] if low in df.columns else df.low
-        else:
-            return
 
         # Validate arguments
         single = validate_positive(int, single, minimum=0, default=9)
@@ -546,14 +544,13 @@ class AnalysisIndicators(BasePandasObject):
         """ mom """
         df = self._df
 
-        if df is not None:
-            # Get the correct column.
-            if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
+        # Get the correct column.
+        if df is None: return
+        else:
+            if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=1)
@@ -583,14 +580,13 @@ class AnalysisIndicators(BasePandasObject):
         """ ppo """
         df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate arguments
         fast = validate_positive(int, fast, minimum=0, default=12)
@@ -623,14 +619,13 @@ class AnalysisIndicators(BasePandasObject):
         """ roc """
         df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=1)
@@ -707,8 +702,9 @@ class AnalysisIndicators(BasePandasObject):
         """ willr """
         df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(high, pd.Series):
                 high = high
             else:
@@ -723,8 +719,6 @@ class AnalysisIndicators(BasePandasObject):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=14)
@@ -775,8 +769,9 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column(s).
+        # Get the correct column(s).
+        if df is None: return
+        else:
             if isinstance(high, pd.Series):
                 high = high
             else:
@@ -786,8 +781,6 @@ class AnalysisIndicators(BasePandasObject):
                 low = low
             else:
                 low = df[low] if low in df.columns else df.low
-        else:
-            return
 
         # Validate Arguments
         offset = offset if isinstance(offset, int) else 0
@@ -796,7 +789,7 @@ class AnalysisIndicators(BasePandasObject):
         hl2 = 0.5 * (high + low)
 
         # Offset
-        hl2.shift(offset)
+        hl2 = hl2.shift(offset)
 
         # Name & Category
         hl2.name = "HL2"
@@ -832,8 +825,9 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column(s).
+        # Get the correct column(s).
+        if df is None: return
+        else:
             if isinstance(high, pd.Series):
                 high = high
             else:
@@ -848,8 +842,6 @@ class AnalysisIndicators(BasePandasObject):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate Arguments
         offset = offset if isinstance(offset, int) else 0
@@ -858,7 +850,7 @@ class AnalysisIndicators(BasePandasObject):
         hlc3 = (high + low + close) / 3
 
         # Offset
-        hlc3.shift(offset)
+        hlc3 = hlc3.shift(offset)
 
         # Name & Category
         hlc3.name = "HLC3"
@@ -896,8 +888,9 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column(s).
+        # Get the correct column(s).
+        if df is None: return
+        else:
             if isinstance(open_, pd.Series):
                 open_ = open_
             else:
@@ -917,8 +910,6 @@ class AnalysisIndicators(BasePandasObject):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate Arguments
         offset = offset if isinstance(offset, int) else 0
@@ -927,7 +918,7 @@ class AnalysisIndicators(BasePandasObject):
         ohlc4 = 0.25 * (open_ + high + low + close)
 
         # Offset
-        ohlc4.shift(offset)
+        ohlc4 = ohlc4.shift(offset)
 
         # Name & Category
         ohlc4.name = "OHLC4"
@@ -965,14 +956,13 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate Arguments
         length = validate_positive(int, length, minimum=1, default=5)
@@ -983,7 +973,7 @@ class AnalysisIndicators(BasePandasObject):
         median = close.rolling(length, min_periods=min_periods).median()
 
         # Offset
-        median.shift(offset)
+        median = median.shift(offset)
 
         # Name & Category
         median.name = f"MEDIAN_{length}"
@@ -1017,19 +1007,18 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column(s).
+        # Get the correct column(s).
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=1)
         min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-        # offset = offset if isinstance(offset, int) else 0
+        offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
         lowest = close.rolling(length, min_periods=min_periods).min()
@@ -1037,7 +1026,7 @@ class AnalysisIndicators(BasePandasObject):
         midpoint = 0.5 * (lowest + highest)
 
         # Offset
-        # midpoint.shift(offset)
+        midpoint = midpoint.shift(offset)
 
         # Handle fills
         if 'fillna' in kwargs:
@@ -1060,8 +1049,9 @@ class AnalysisIndicators(BasePandasObject):
         """ midprice """
         df = self._df
 
-        if df is not None:
-            # Get the correct column(s).
+        # Get the correct column(s).
+        if df is None: return
+        else:
             if isinstance(low, pd.Series):
                 low = low
             else:
@@ -1071,8 +1061,6 @@ class AnalysisIndicators(BasePandasObject):
                 high = high
             else:
                 high = df[high] if high in df.columns else df.high
-        else:
-            return
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=1)
@@ -1124,8 +1112,9 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column(s).
+        # Get the correct column(s).
+        if df is None: return
+        else:
             if isinstance(high, pd.Series):
                 high = high
             else:
@@ -1135,8 +1124,7 @@ class AnalysisIndicators(BasePandasObject):
                 low = low
             else:
                 low = df[low] if low in df.columns else df.low
-        else:
-            return
+
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=1)
@@ -1169,11 +1157,13 @@ class AnalysisIndicators(BasePandasObject):
         
     #     length = length if length and length > 0 else 1
 
-    #     # Get the correct column
-    #     if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
-    #         close = close
-    #     else:
-    #         close = df[close] if close in df.columns else df.close
+    #     # Get the correct column.
+        # if df is None: return
+        # else:
+        #     if isinstance(close, pd.Series):
+        #         close = close
+        #     else:
+        #         close = df[close] if close in df.columns else df.close
         
     #     wma = _wma(close, length=length, **kwargs)
         
@@ -1220,14 +1210,13 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate Arguments
         length = validate_positive(int, length, minimum=0, default=1)
@@ -1279,14 +1268,13 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate Arguments
         length = validate_positive(int, length, minimum=0, default=1)
@@ -1300,7 +1288,7 @@ class AnalysisIndicators(BasePandasObject):
             pct_return = percent * pct_return.cumsum()
 
         # Offset
-        pct_return.shift(offset)
+        pct_return = pct_return.shift(offset)
 
         # Name & Category
         pct_return.name = f"{'CUM_' if cumulative else ''}PCTRET_{length}"
@@ -1335,14 +1323,13 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate Arguments
         length = validate_positive(int, length, minimum=3, default=30)
@@ -1383,14 +1370,13 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate Arguments
         length = validate_positive(int, length, minimum=3, default=30)
@@ -1433,14 +1419,13 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate Arguments
         length = validate_positive(int, length, minimum=3, default=30)
@@ -1481,14 +1466,13 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate Arguments
         length = validate_positive(int, length, minimum=2, default=30)
@@ -1533,14 +1517,13 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate Arguments
         length = validate_positive(int, length, minimum=2, default=30)
@@ -1582,14 +1565,13 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column(s).
+        # Get the correct column(.
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate Arguments
         length = validate_positive(int, length, minimum=1, default=1)
@@ -1642,14 +1624,13 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column(s).
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate arguments
         length = validate_positive(int, length, minimum=1, default=1)
@@ -1704,8 +1685,9 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column(s).
+        # Get the correct column(s).
+        if df is None: return
+        else:
             if isinstance(high, pd.Series):
                 high = high
             else:
@@ -1720,9 +1702,6 @@ class AnalysisIndicators(BasePandasObject):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-
-        else:
-            return
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=14)
@@ -1776,14 +1755,13 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=20)
@@ -1855,14 +1833,13 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column.
+        # Get the correct column.
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-        else:
-            return
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=20)
@@ -1927,9 +1904,9 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
+        # Get the correct column(s).
         if df is None: return
         else:
-            # Get the correct column.
             if isinstance(high, pd.Series):
                 high = high
             else:
@@ -2044,8 +2021,9 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column(s).
+        # Get the correct column(s).
+        if df is None: return
+        else:
             if isinstance(high, pd.Series):
                 high = high
             else:
@@ -2060,9 +2038,6 @@ class AnalysisIndicators(BasePandasObject):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-
-        else:
-            return
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=1)
@@ -2118,8 +2093,9 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column(s).
+        # Get the correct column(s).
+        if df is None: return
+        else:
             if isinstance(high, pd.Series):
                 high = high
             else:
@@ -2146,13 +2122,9 @@ class AnalysisIndicators(BasePandasObject):
                 else:
                     open_ = df[open_] if open_ in df.columns else df.open
 
-                # AD with Open
-                ad - close - open_
-            else:
-                # AD with High, Low, Close
-                ad = 2 * close - high - low
-        else:
-            return
+                ad - close - open_  # AD with Open
+            else:                
+                ad = 2 * close - high - low  # AD with High, Low, Close
 
         # Validate arguments
         offset = offset if isinstance(offset, int) else 0
@@ -2206,8 +2178,9 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column(s).
+        # Get the correct column(s).
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
@@ -2217,8 +2190,6 @@ class AnalysisIndicators(BasePandasObject):
                 volume = volume
             else:
                 volume = df[volume] if volume in df.columns else df.volume
-        else:
-            return
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=1)
@@ -2278,9 +2249,9 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
+        # Get the correct column(s).
         if df is None: return
         else:
-            # Get the correct column(s).
             if isinstance(high, pd.Series):
                 high = high
             else:
@@ -2307,9 +2278,9 @@ class AnalysisIndicators(BasePandasObject):
                 else:
                     open_ = df[open_] if open_open_ in df.columns else df.open
                 
-                ad = close - open_
+                ad = close - open_  # AD with Open
             else:
-                ad = 2 * close - high - low
+                ad = 2 * close - high - low  # AD with High, Low, Close
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=1)
@@ -2364,9 +2335,9 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
+        # Get the correct column(s).
         if df is None: return
         else:
-            # Get the correct column(s).
             if isinstance(high, pd.Series):
                 high = high
             else:
@@ -2444,9 +2415,9 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
+        # Get the correct column(s).
         if df is None: return
         else:
-            # Get the correct column(s).
             if isinstance(close, pd.Series):
                 close = close
             else:
@@ -2513,8 +2484,9 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column(s).
+        # Get the correct column(s).
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
@@ -2524,8 +2496,6 @@ class AnalysisIndicators(BasePandasObject):
                 volume = volume
             else:
                 volume = df[volume] if volume in df.columns else df.volume
-        else:
-            return
 
         # Validate arguments
         offset = offset if isinstance(offset, int) else 0
@@ -2577,8 +2547,9 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column(s).
+        # Get the correct column(s).
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
@@ -2588,8 +2559,6 @@ class AnalysisIndicators(BasePandasObject):
                 volume = volume
             else:
                 volume = df[volume] if volume in df.columns else df.volume
-        else:
-            return
 
         # Validate arguments
         offset = offset if isinstance(offset, int) else 0
@@ -2643,8 +2612,9 @@ class AnalysisIndicators(BasePandasObject):
         """
         df = self._df
 
-        if df is not None:
-            # Get the correct column(s).
+        # Get the correct column(s).
+        if df is None: return
+        else:
             if isinstance(close, pd.Series):
                 close = close
             else:
@@ -2654,8 +2624,6 @@ class AnalysisIndicators(BasePandasObject):
                 volume = volume
             else:
                 volume = df[volume] if volume in df.columns else df.volume
-        else:
-            return
 
         # Validate arguments
         length = validate_positive(int, length, minimum=0, default=1)

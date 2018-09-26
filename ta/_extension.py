@@ -1805,6 +1805,99 @@ class AnalysisIndicators(BasePandasObject):
         return dcdf
 
 
+    def kc(self, high=None, low=None, close=None, length=None, scalar=None, mamode:str = None, **kwargs):
+        """Keltner Channels
+
+        Returns a DataFrame with high, mid, and low values.  The high channel is max()
+        and the low channel is the min() over a rolling period length of the source.
+        The mid is the average of the high and low channels.
+
+        Args:
+            close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+            length(int): How many
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is None: return
+        else:
+            # Get the correct column.
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=20)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        scalar = validate_positive(float, scalar, minimum=0, default=2)
+        mamode = mamode.lower() if mamode else 'classic'
+
+        # Calculate Result
+        std = self.variance(close=close, length=length).apply(np.sqrt)
+
+        if mamode == 'ema':
+            hl_range = high - low
+            typical_price = self.hlc3(high=high, low=low, close=close)
+            basis = typical_price.rolling(length, min_periods=min_periods).mean()
+            band = hl_range.rolling(length, min_periods=min_periods).mean()
+        else:
+            basis = close.ewm(span=length, min_periods=min_periods).mean()
+            band = self.atr(high=high, low=low, close=close)
+
+        lower = basis - scalar * band
+        upper = basis + scalar * band
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            lower.fillna(kwargs['fillna'], inplace=True)
+            basis.fillna(kwargs['fillna'], inplace=True)
+            upper.fillna(kwargs['fillna'], inplace=True)
+        if 'fill_method' in kwargs:
+            lower.fillna(method=kwargs['fill_method'], inplace=True)
+            basis.fillna(method=kwargs['fill_method'], inplace=True)
+            upper.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        lower.name = f"KCL_{length}"
+        basis.name = f"KCB_{length}"
+        upper.name = f"KCU_{length}"
+        basis.category = upper.category = lower.category = 'volatility'
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[lower.name] = lower
+            df[basis.name] = basis
+            df[upper.name] = upper
+
+        # Prepare DataFrame to return
+        data = {lower.name: lower, basis.name: basis, upper.name: upper}
+        kcdf = pd.DataFrame(data)
+        kcdf.name = f"KC{length}"
+        kcdf.category = 'volatility'
+
+        return kcdf
+
+
     def true_range(self, high=None, low=None, close=None, length=None, **kwargs):
         """True Range
 
@@ -2440,7 +2533,8 @@ class AnalysisIndicators(BasePandasObject):
     # Volatility
     AverageTrueRange = atr
     BollingerBands = bbands
-    Donchian = donchian
+    DonchianChannels = donchian
+    KeltnerChannels = kc
     TrueRange = true_range
 
     # Volume

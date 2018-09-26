@@ -1654,6 +1654,85 @@ class AnalysisIndicators(BasePandasObject):
         return atr
 
 
+    def bbands(self, close=None, length:int = None, stdev:float = None, mamode:str = None, **kwargs):
+        """Bollinger Bands
+
+        Returns a DataFrame with high, mid, and low values.  The high channel is max()
+        and the low channel is the min() over a rolling period length of the source.
+        The mid is the average of the high and low channels.
+
+        Args:
+            close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+            length(int): How many
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is not None:
+            # Get the correct column.
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+        else:
+            return
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=20)
+        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        stdev = validate_positive(int, stdev, minimum=0, default=2)
+
+        # Calculate Result
+        std = self.variance(close=close, length=length).apply(np.sqrt)
+
+        if mamode is None or mamode.lower() == 'sma':
+            mid = close.rolling(length, min_periods=min_periods).mean()
+        elif mamode.lower() == 'ema':
+            mid = close.ewm(span=length, min_periods=min_periods).mean()
+
+        lower = mid - stdev * std
+        upper = mid + stdev * std
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            lower.fillna(kwargs['fillna'], inplace=True)
+            mid.fillna(kwargs['fillna'], inplace=True)
+            upper.fillna(kwargs['fillna'], inplace=True)
+        if 'fill_method' in kwargs:
+            lower.fillna(method=kwargs['fill_method'], inplace=True)
+            mid.fillna(method=kwargs['fill_method'], inplace=True)
+            upper.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        lower.name = f"BBL_{length}"
+        mid.name = f"BBM_{length}"
+        upper.name = f"BBU_{length}"
+        mid.category = upper.category = lower.category = 'volatility'
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[lower.name] = lower
+            df[mid.name] = mid
+            df[upper.name] = upper
+
+        # Prepare DataFrame to return
+        data = {lower.name: lower, mid.name: mid, upper.name: upper}
+        bbandsdf = pd.DataFrame(data)
+        bbandsdf.name = f"BBANDS{length}"
+        bbandsdf.category = 'volatility'
+
+        return bbandsdf
+
+
     def donchian(self, close=None, length:int = None, **kwargs):
         """Donchian Channels
 
@@ -2185,7 +2264,7 @@ class AnalysisIndicators(BasePandasObject):
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[pvt.name] = obv
+            df[obv.name] = obv
 
         return obv
 
@@ -2360,12 +2439,13 @@ class AnalysisIndicators(BasePandasObject):
 
     # Volatility
     AverageTrueRange = atr
+    BollingerBands = bbands
     Donchian = donchian
     TrueRange = true_range
 
     # Volume
     AccumDist = ad
-    # ChaikinMoneyFlow = cmf
+    ChaikinMoneyFlow = cmf
     EldersForceIndex = efi
     EaseOfMovement = eom
     OnBalanceVolume = obv

@@ -148,7 +148,6 @@ class AnalysisIndicators(BasePandasObject):
             apo.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
-        # bop.name = f"BOP_{length}"
         apo.name = f"APO_{fast}_{slow}"
         apo.category = 'momentum'
 
@@ -203,7 +202,6 @@ class AnalysisIndicators(BasePandasObject):
             bop.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
-        # bop.name = f"BOP_{length}"
         bop.name = f"BOP"
         bop.category = 'momentum'
 
@@ -346,7 +344,7 @@ class AnalysisIndicators(BasePandasObject):
         # Prepare DataFrame to return
         data = {macd.name: macd, histogram.name: histogram, signalma.name: signalma}
         macddf = pd.DataFrame(data)
-        macddf.name = f"MACD{fast}_{slow}_{signal}"
+        macddf.name = f"MACD_{fast}_{slow}_{signal}"
         macddf.category = 'momentum'
 
         return macddf
@@ -1303,7 +1301,7 @@ class AnalysisIndicators(BasePandasObject):
         quantile = close.rolling(length, min_periods=min_periods).quantile(q)
 
         # Name & Category
-        quantile.name = f"QTL_{length}"
+        quantile.name = f"QTL_{length}_{q}"
         quantile.category = 'statistics'
 
         # If 'append', then add it to the df

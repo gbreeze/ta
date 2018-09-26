@@ -2298,6 +2298,75 @@ class AnalysisIndicators(BasePandasObject):
         return eom
 
 
+    def nvi(self, close=None, volume=None, length:int = None, initial:int = None, signed:bool = True, offset:int = None, **kwargs):
+        """Negative Volume Index
+
+        Returns a Series of the product of Price and Volume.
+
+        Args:
+            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+            signed (bool): True.  Returns zeros and ones.
+            offset (int): How many
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is None: return
+        else:
+            # Get the correct column(s).
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+            if isinstance(volume, pd.Series):
+                volume = volume
+            else:
+                volume = df[volume] if volume in df.columns else df.volume
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=1)
+        initial = initial if initial and initial > 0 else 1000
+        offset = offset if isinstance(offset, int) else 0
+
+        # Calculate Result
+        roc = self.roc(close=close)
+        signed_volume = signed_series(volume, initial=1)
+        nvi = signed_volume[signed_volume < 0].abs() * roc
+        nvi.fillna(0, inplace=True)
+        nvi.iloc[0]= initial
+        nvi = nvi.cumsum()
+
+        # Offset
+        nvi = nvi.shift(offset)
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            nvi.fillna(kwargs['fillna'], inplace=True)
+        if 'fill_method' in kwargs:
+            nvi.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        nvi.name = f"NVI_{length}"
+        nvi.category = 'volume'
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[nvi.name] = nvi
+
+        return nvi
+
+
     def obv(self, close=None, volume=None, offset:int = None, **kwargs):
         """On Balance Volume
 
@@ -2542,6 +2611,7 @@ class AnalysisIndicators(BasePandasObject):
     ChaikinMoneyFlow = cmf
     EldersForceIndex = efi
     EaseOfMovement = eom
+    NegativeVolumeIndex = nvi
     OnBalanceVolume = obv
     PriceVolume = pvol
     PriceVolumeTrend = pv_trend

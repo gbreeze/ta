@@ -112,7 +112,6 @@ env/**
 ta/_wrapper.py
 
 # twopirllc stuff
-data/AAPL_D.csv
 driver.py
 doc.py
 ta_extension.ipynb

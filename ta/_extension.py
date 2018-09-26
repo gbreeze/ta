@@ -1178,6 +1178,37 @@ class AnalysisIndicators(BasePandasObject):
         return rp
 
 
+    # def wma(self, close:str = None, length:int = None, asc:bool = True, **kwargs):
+    #     """ wma """
+    #     df = self._valid_df()
+        
+    #     length = length if length and length > 0 else 1
+
+    #     # Get the correct column
+    #     if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
+    #         close = close
+    #     else:
+    #         close = df[close] if close in df.columns else df.close
+        
+    #     wma = _wma(close, length=length, **kwargs)
+        
+    #     # Handle fills
+    #     if 'fillna' in kwargs:
+    #         wma.fillna(kwargs['fillna'], inplace=True)
+    #     elif 'fill_method' in kwargs:
+    #         wma.fillna(method=kwargs['fill_method'], inplace=True)                
+
+    #     # Name and Categorize it
+    #     wma.name = f"WMA_{length}"
+    #     wma.category = 'overlap'
+        
+    #     # If append, then add it to the df 
+    #     if 'append' in kwargs and kwargs['append']:
+    #         df[wma.name] = wma
+            
+    #     return wma
+
+
     ## Performance Indicators
     def log_return(self, close=None, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
         """Log Return with cumulative and offset

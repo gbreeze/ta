@@ -22,6 +22,77 @@ def signed_series(series:pd.Series, initial:int = None):
     return sign
 
 
+def _stoch(df, high, low, close, fast_k:int = None, slow_k:int = None, slow_d:int = None, **kwargs):
+    """Stochastic"""
+    if df is None: return
+    else:
+        # Get the correct column.
+        if isinstance(high, pd.Series):
+            high = high
+        else:
+            high = df[high] if high in df.columns else df.high
+
+        if isinstance(low, pd.Series):
+            low = low
+        else:
+            low = df[low] if low in df.columns else df.low
+
+        if isinstance(close, pd.Series):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
+
+    # Validate arguments
+    # length = validate_positive(int, length, minimum=0, default=1)
+    fast_k = fast_k if fast_k and fast_k > 0 else 14
+    slow_k = slow_k if slow_k and slow_k > 0 else 5
+    slow_d = slow_d if slow_d and slow_d > 0 else 3
+
+    # Calculate Result
+    lowest_low   =  low.rolling(fast_k, min_periods=fast_k - 1).min()
+    highest_high = high.rolling(fast_k, min_periods=fast_k - 1).max()
+
+    fastk = 100 * (close - lowest_low) / (highest_high - lowest_low)
+    fastd = fastk.rolling(slow_d, min_periods=slow_d - 1).mean()
+
+    slowk = fastk.rolling(slow_k, min_periods=slow_k).mean()
+    slowd = slowk.rolling(slow_d, min_periods=slow_d).mean()
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        fastk.fillna(kwargs['fillna'], inplace=True)
+        fastd.fillna(kwargs['fillna'], inplace=True)
+        slowk.fillna(kwargs['fillna'], inplace=True)
+        slowd.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        fastk.fillna(method=kwargs['fill_method'], inplace=True)
+        fastd.fillna(method=kwargs['fill_method'], inplace=True)
+        slowk.fillna(method=kwargs['fill_method'], inplace=True)
+        slowd.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    fastk.name = f"STOCHF_{fast_k}"
+    fastd.name = f"STOCHF_{slow_d}"
+    slowk.name = f"STOCH_{slow_k}"
+    slowd.name = f"STOCH_{slow_d}"
+    fastk.category = fastd.category = slowk.category = slowd.category = 'momentum'
+
+    # If append, then add it to the df
+    if 'append' in kwargs and kwargs['append']:
+        df[fastk.name] = fastk
+        df[fastd.name] = fastd
+        df[slowk.name] = slowk
+        df[slowd.name] = slowd
+
+    # Prepare DataFrame to return
+    data = {fastk.name: fastk, fastd.name: fastd, slowk.name: slowk, slowd.name: slowd}
+    stochdf = pd.DataFrame(data)
+    stochdf.name = f"STOCH_{fast_k}_{slow_k}_{slow_d}"
+    stochdf.category = 'volatility'
+
+    return stochdf
+
+
 class BasePandasObject(PandasObject):
     """Simple PandasObject Extension
 
@@ -1143,7 +1214,7 @@ class AnalysisIndicators(BasePandasObject):
         log_return.shift(offset)
 
         # Name & Category
-        log_return.name = f"LOGRET_{length}"
+        log_return.name = f"{'CUM_' if cumulative else ''}LOGRET_{length}"
         log_return.category = 'performance'
 
         # If 'append', then add it to the df
@@ -1202,7 +1273,7 @@ class AnalysisIndicators(BasePandasObject):
         pct_return.shift(offset)
 
         # Name & Category
-        pct_return.name = f"PCTRET_{length}"
+        pct_return.name = f"{'CUM_' if cumulative else ''}PCTRET_{length}"
         pct_return.category = 'performance'
 
         # If 'append', then add it to the df
@@ -1500,7 +1571,7 @@ class AnalysisIndicators(BasePandasObject):
             decreasing = decreasing.astype(int)
 
         # Offset
-        decreasing.shift(offset)
+        decreasing = decreasing.shift(offset)
 
         # Handle fills
         if 'fillna' in kwargs:
@@ -1560,7 +1631,7 @@ class AnalysisIndicators(BasePandasObject):
             increasing = increasing.astype(int)
 
         # Offset
-        increasing.shift(offset)
+        increasing = increasing.shift(offset)
 
         # Handle fills
         if 'fillna' in kwargs:
@@ -1895,6 +1966,30 @@ class AnalysisIndicators(BasePandasObject):
 
         return kcdf
 
+
+    def stoch(self, high:str = None, low:str = None, close:str = None, fast_k:int = None, slow_k:int = None, slow_d:int = None, **kwargs):
+        df = self._valid_df()
+        
+        # if df is None: return
+        # else:
+        #     # Get the correct column.
+        #     if isinstance(high, pd.Series):
+        #         high = high
+        #     else:
+        #         high = df[high] if high in df.columns else df.high
+
+        #     if isinstance(low, pd.Series):
+        #         low = low
+        #     else:
+        #         low = df[low] if low in df.columns else df.low
+
+        #     if isinstance(close, pd.Series):
+        #         close = close
+        #     else:
+        #         close = df[close] if close in df.columns else df.close
+        # print(f"df:\n{df.head()}")
+        # print(f"{high.head()}\n{low.head()}\n{close.head()}")
+        return _stoch(df, high=high, low=low, close=close, fast_k=fast_k, slow_k=slow_k, slow_d=slow_d, **kwargs)
 
     def true_range(self, high=None, low=None, close=None, length=None, **kwargs):
         """True Range

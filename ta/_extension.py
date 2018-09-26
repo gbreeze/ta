@@ -1960,6 +1960,86 @@ class AnalysisIndicators(BasePandasObject):
         return efi
 
 
+    def eom(self, high=None, low=None, close=None, volume=None, length=None, divisor:int = None, ease:int = None, offset:int = None, **kwargs):
+        """Ease of Movement
+
+        Returns a Series of the product of Price and Volume.
+
+        Args:
+            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+            signed (bool): True.  Returns zeros and ones.
+            offset (int): How many
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is None: return
+        else:
+            # Get the correct column(s).
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+            if isinstance(volume, pd.Series):
+                volume = volume
+            else:
+                volume = df[volume] if volume in df.columns else df.volume
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=1)
+        min_periods = int(kwargs['minperiods']) if 'minperiods' in kwargs else length
+        divisor = divisor if divisor and divisor > 0 else 100000000
+        ease = int(ease) if ease and ease > 0 else 1
+        offset = offset if isinstance(offset, int) else 0
+
+        # Calculate Result
+        hl_range = high - low
+        distance = self.hl2(high=high, low=low) - self.hl2(high=high.shift(ease), low=low.shift(ease))
+        box_ratio = (volume / divisor) / hl_range
+        eom = distance / box_ratio
+        eom = eom.rolling(length, min_periods=min_periods).mean()
+
+        # Offset
+        eom = eom.shift(offset)
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            eom.fillna(kwargs['fillna'], inplace=True)
+        if 'fill_method' in kwargs:
+            eom.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        eom.name = f"PVT_{length}"
+        eom.category = 'volume'
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[eom.name] = eom
+
+        return eom
+
+
     def obv(self, close=None, volume=None, offset:int = None, **kwargs):
         """On Balance Volume
 
@@ -2199,8 +2279,9 @@ class AnalysisIndicators(BasePandasObject):
 
     # Volume
     AccumDist = ad
-    # EldersForceIndex = efi
-    # EaseOfMovement = eom
+    # ChaikinMoneyFlow = cmf
+    EldersForceIndex = efi
+    EaseOfMovement = eom
     OnBalanceVolume = obv
     PriceVolume = pvol
     PriceVolumeTrend = pv_trend

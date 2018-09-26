@@ -1960,6 +1960,92 @@ class AnalysisIndicators(BasePandasObject):
         return efi
 
 
+    def cmf(self, high=None, low=None, close=None, volume=None, length=None, open_=None, offset:int = None, **kwargs):
+        """Chaikin Money Flow
+
+        Returns a Series of the product of Price and Volume.
+
+        Args:
+            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+            signed (bool): True.  Returns zeros and ones.
+            offset (int): How many
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._valid_df()
+
+        if df is None: return
+        else:
+            # Get the correct column(s).
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+            if isinstance(volume, pd.Series):
+                volume = volume
+            else:
+                volume = df[volume] if volume in df.columns else df.volume
+
+            if open_ is not None:
+                if isinstance(open_, pd.Series):
+                    open_ = open_
+                else:
+                    open_ = df[open_] if open_open_ in df.columns else df.open
+                
+                ad = close - open_
+            else:
+                ad = 2 * close - high - low
+
+        # Validate arguments
+        length = validate_positive(int, length, minimum=0, default=1)
+        min_periods = int(kwargs['minperiods']) if 'minperiods' in kwargs else length
+        offset = offset if isinstance(offset, int) else 0
+
+        # Calculate Result
+        hl_range = high - low
+        ad *= volume / hl_range
+        cmf = ad.rolling(length).sum() / volume.rolling(length).sum()
+
+        # Offset
+        cmf = cmf.shift(offset)
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            cmf.fillna(kwargs['fillna'], inplace=True)
+        if 'fill_method' in kwargs:
+            cmf.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        cmf.name = f"CMF_{length}"
+        cmf.category = 'volume'
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[cmf.name] = cmf
+
+        return cmf
+
+
     def eom(self, high=None, low=None, close=None, volume=None, length=None, divisor:int = None, ease:int = None, offset:int = None, **kwargs):
         """Ease of Movement
 
@@ -2030,7 +2116,7 @@ class AnalysisIndicators(BasePandasObject):
             eom.fillna(method=kwargs['fill_method'], inplace=True)
 
         # Name and Categorize it
-        eom.name = f"PVT_{length}"
+        eom.name = f"EOM_{length}_{divisor}"
         eom.category = 'volume'
 
         # If append, then add it to the df

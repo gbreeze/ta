@@ -9,8 +9,8 @@ from sys import float_info as sflt
 
 TA_EPSILON = sflt.epsilon
 
-def validate_positive(fn, x, minimum, default):
-    return fn(x) if x and default and x > minimum and default > minimum else fn(default)
+# def validate_positive(fn, x, minimum, default):
+#     return fn(x) if x and default and x > minimum and default > minimum else fn(default)
 
 
 def signed_series(series:pd.Series, initial:int = None):
@@ -165,16 +165,20 @@ class AnalysisIndicators(BasePandasObject):
         except AttributeError:
             raise ValueError(f"kind='{kind.lower()}' is not valid for {self.__class__.__name__}")
 
-        # Run the indicator
         if timed:
             stime = time.time()
+
+        # Run the indicator
         indicator = fn(**kwargs)
+
         if timed:
             time_diff = time.time() - stime
             ms = time_diff * 1000
             indicator.timed = f"{ms:2.3f} ms ({time_diff:2.3f} s)"
-        if alias:
-            indicator.alias = f"{alias}"
+        
+        # Add an alias if passed
+        if alias: indicator.alias = f"{alias}"
+
         return indicator
 
 
@@ -204,9 +208,11 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate arguments
-        fast = validate_positive(int, fast, minimum=0, default=12)
-        slow = validate_positive(int, slow, minimum=0, default=26)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else fast
+        fast = int(fast) if fast and fast > 0 else 12
+        slow = int(slow) if slow and slow > 0 else 26
+        if slow < fast:
+            fast, slow = slow, fast
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else slow
 
         # Calculate Result
         fastma = close.rolling(fast, min_periods=min_periods).mean()
@@ -258,7 +264,6 @@ class AnalysisIndicators(BasePandasObject):
                 close_ = df[close] if close in df.columns else df.close
 
         # Validate arguments
-        # length = validate_positive(int, length, minimum=0, default=1)
         percent = 100 if percentage else 1
 
         # Calculate Result
@@ -306,10 +311,10 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=20)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-        c = validate_positive(float, c, minimum=0, default=0.015)
-
+        length = int(length) if length and length > 0 else 20
+        c = float(c) if c and c > 0 else 0.015
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+        
         # Calculate Result
         def mad(series):
             """Mean Absolute Deviation"""
@@ -371,21 +376,19 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate arguments
-        fast = validate_positive(int, fast, minimum=0, default=12)
-        fast_min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else fast
-
-        slow = validate_positive(int, slow, minimum=0, default=26)
-        slow_min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else slow
-
-        signal = validate_positive(int, signal, minimum=0, default=9)
-        signal_min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else signal
+        fast = int(fast) if fast and fast > 0 else 12
+        slow = int(slow) if slow and slow > 0 else 26
+        signal = int(signal) if signal and signal > 0 else 9
+        if slow < fast:
+            fast, slow = slow, fast
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else slow
 
         # Calculate Result
-        fastma = close.ewm(span=fast, min_periods=fast_min_periods).mean()
-        slowma = close.ewm(span=slow, min_periods=slow_min_periods).mean()
+        fastma = close.ewm(span=fast, min_periods=min_periods).mean()
+        slowma = close.ewm(span=slow, min_periods=min_periods).mean()
         macd = fastma - slowma
 
-        signalma = macd.ewm(span=signal, min_periods=signal_min_periods).mean()
+        signalma = macd.ewm(span=signal, min_periods=min_periods).mean()
         histogram = macd - signalma
 
         # Handle fills
@@ -419,7 +422,7 @@ class AnalysisIndicators(BasePandasObject):
         return macddf
 
 
-    def massi(self, high:str = None, low:str = None, single=None, double=None, **kwargs):
+    def massi(self, high:str = None, low:str = None, fast=None, slow=None, **kwargs):
         """Mass Index
         
         Incorrect
@@ -441,16 +444,19 @@ class AnalysisIndicators(BasePandasObject):
                 low = df[low] if low in df.columns else df.low
 
         # Validate arguments
-        single = validate_positive(int, single, minimum=0, default=9)
-        double = validate_positive(int, double, minimum=0, default=25)
+        fast = int(fast) if fast and fast > 0 else 9
+        slow = int(slow) if slow and slow > 0 else 25
+        if slow < fast:
+            fast, slow = slow, fast
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else slow
 
         # Calculate Result
         hl_range = high - low
-        hl_ema1 = hl_range.ewm(span=single, min_periods=single).mean()
-        hl_ema2 =  hl_ema1.ewm(span=single, min_periods=single).mean()
+        hl_ema1 = hl_range.ewm(span=fast, min_periods=min_periods).mean()
+        hl_ema2 =  hl_ema1.ewm(span=fast, min_periods=min_periods).mean()
 
         mass = hl_ema1 / hl_ema2
-        massi = mass.rolling(double, min_periods=double).sum()
+        massi = mass.rolling(slow, min_periods=slow).sum()
 
         # Handle fills
         if 'fillna' in kwargs:
@@ -502,8 +508,8 @@ class AnalysisIndicators(BasePandasObject):
                 volume = df[volume] if volume in df.columns else df.volume
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=14)
-        drift = validate_positive(int, drift, minimum=0, default=1)
+        length = int(length) if length and length > 0 else 14
+        drift = int(drift) if drift and drift > 0 else 1
 
         # Calculate Result
         typical_price = self.hlc3(high=high, low=low, close=close)
@@ -553,8 +559,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=1)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = int(length) if length and length > 0 else 1
+        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
 
         # Calculate Result
         mom = close.diff(length)
@@ -589,9 +595,9 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate arguments
-        fast = validate_positive(int, fast, minimum=0, default=12)
-        slow = validate_positive(int, slow, minimum=0, default=26)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else fast
+        fast = int(fast) if fast and fast > 0 else 12
+        slow = int(slow) if slow and slow > 0 else 26
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
 
         # Calculate Result
         fastma = close.rolling(fast, min_periods=min_periods).mean()
@@ -628,8 +634,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=1)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = int(length) if length and length > 0 else 1
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
 
         # Calculate Result
         roc = 100 * self.mom(close=close, length=length) / close.shift(length)
@@ -666,8 +672,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=14)
-        drift = validate_positive(int, drift, minimum=0, default=1)
+        length = int(length) if length and length > 0 else 14
+        drift = int(drift) if drift and drift > 0 else 1
 
         # Calculate Result
         negative = close.diff(drift)
@@ -721,8 +727,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=14)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = int(length) if length and length > 0 else 14
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
 
         # Calculate Result
         lowest_low = low.rolling(length, min_periods=min_periods).min()
@@ -783,6 +789,7 @@ class AnalysisIndicators(BasePandasObject):
                 low = df[low] if low in df.columns else df.low
 
         # Validate Arguments
+        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else double
         offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
@@ -844,6 +851,7 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate Arguments
+        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else double
         offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
@@ -912,6 +920,7 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate Arguments
+        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else double
         offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
@@ -965,8 +974,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate Arguments
-        length = validate_positive(int, length, minimum=1, default=5)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = int(length) if length and length > 0 else 5
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
         offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
@@ -986,8 +995,7 @@ class AnalysisIndicators(BasePandasObject):
         return median
 
 
-    # def midpoint(self, close:str = None, length:int = None, offset=None, **kwargs):
-    def midpoint(self, close:str = None, length:int = None, **kwargs):
+    def midpoint(self, close:str = None, length:int = None, offset=None, **kwargs):
         """Returns the Midpoint of a Series of a certain length.
 
         Args:
@@ -1016,8 +1024,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=1)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = int(length) if length and length > 0 else 1
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
         offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
@@ -1063,8 +1071,8 @@ class AnalysisIndicators(BasePandasObject):
                 high = df[high] if high in df.columns else df.high
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=1)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = int(length) if length and length > 0 else 1
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
 
         # Calculate Result
         lowest_low = low.rolling(length, min_periods=min_periods).min()
@@ -1127,16 +1135,16 @@ class AnalysisIndicators(BasePandasObject):
 
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=1)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = int(length) if length and length > 0 else 1
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
         percentage = validate_positive(float, percentage, minimum=0.0, default=0.1)
 
         # Calculate Result
         highest_high = high.rolling(length, min_periods=min_periods).max()
         lowest_low = low.rolling(length, min_periods=min_periods).min()
         abs_range = (highest_high - lowest_low).abs()
-
         rp = percentage * abs_range
+    
         if 'addLow' in kwargs and kwargs['addLow']:
             rp += low
 
@@ -1219,7 +1227,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate Arguments
-        length = validate_positive(int, length, minimum=0, default=1)
+        length = int(length) if length and length > 0 else 1
+        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
         offset = offset if isinstance(offset, int) else 0
         percent = 100 if percent else 1
 
@@ -1230,7 +1239,7 @@ class AnalysisIndicators(BasePandasObject):
             log_return = log_return.cumsum()
 
         # Offset
-        log_return.shift(offset)
+        log_return = log_return.shift(offset)
 
         # Name & Category
         log_return.name = f"{'CUM_' if cumulative else ''}LOGRET_{length}"
@@ -1277,7 +1286,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate Arguments
-        length = validate_positive(int, length, minimum=0, default=1)
+        length = int(length) if length and length > 0 else 1
+        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
         offset = offset if isinstance(offset, int) else 0
         percent = 100 if percent else 1
 
@@ -1332,8 +1342,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate Arguments
-        length = validate_positive(int, length, minimum=3, default=30)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = int(length) if length and length > 0 else 30
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
 
         # Calculate Result
         kurtosis = close.rolling(length, min_periods=min_periods).kurt()
@@ -1379,10 +1389,9 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate Arguments
-        length = validate_positive(int, length, minimum=3, default=30)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-        q = float(q) if q and q > 0 and q <= 1 else 0.5
-        # q = validate_positive(float, q, minimum=0, default=0.5) and float(q) <= 1.0
+        length = int(length) if length and length > 0 else 30
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+        q = float(q) if q and q > 0 and q < 1 else 0.5
 
         # Calculate Result
         quantile = close.rolling(length, min_periods=min_periods).quantile(q)
@@ -1428,8 +1437,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate Arguments
-        length = validate_positive(int, length, minimum=3, default=30)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = int(length) if length and length > 0 else 30
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
 
         # Calculate Result
         skew = close.rolling(length, min_periods=min_periods).skew()
@@ -1475,8 +1484,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate Arguments
-        length = validate_positive(int, length, minimum=2, default=30)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = int(length) if length and length > 0 else 30
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
 
         # Calculate Result
         stdev = self.variance(length=length).apply(np.sqrt)
@@ -1526,8 +1535,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate Arguments
-        length = validate_positive(int, length, minimum=2, default=30)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = int(length) if length and length > 1 else 30
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
 
         # Calculate Result
         variance = close.rolling(length, min_periods=min_periods).var()
@@ -1574,7 +1583,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate Arguments
-        length = validate_positive(int, length, minimum=1, default=1)
+        length = int(length) if length and length > 0 else 1
+        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
         offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
@@ -1633,7 +1643,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=1, default=1)
+        length = int(length) if length and length > 0 else 1
+        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
         offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
@@ -1704,8 +1715,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=14)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = int(length) if length and length > 0 else 14
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
         mamode = mamode.lower() if mamode else 'ema'
 
         # Calculate Result
@@ -1764,9 +1775,9 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=20)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-        stdev = validate_positive(int, stdev, minimum=0, default=2)
+        length = int(length) if length and length > 0 else 20
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+        stdev = int(stdev) if stdev and stdev >= 0 else 2
 
         # Calculate Result
         std = self.variance(close=close, length=length).apply(np.sqrt)
@@ -1842,8 +1853,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=20)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = int(length) if length and length > 0 else 20
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
 
         # Calculate Result
         lower = close.rolling(length, min_periods=min_periods).min()
@@ -1923,9 +1934,9 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=20)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-        scalar = validate_positive(float, scalar, minimum=0, default=2)
+        length = int(length) if length and length > 0 else 9999
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+        scalar = float(scalar) if scalar and scalar >= 0 else 2
         mamode = mamode.lower() if mamode else 'classic'
 
         # Calculate Result
@@ -1998,6 +2009,7 @@ class AnalysisIndicators(BasePandasObject):
         # print(f"{high.head()}\n{low.head()}\n{close.head()}")
         return _stoch(df, high=high, low=low, close=close, fast_k=fast_k, slow_k=slow_k, slow_d=slow_d, **kwargs)
 
+
     def true_range(self, high=None, low=None, close=None, length=None, **kwargs):
         """True Range
 
@@ -2040,11 +2052,12 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=1)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = int(length) if length and length > 0 else 1
+        drift = int(drift) if drift and drift > 0 else 1
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
 
         # Calculate Result
-        prev_close = close.shift(1)
+        prev_close = close.shift(drift)
         ranges = [high - low, high - prev_close, low - prev_close]
         true_range = pd.DataFrame(ranges).T
         true_range = true_range.abs().max(axis=1)
@@ -2128,7 +2141,7 @@ class AnalysisIndicators(BasePandasObject):
 
         # Validate arguments
         offset = offset if isinstance(offset, int) else 0
-        # min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else offset
+        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
 
         # Calculate Result
         hl_range = high - low
@@ -2192,9 +2205,9 @@ class AnalysisIndicators(BasePandasObject):
                 volume = df[volume] if volume in df.columns else df.volume
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=1)
-        min_periods = validate_positive(int, kwargs['minperiods']) if 'minperiods' in kwargs else length
-        drift = validate_positive(int, drift, minimum=0, default=1)
+        length = int(length) if length and length > 0 else 1
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+        drift = int(drift) if drift and drift > 0 else 1
         offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
@@ -2283,8 +2296,8 @@ class AnalysisIndicators(BasePandasObject):
                 ad = 2 * close - high - low  # AD with High, Low, Close
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=1)
-        min_periods = int(kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = int(length) if length and length > 0 else 1
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
         offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
@@ -2359,8 +2372,8 @@ class AnalysisIndicators(BasePandasObject):
                 volume = df[volume] if volume in df.columns else df.volume
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=1)
-        min_periods = int(kwargs['minperiods']) if 'minperiods' in kwargs else length
+        length = int(length) if length and length > 0 else 1
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
         divisor = divisor if divisor and divisor > 0 else 100000000
         ease = int(ease) if ease and ease > 0 else 1
         offset = offset if isinstance(offset, int) else 0
@@ -2429,8 +2442,9 @@ class AnalysisIndicators(BasePandasObject):
                 volume = df[volume] if volume in df.columns else df.volume
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=1)
-        initial = initial if initial and initial > 0 else 1000
+        length = int(length) if length and length > 0 else 1
+        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+        initial = int(initial) if initial and initial > 0 else 1000
         offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result
@@ -2626,7 +2640,7 @@ class AnalysisIndicators(BasePandasObject):
                 volume = df[volume] if volume in df.columns else df.volume
 
         # Validate arguments
-        length = validate_positive(int, length, minimum=0, default=1)
+        length = int(length) if length and length > 0 else 1
         offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result

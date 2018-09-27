@@ -9,10 +9,6 @@ from sys import float_info as sflt
 
 TA_EPSILON = sflt.epsilon
 
-# def validate_positive(fn, x, minimum, default):
-#     return fn(x) if x and default and x > minimum and default > minimum else fn(default)
-
-
 def signed_series(series:pd.Series, initial:int = None):
     """Returns a Signed Series with or without an initial value"""
     sign = series.diff(1)
@@ -57,7 +53,6 @@ def _stoch(df, high, low, close, fast_k:int = None, slow_k:int = None, slow_d:in
             close = df[close] if close in df.columns else df.close
 
     # Validate arguments
-    # length = validate_positive(int, length, minimum=0, default=1)
     fast_k = fast_k if fast_k and fast_k > 0 else 14
     slow_k = slow_k if slow_k and slow_k > 0 else 5
     slow_d = slow_d if slow_d and slow_d > 0 else 3
@@ -212,7 +207,7 @@ class AnalysisIndicators(BasePandasObject):
         slow = int(slow) if slow and slow > 0 else 26
         if slow < fast:
             fast, slow = slow, fast
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else slow
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
 
         # Calculate Result
         fastma = close.rolling(fast, min_periods=min_periods).mean()
@@ -381,7 +376,7 @@ class AnalysisIndicators(BasePandasObject):
         signal = int(signal) if signal and signal > 0 else 9
         if slow < fast:
             fast, slow = slow, fast
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else slow
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
 
         # Calculate Result
         fastma = close.ewm(span=fast, min_periods=min_periods).mean()
@@ -448,7 +443,7 @@ class AnalysisIndicators(BasePandasObject):
         slow = int(slow) if slow and slow > 0 else 25
         if slow < fast:
             fast, slow = slow, fast
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else slow
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
 
         # Calculate Result
         hl_range = high - low
@@ -466,7 +461,7 @@ class AnalysisIndicators(BasePandasObject):
 
         # Name and Categorize it
         # bop.name = f"BOP_{length}"
-        massi.name = f"MASSI_{single}_{double}"
+        massi.name = f"MASSI_{fast}_{slow}"
         massi.category = 'momentum'
 
         # If append, then add it to the df
@@ -597,6 +592,8 @@ class AnalysisIndicators(BasePandasObject):
         # Validate arguments
         fast = int(fast) if fast and fast > 0 else 12
         slow = int(slow) if slow and slow > 0 else 26
+        if slow < fast:
+            fast, slow = slow, fast
         min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
 
         # Calculate Result
@@ -1137,7 +1134,7 @@ class AnalysisIndicators(BasePandasObject):
         # Validate arguments
         length = int(length) if length and length > 0 else 1
         min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        percentage = validate_positive(float, percentage, minimum=0.0, default=0.1)
+        percentage = float(percentage) if percentage and percentage > 0 and percentage < 100 else 0.1
 
         # Calculate Result
         highest_high = high.rolling(length, min_periods=min_periods).max()
@@ -2010,7 +2007,7 @@ class AnalysisIndicators(BasePandasObject):
         return _stoch(df, high=high, low=low, close=close, fast_k=fast_k, slow_k=slow_k, slow_d=slow_d, **kwargs)
 
 
-    def true_range(self, high=None, low=None, close=None, length=None, **kwargs):
+    def true_range(self, high=None, low=None, close=None, length=None, drift:int = None, **kwargs):
         """True Range
 
         Returns a Series of the product of Price and Volume.
@@ -2053,7 +2050,7 @@ class AnalysisIndicators(BasePandasObject):
 
         # Validate arguments
         length = int(length) if length and length > 0 else 1
-        drift = int(drift) if drift and drift > 0 else 1
+        drift = int(drift) if drift and drift != 0 else 1
         min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
 
         # Calculate Result
@@ -2207,7 +2204,7 @@ class AnalysisIndicators(BasePandasObject):
         # Validate arguments
         length = int(length) if length and length > 0 else 1
         min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        drift = int(drift) if drift and drift > 0 else 1
+        drift = int(drift) if drift and drift != 0 else 1
         offset = offset if isinstance(offset, int) else 0
 
         # Calculate Result

@@ -1609,6 +1609,68 @@ class AnalysisIndicators(BasePandasObject):
         return decreasing
 
 
+    def dpo(self, close:str = None, length:int = None, centered:bool = True, offset=None, **kwargs):
+        """Detrend Price Oscillator
+
+        Returns if a Series is Increasing over a certain length.
+
+        Args:
+            close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+            length(int): How many
+            asint(bool): True.  Returns zeros and ones.
+
+            append(bool): kwarg, optional.  If True, appends result to current df
+
+            **kwargs:
+                fillna (value, optional): pd.DataFrame.fillna(value)
+                fill_method (value, optional): Type of fill method
+                append (bool, optional): If True, appends result to current df.
+
+        Returns:
+            pd.Series: New feature
+        """
+        df = self._df
+
+        # Get the correct column.
+        if df is None: return
+        else:
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        # Validate arguments
+        length = int(length) if length and length > 0 else 1
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+        offset = offset if isinstance(offset, int) else 0
+
+        # Calculate Result
+        drift = int(0.5 * length) + 1  # int((0.5 * length) + 1)
+        # dpo = close.shift(drift) - close.rolling(length, min_periods=min_periods).mean()
+        dpo = close.shift(drift) - close.rolling(length).mean()
+        if centered:
+            dpo = dpo.shift(-drift)
+
+        # Offset
+        dpo = dpo.shift(offset)
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            dpo.fillna(kwargs['fillna'], inplace=True)
+        if 'fill_method' in kwargs:
+            dpo.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        dpo.name = f"DPO_{length}"
+        dpo.category = 'trend'
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[dpo.name] = dpo
+
+        return dpo
+
+
     def increasing(self, close:str = None, length:int = None, asint:bool = True, offset=None, **kwargs):
         """Increasing Trend
 
@@ -2699,6 +2761,7 @@ class AnalysisIndicators(BasePandasObject):
 
     # Trend
     Decreasing = decreasing
+    DetrendPriceOscillator = dpo
     Increasing = increasing
 
     # Volatility

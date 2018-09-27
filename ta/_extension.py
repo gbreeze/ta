@@ -102,6 +102,54 @@ def _stoch(df, high, low, close, fast_k:int = None, slow_k:int = None, slow_d:in
     return stochdf
 
 
+def _tsi(df, close:str = None, fast:int = None, slow:int = None, drift:int = None, **kwargs):
+    """True Strength Index - tsi"""
+    # Get the correct column.
+    if df is None: return
+    else:
+        if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
+
+    # Validate arguments
+    fast = int(fast) if fast and fast > 0 else 13
+    slow = int(slow) if slow and slow > 0 else 25
+    if slow < fast:
+        fast, slow = slow, fast
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
+    drift = int(drift) if drift and drift > 0 else 1
+
+    # Calculate Result
+    diff = close.diff(drift)
+
+    _m = diff.ewm(span=slow).mean()
+    m = _m.ewm(span=fast).mean()
+
+    _ma = abs(diff).ewm(span=slow).mean()
+    ma = _ma.ewm(span=fast).mean()
+
+    tsi = 100 * m / ma
+    # tsi *= 100
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        tsi.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        tsi.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    tsi.name = f"TSI_{fast}_{slow}"
+    tsi.category = 'momentum'
+
+    # If append, then add it to the df
+    if 'append' in kwargs and kwargs['append']:
+        df[tsi.name] = tsi
+
+    return tsi
+
+
+
 class BasePandasObject(PandasObject):
     """Simple PandasObject Extension
 
@@ -699,6 +747,10 @@ class AnalysisIndicators(BasePandasObject):
             df[rsi.name] = rsi
 
         return rsi
+
+
+    def tsi(self, close=None, fast:int = None, slow:int = None, **kwargs):
+        return _tsi(self._df, close=close, fast=fast, slow=slow, **kwargs)
 
 
     def willr(self, high:str = None, low:str = None, close:str = None, length:int = None, **kwargs):
@@ -2045,28 +2097,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def stoch(self, high:str = None, low:str = None, close:str = None, fast_k:int = None, slow_k:int = None, slow_d:int = None, **kwargs):
-        df = self._df
-        
-        # if df is None: return
-        # else:
-        #     # Get the correct column.
-        #     if isinstance(high, pd.Series):
-        #         high = high
-        #     else:
-        #         high = df[high] if high in df.columns else df.high
-
-        #     if isinstance(low, pd.Series):
-        #         low = low
-        #     else:
-        #         low = df[low] if low in df.columns else df.low
-
-        #     if isinstance(close, pd.Series):
-        #         close = close
-        #     else:
-        #         close = df[close] if close in df.columns else df.close
-        # print(f"df:\n{df.head()}")
-        # print(f"{high.head()}\n{low.head()}\n{close.head()}")
-        return _stoch(df, high=high, low=low, close=close, fast_k=fast_k, slow_k=slow_k, slow_d=slow_d, **kwargs)
+        return _stoch(self._df, high=high, low=low, close=close, fast_k=fast_k, slow_k=slow_k, slow_d=slow_d, **kwargs)
 
 
     def true_range(self, high=None, low=None, close=None, length=None, drift:int = None, **kwargs):

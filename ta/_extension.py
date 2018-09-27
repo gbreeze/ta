@@ -2768,6 +2768,7 @@ class AnalysisIndicators(BasePandasObject):
     PercentagePriceOscillator = ppo
     RateOfChange = roc
     RelativeStrengthIndex = rsi
+    TrueStrengthIndex = tsi
     WilliamsR = willr
 
     # Overlap

@@ -72,6 +72,64 @@ def _wma(df, length:int = None, asc:bool = True, **kwargs):
 
     return df.rolling(length, min_periods=length).apply(linear_weights(weights), raw=True)        
 
+def _kst(df, close=None, roc1:int = None, roc2:int = None, roc3:int = None, roc4:int = None, sma1:int = None, sma2:int = None, sma3:int = None, sma4:int = None, signal:int = None, drift:int = None, **kwargs):
+    """Know Sure Thing - kst"""
+    if df is None: return
+    else:
+        # Get the correct column.
+        if isinstance(close, pd.Series):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
+
+    # Validate arguments
+    roc1 = int(roc1) if roc1 and roc1 > 0 else 10
+    roc2 = int(roc2) if roc2 and roc2 > 0 else 15
+    roc3 = int(roc3) if roc3 and roc3 > 0 else 20
+    roc4 = int(roc4) if roc4 and roc4 > 0 else 30
+
+    sma1 = int(sma1) if sma1 and sma1 > 0 else 10
+    sma2 = int(sma2) if sma2 and sma2 > 0 else 10
+    sma3 = int(sma3) if sma3 and sma3 > 0 else 10
+    sma4 = int(sma4) if sma4 and sma4 > 0 else 15
+
+    signal = int(signal) if signal and signal > 0 else 9
+
+    # Calculate Result
+    rocma1 = (close.diff(roc1) / close.shift(roc1)).rolling(sma1).mean()
+    rocma2 = (close.diff(roc2) / close.shift(roc2)).rolling(sma2).mean()
+    rocma3 = (close.diff(roc3) / close.shift(roc3)).rolling(sma3).mean()
+    rocma4 = (close.diff(roc4) / close.shift(roc4)).rolling(sma4).mean()
+
+    kst = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
+    kst_signal = kst.rolling(signal).mean()
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        kst.fillna(kwargs['fillna'], inplace=True)
+        kst_signal.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        kst.fillna(method=kwargs['fill_method'], inplace=True)
+        kst_signal.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    kst.name = f"KST_{roc1}_{roc2}_{roc3}_{roc4}_{sma1}_{sma2}_{sma3}_{sma4}"
+    kst_signal.name = f"KSTS_{signal}"
+    kst.category = kst_signal.category = 'momentum'
+
+    # If append, then add it to the df
+    if 'append' in kwargs and kwargs['append']:
+        df[kst.name] = kst
+        df[kst_signal.name] = kst_signal
+
+    # Prepare DataFrame to return
+    data = {kst.name: kst, kst_signal.name: kst_signal}
+    kstdf = pd.DataFrame(data)
+    kstdf.name = f"KST_{roc1}_{roc2}_{roc3}_{roc4}_{sma1}_{sma2}_{sma3}_{sma4}_{signal}"
+    kstdf.category = 'momentum'
+
+    return kstdf
+
 
 def _stoch(df, high, low, close, fast_k:int = None, slow_k:int = None, slow_d:int = None, **kwargs):
     """Stochastic"""
@@ -222,6 +280,7 @@ def _uo(df, high=None, low=None, close=None, fast:int = None, medium:int = None,
     drift = int(drift) if drift and drift > 0 else 1
     # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
 
+    # Calculate Result
     min_l_or_pc = close.shift(drift).combine(low, min)
     max_h_or_pc = close.shift(drift).combine(high, max)
 
@@ -342,7 +401,10 @@ class AnalysisIndicators(BasePandasObject):
 
     ## Momentum Indicators
     def apo(self, close=None, fast:int = None, slow:int = None, **kwargs):
-        """ apo """
+        """ apo
+        
+        Not visually the same as TV Chart
+        """
         df = self._df
 
         # Get the correct column.
@@ -494,6 +556,10 @@ class AnalysisIndicators(BasePandasObject):
         return cci
 
 
+    def kst(self, close=None, roc1:int = None, roc2:int = None, roc3:int = None, roc4:int = None, sma1:int = None, sma2:int = None, sma3:int = None, sma4:int = None, signal:int = None, **kwargs):
+        return _kst(self._df, close=close, roc1=roc1, roc2=roc2, roc3=roc3, roc4=roc4, sma1=sma1, sma2=sma2, sma3=sma3, sma4=sma4, signal=signal, **kwargs)
+
+
     def macd(self, close=None, fast:int = None, slow:int = None, signal:int = None, **kwargs):
         """Moving Average Convergence Divergence
 
@@ -575,7 +641,7 @@ class AnalysisIndicators(BasePandasObject):
     def massi(self, high:str = None, low:str = None, fast=None, slow=None, **kwargs):
         """Mass Index
         
-        Incorrect
+        Not visually the same as TV Chart
 
         """
         df = self._df
@@ -2875,6 +2941,7 @@ class AnalysisIndicators(BasePandasObject):
     AwesomeOscillator = ao
     BalanceOfPower = bop
     CommodityChannelIndex = cci
+    KnowSureThing = kst
     MACD = macd
     MassIndex = massi
     Momentum = mom

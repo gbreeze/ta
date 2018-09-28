@@ -18,6 +18,47 @@ def signed_series(series:pd.Series, initial:int = None):
     return sign
 
 
+def _ao(df, high, low, fast:int = None, slow:int = None, **kwargs):
+    """Awesome Oscillator"""
+
+    if df is None: return
+    else:
+        # Get the correct column.
+        if isinstance(high, pd.Series):
+            high = high
+        else:
+            high = df[high] if high in df.columns else df.high
+
+        if isinstance(low, pd.Series):
+            low = low
+        else:
+            low = df[low] if low in df.columns else df.low
+
+    # Validate arguments
+    fast = fast if fast and fast > 0 else 5
+    slow = slow if slow and slow > 0 else 34
+
+    # Calculate Result
+    median_price = 0.5 * (high + low)
+    ao = median_price.rolling(fast).mean() - median_price.rolling(slow).mean()
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        ao.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        ao.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    ao.name = f"AO_{fast}_{slow}"
+    ao.category = 'momentum'
+
+    # If append, then add it to the df
+    if 'append' in kwargs and kwargs['append']:
+        df[ao.name] = ao
+
+    return ao
+
+
 def _wma(df, length:int = None, asc:bool = True, **kwargs):
     length = length if length and length > 0 else 1
     total_weight = 0.5 * length * (length + 1)
@@ -102,12 +143,12 @@ def _stoch(df, high, low, close, fast_k:int = None, slow_k:int = None, slow_d:in
     return stochdf
 
 
-def _tsi(df, close:str = None, fast:int = None, slow:int = None, drift:int = None, **kwargs):
+def _tsi(df, close=None, fast:int = None, slow:int = None, drift:int = None, **kwargs):
     """True Strength Index - tsi"""
     # Get the correct column.
     if df is None: return
     else:
-        if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
+        if isinstance(close, pd.Series):
             close = close
         else:
             close = df[close] if close in df.columns else df.close
@@ -130,7 +171,6 @@ def _tsi(df, close:str = None, fast:int = None, slow:int = None, drift:int = Non
     ma = _ma.ewm(span=fast).mean()
 
     tsi = 100 * m / ma
-    # tsi *= 100
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -148,6 +188,69 @@ def _tsi(df, close:str = None, fast:int = None, slow:int = None, drift:int = Non
 
     return tsi
 
+
+def _uo(df, high=None, low=None, close=None, fast:int = None, medium:int = None, slow:int = None, fast_w:int = None, medium_w:int = None, slow_w:int = None, drift:int = None, **kwargs):
+    """Ultimate Oscillator - uso"""
+    if df is None: return
+    else:
+        # Get the correct column.
+        if isinstance(high, pd.Series):
+            high = high
+        else:
+            high = df[high] if high in df.columns else df.high
+
+        if isinstance(low, pd.Series):
+            low = low
+        else:
+            low = df[low] if low in df.columns else df.low
+
+        if isinstance(close, pd.Series):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
+
+    # Validate arguments
+    fast = int(fast) if fast and fast > 0 else 7
+    fast_w = float(fast_w) if fast_w and fast_w > 0 else 4.0
+
+    medium = int(medium) if medium and medium > 0 else 14
+    medium_w = float(medium_w) if medium_w and medium_w > 0 else 2.0
+
+    slow = int(slow) if slow and slow > 0 else 28
+    slow_w = float(slow_w) if slow_w and slow_w > 0 else 1.0
+
+    drift = int(drift) if drift and drift > 0 else 1
+    # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
+
+    min_l_or_pc = close.shift(drift).combine(low, min)
+    max_h_or_pc = close.shift(drift).combine(high, max)
+
+    bp = close - min_l_or_pc
+    tr = max_h_or_pc - min_l_or_pc
+
+    fast_avg = bp.rolling(fast).sum() / tr.rolling(fast).sum()
+    medium_avg = bp.rolling(medium).sum() / tr.rolling(medium).sum()
+    slow_avg = bp.rolling(slow).sum() / tr.rolling(slow).sum()
+
+    total_weight =  fast_w + medium_w + slow_w
+    weights = (fast_w * fast_avg) + (medium_w * medium_avg) + (slow_w * slow_avg)
+    uo = 100 * weights / total_weight
+    
+    # Handle fills
+    if 'fillna' in kwargs:
+        uo.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        uo.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    uo.name = f"UO_{fast}_{medium}_{slow}"
+    uo.category = 'momentum'
+
+    # If append, then add it to the df
+    if 'append' in kwargs and kwargs['append']:
+        df[uo.name] = uo
+
+    return uo
 
 
 class BasePandasObject(PandasObject):
@@ -243,7 +346,7 @@ class AnalysisIndicators(BasePandasObject):
         df = self._df
 
         # Get the correct column.
-        if df is None: return
+        if df is None or not isinstance(df, pd.DataFrame): return
         else:
             if isinstance(close, pd.Series):
                 close = close
@@ -277,6 +380,10 @@ class AnalysisIndicators(BasePandasObject):
             df[apo.name] = apo
 
         return apo
+
+
+    def ao(self, high=None, low=None, fast:int = None, slow:int = None, **kwargs):
+        return _ao(self._df, high=high, low=low, fast=fast, slow=slow, **kwargs)
 
 
     def bop(self, open_:str = None, high:str = None, low:str = None, close:str = None, percentage:bool = False, **kwargs):
@@ -751,6 +858,11 @@ class AnalysisIndicators(BasePandasObject):
 
     def tsi(self, close=None, fast:int = None, slow:int = None, **kwargs):
         return _tsi(self._df, close=close, fast=fast, slow=slow, **kwargs)
+
+
+    def uo(self, high=None, low=None, close=None, fast:int = None, medium:int = None, slow:int = None, fast_w:int = None, medium_w:int = None, slow_w:int = None, drift:int = None, **kwargs):
+        return _uo(self._df, high=high, low=low, close=close, fast=fast, medium=medium, slow=slow, fast_w=fast_w, medium_w=medium_w, slow_w=slow_w, drift=drift, **kwargs)
+        # return None
 
 
     def willr(self, high:str = None, low:str = None, close:str = None, length:int = None, **kwargs):
@@ -2760,6 +2872,7 @@ class AnalysisIndicators(BasePandasObject):
     ## Indicator Aliases & Categories
     # Momentum
     AbsolutePriceOscillator = apo
+    AwesomeOscillator = ao
     BalanceOfPower = bop
     CommodityChannelIndex = cci
     MACD = macd
@@ -2769,6 +2882,7 @@ class AnalysisIndicators(BasePandasObject):
     RateOfChange = roc
     RelativeStrengthIndex = rsi
     TrueStrengthIndex = tsi
+    UltimateOscillator = uo
     WilliamsR = willr
 
     # Overlap

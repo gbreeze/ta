@@ -1268,7 +1268,7 @@ class AnalysisIndicators(BasePandasObject):
         return midprice(high=high, low=low, length=length, offset=offset, **kwargs)
 
 
-    def rpn(self, high=None, low=None, length=None, percentage=None, **kwargs):
+    def rpn(self, high=None, low=None, length=None, offset=None, percentage=None, **kwargs):
         """Range Percentage
 
         Returns the Series of values that are a percentage of the absolute difference of two Series.
@@ -1282,7 +1282,7 @@ class AnalysisIndicators(BasePandasObject):
                 If True, appends result to current df
 
             **kwargs:
-                addLow (bool, optional): If true, adds low value to result
+                withLow (bool, optional): If true, adds low value to result
                 fillna (value, optional): pd.DataFrame.fillna(value)
                 fill_method (value, optional): Type of fill method
                 append (bool, optional): If True, appends result to current df.
@@ -1304,30 +1304,7 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 low = df[low] if low in df.columns else df.low
 
-
-        # Validate arguments
-        length = int(length) if length and length > 0 else 1
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        percentage = float(percentage) if percentage and percentage > 0 and percentage < 100 else 0.1
-
-        # Calculate Result
-        highest_high = high.rolling(length, min_periods=min_periods).max()
-        lowest_low = low.rolling(length, min_periods=min_periods).min()
-        abs_range = (highest_high - lowest_low).abs()
-        rp = percentage * abs_range
-    
-        if 'addLow' in kwargs and kwargs['addLow']:
-            rp += low
-
-        # Name & Category
-        rp.name = f"RP_{length}_{percentage}"
-        rp.category = 'overlap'
-
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[rp.name] = rp
-
-        return rp
+        return rpn(high=high, low=low, length=length, offset=offset, percentage=percentage, **kwargs)
 
 
     # def wma(self, close:str = None, length:int = None, asc:bool = True, **kwargs):

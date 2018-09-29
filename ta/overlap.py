@@ -190,3 +190,36 @@ def midprice(high:pd.Series, low:pd.Series, length=None, offset=None, **kwargs):
         df[midprice.name] = midprice
 
     return midprice
+
+
+def rpn(high:pd.Series, low:pd.Series, length=None, offset=None, percentage=None, **kwargs):
+    """Percent of Range of a Pandas Series
+    
+    Use help(df.ta.rpn) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    length = int(length) if length and length > 0 else 1
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    percentage = float(percentage) if percentage and percentage > 0 and percentage < 100 else 0.1
+
+    # Calculate Result
+    highest_high = high.rolling(length, min_periods=min_periods).max()
+    lowest_low = low.rolling(length, min_periods=min_periods).min()
+    abs_range = (highest_high - lowest_low).abs()
+    rp = percentage * abs_range
+
+    if 'withLow' in kwargs and kwargs['withLow']:
+        rp += low
+
+    # Name & Category
+    rp.name = f"RP_{length}_{percentage}"
+    rp.category = 'overlap'
+
+    # If 'append', then add it to the df
+    if 'append' in kwargs and kwargs['append']:
+        df[rp.name] = rp
+
+    return rp

@@ -90,3 +90,31 @@ def ohlc4(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, offse
         df[ohlc4.name] = ohlc4
 
     return ohlc4
+
+
+def median(close:pd.Series, length=None, offset=None, **kwargs):
+    """Median of a Pandas Series
+    
+    Use help(df.ta.median) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    length = int(length) if length and length > 0 else 5
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = get_offset(offset)
+
+    # Calculate Result
+    median = close.rolling(length, min_periods=min_periods).median()
+
+    # Offset
+    median = median.shift(offset)
+
+    # Name & Category
+    median.name = f"MEDIAN_{length}"
+    median.category = 'overlap'
+
+    # If 'append', then add it to the df
+    if 'append' in kwargs and kwargs['append']:
+        df[median.name] = median
+
+    return median

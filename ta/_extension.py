@@ -1177,10 +1177,10 @@ class AnalysisIndicators(BasePandasObject):
         return ohlc4(open_=open_, high=high, low=low, close=close, offset=offset, **kwargs)
 
 
-    def median(self, close=None, length=None, cumulative:bool = False, offset:int = None, **kwargs):
+    def median(self, close=None, length=None, offset:int = None, **kwargs):
         """Median Price
 
-        Returns the Log Return of a Series.
+        Returns the Median of a Series.
 
         Args:
             close (None, pd.Series, optional):
@@ -1209,26 +1209,8 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate Arguments
-        length = int(length) if length and length > 0 else 5
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        offset = offset if isinstance(offset, int) else 0
-
-        # Calculate Result
-        median = close.rolling(length, min_periods=min_periods).median()
-
-        # Offset
-        median = median.shift(offset)
-
-        # Name & Category
-        median.name = f"MEDIAN_{length}"
-        median.category = 'overlap'
-
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[median.name] = median
-
-        return median
+        return median(close=close, length=length, offset=offset, **kwargs)
+ 
 
 
     def midpoint(self, close:str = None, length:int = None, offset=None, **kwargs):

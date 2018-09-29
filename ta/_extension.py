@@ -1081,7 +1081,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 low = df[low] if low in df.columns else df.low
 
-        return hl2(high=high, low=low, offset=offset, **kwargs)
+        result = hl2(high=high, low=low, offset=offset, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
 
 
     def hlc3(self, high=None, low=None, close=None, offset=None, **kwargs):

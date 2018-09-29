@@ -26,10 +26,6 @@ def hl2(high:pd.Series, low:pd.Series, offset=None, **kwargs):
     hl2.name = "HL2"
     hl2.category = 'overlap'
 
-    # If 'append', then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[hl2.name] = hl2
-
     return hl2
 
 

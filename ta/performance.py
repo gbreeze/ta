@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import pandas as pd
-from .utils import verify_series
+
+from .utils import get_offset, verify_series
+
 
 def log_return(close:pd.Series, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
     """Log Return of a Pandas Series
@@ -12,7 +14,7 @@ def log_return(close:pd.Series, length=None, cumulative:bool = False, percent:bo
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 1
-    offset = offset if isinstance(offset, int) else 0
+    offset = get_offset(offset)
     percent = 100 if percent else 1
 
     # Calculate Result
@@ -44,7 +46,7 @@ def percent_return(close:pd.Series, length=None, cumulative:bool = False, percen
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 1
-    offset = offset if isinstance(offset, int) else 0
+    offset = get_offset(offset)
     percent = 100 if percent else 1
 
     # Calculate Result

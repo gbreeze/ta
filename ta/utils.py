@@ -18,6 +18,10 @@ def ema(series:pd.Series, periods:int):
     return pd.concat([sma, rest]).ewm(span=periods, adjust=False).mean()
 
 
+def get_offset(x:int):
+    return int(x) if x else 0
+
+
 def signed_series(series:pd.Series, initial:int = None):
     """Returns a Signed Series with or without an initial value"""
     series = verify_series(series)

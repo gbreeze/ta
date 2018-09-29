@@ -9,8 +9,8 @@
 import pandas as pd
 import numpy as np
 
-from .utils import *
-# from .utils import verify_series
+from .utils import get_offset, verify_series
+
 
 def decreasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
     """Decreasing over periods of a Pandas Series
@@ -21,7 +21,7 @@ def decreasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 1
-    offset = int(offset) if offset else 0
+    offset = get_offset(offset)
 
     # Calculate Result
     decreasing = close.diff(length) < 0
@@ -58,7 +58,7 @@ def dpo(close:pd.Series, length=None, centered=True, offset=None, **kwargs):
     close = verify_series(close)
     length = int(length) if length and length > 0 else 1
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-    offset = int(offset) if offset else 0
+    offset = get_offset(offset)
 
     # Calculate Result
     drift = int(0.5 * length) + 1  # int((0.5 * length) + 1)
@@ -96,7 +96,7 @@ def increasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 1
-    offset = int(offset) if offset else 0
+    offset = get_offset(offset)
 
     # Calculate Result
     increasing = close.diff(length) > 0

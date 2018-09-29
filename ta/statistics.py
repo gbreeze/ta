@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import pandas as pd
-from .utils import verify_series
+
+from .utils import get_offset, verify_series
 
 
 def kurtosis(close:pd.Series, length=None, offset=None, **kwargs):
@@ -14,7 +15,7 @@ def kurtosis(close:pd.Series, length=None, offset=None, **kwargs):
     close = verify_series(close)
     length = int(length) if length and length > 0 else 30
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-    offset = offset if isinstance(offset, int) else 0
+    offset = get_offset(offset)
 
     # Calculate Result
     kurtosis = close.rolling(length, min_periods=min_periods).kurt()
@@ -44,7 +45,7 @@ def quantile(close:pd.Series, length=None, q=None, offset=None, **kwargs):
     length = int(length) if length and length > 0 else 30
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     q = float(q) if q and q > 0 and q < 1 else 0.5
-    offset = offset if isinstance(offset, int) else 0
+    offset = get_offset(offset)
 
     # Calculate Result
     quantile = close.rolling(length, min_periods=min_periods).quantile(q)
@@ -73,7 +74,7 @@ def skew(close:pd.Series, length=None, offset=None, **kwargs):
     close = verify_series(close)
     length = int(length) if length and length > 0 else 30
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-    offset = offset if isinstance(offset, int) else 0
+    offset = get_offset(offset)
 
     # Calculate Result
     skew = close.rolling(length, min_periods=min_periods).skew()
@@ -102,7 +103,7 @@ def stdev(close:pd.Series, length=None, offset=None, **kwargs):
     close = verify_series(close)
     length = int(length) if length and length > 0 else 30
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-    offset = offset if isinstance(offset, int) else 0
+    offset = get_offset(offset)
 
     # Calculate Result
     stdev = variance(close, length=length).apply(np.sqrt)
@@ -131,7 +132,7 @@ def variance(close:pd.Series, length=None, offset=None, **kwargs):
     close = verify_series(close)
     length = int(length) if length and length > 1 else 30
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-    offset = offset if isinstance(offset, int) else 0
+    offset = get_offset(offset)
 
     # Calculate Result
     variance = close.rolling(length, min_periods=min_periods).var()

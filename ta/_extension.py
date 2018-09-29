@@ -6,7 +6,7 @@ import pandas as pd
 
 # from .momentum import *
 # from .others import *
-# from .overlap import *
+from .overlap import *
 from .performance import *
 from .statistics import *
 from .trend import *
@@ -1081,25 +1081,7 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 low = df[low] if low in df.columns else df.low
 
-        # Validate Arguments
-        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else double
-        offset = offset if isinstance(offset, int) else 0
-
-        # Calculate Result
-        hl2 = 0.5 * (high + low)
-
-        # Offset
-        hl2 = hl2.shift(offset)
-
-        # Name & Category
-        hl2.name = "HL2"
-        hl2.category = 'overlap'
-
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[hl2.name] = hl2
-
-        return hl2
+        return hl2(high=high, low=low, offset=offset, **kwargs)
 
 
     def hlc3(self, high=None, low=None, close=None, offset=None, **kwargs):
@@ -2795,6 +2777,7 @@ class AnalysisIndicators(BasePandasObject):
     Midpoint = midpoint
     Midprice = midprice
     RangePercentage = rpn
+    TypicalPrice = hlc3
 
     # Performance: performance.py ✅
     LogReturn = log_return

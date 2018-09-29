@@ -2796,18 +2796,18 @@ class AnalysisIndicators(BasePandasObject):
     Midprice = midprice
     RangePercentage = rpn
 
-    # Performance: performance.py
+    # Performance: performance.py ✅
     LogReturn = log_return
     PctReturn = percent_return
 
-    # Statistics: statistics.py
+    # Statistics: statistics.py ✅
     Kurtosis = kurtosis
     Quantile = quantile
     Skew = skew
     StandardDeviation = stdev
     Variance = variance
 
-    # Trend: trend.py
+    # Trend: trend.py ✅
     Decreasing = decreasing
     DetrendPriceOscillator = dpo
     Increasing = increasing

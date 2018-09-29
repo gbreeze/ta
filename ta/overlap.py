@@ -31,3 +31,32 @@ def hl2(high:pd.Series, low:pd.Series, offset=None, **kwargs):
         df[hl2.name] = hl2
 
     return hl2
+
+
+def hlc3(high:pd.Series, low:pd.Series, close:pd.Series, offset=None, **kwargs):
+    """HLC3 of a Pandas Series
+    
+    Use help(df.ta.hlc3) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    offset = get_offset(offset)
+
+    # Calculate Result
+    hlc3 = (high + low + close) / 3
+
+    # Offset
+    hlc3 = hlc3.shift(offset)
+
+    # Name & Category
+    hlc3.name = "HLC3"
+    hlc3.category = 'overlap'
+
+    # If 'append', then add it to the df
+    if 'append' in kwargs and kwargs['append']:
+        df[hlc3.name] = hlc3
+
+    return hlc3

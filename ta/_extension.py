@@ -1124,25 +1124,7 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate Arguments
-        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else double
-        offset = offset if isinstance(offset, int) else 0
-
-        # Calculate Result
-        hlc3 = (high + low + close) / 3
-
-        # Offset
-        hlc3 = hlc3.shift(offset)
-
-        # Name & Category
-        hlc3.name = "HLC3"
-        hlc3.category = 'overlap'
-
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[hlc3.name] = hlc3
-
-        return hlc3
+        return hlc3(high=high, low=low, close=close, offset=offset, **kwargs)
 
 
     def ohlc4(self, open_=None, high=None, low=None, close=None, offset=None, **kwargs):

@@ -4,6 +4,16 @@ import math
 import numpy as np
 import pandas as pd
 
+# from .momentum import *
+# from .others import *
+# from .overlap import *
+from .performance import *
+# from .statistics import *
+# from .trend import *
+# from .utils import *
+# from .volatility import *
+# from .volume import *
+
 from pandas.core.base import PandasObject
 from sys import float_info as sflt
 
@@ -57,6 +67,77 @@ def _ao(df, high, low, fast:int = None, slow:int = None, **kwargs):
         df[ao.name] = ao
 
     return ao
+
+
+def _aroon(df, close, length:int = None, offset:int = None, **kwargs):
+    """Aroon
+    
+    Chart a little off from TV
+    """
+
+    if df is None: return
+    else:
+        # Get the correct column.
+        if isinstance(close, pd.Series):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
+
+    # Validate arguments
+    length = length if length and length > 0 else 14
+
+    # Calculate Result
+    # def linear_weights(w):
+    #     def _compute(x):
+    #         return (w * x).sum() / total_weight
+    #     return _compute
+
+    def maxidx(x):
+        # def _compute(x):
+        return 100 * (int(np.argmax(x)) + 1) / length
+        # return _compute
+
+    def minidx(x):
+        # def _compute(x):
+        return 100 * (int(np.argmin(x)) + 1) / length
+        # return _compute
+
+
+    _close = close.rolling(length)
+    aroon_up = _close.apply(maxidx, raw=True)
+    aroon_down = _close.apply(minidx, raw=True)
+    # idxmin = close[-n,-n+1].idxmin()
+    # print(f"idxmin: {idxmin}")
+    # aroon_up = close.rolling(length).apply(lambda x: 100 * float(np.argmax(x) - 1) / length, raw=True)
+    # aroon_down = close.rolling(length).apply(lambda x: 100 * float(np.argmin(x) - 1) / length, raw=True)
+    # return
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        aroon_up.fillna(kwargs['fillna'], inplace=True)
+        aroon_down.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        aroon_up.fillna(method=kwargs['fill_method'], inplace=True)
+        aroon_down.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    aroon_up.name = f"AROONU_{length}"
+    aroon_down.name = f"AROOND_{length}"
+
+    # If append, then add it to the df
+    if 'append' in kwargs and kwargs['append']:
+        df[aroon_up.name] = aroon_up
+        df[aroon_down.name] = aroon_down
+
+    aroon_down.category = aroon_up.category = '' #?  trend
+
+    # Prepare DataFrame to return
+    data = {aroon_up.name: aroon_up, aroon_down.name: aroon_down}
+    aroondf = pd.DataFrame(data)
+    aroondf.name = f"ARRON_{length}"
+    aroondf.category = ''
+
+    return aroondf
 
 
 def _wma(df, length:int = None, asc:bool = True, **kwargs):
@@ -446,6 +527,10 @@ class AnalysisIndicators(BasePandasObject):
 
     def ao(self, high=None, low=None, fast:int = None, slow:int = None, **kwargs):
         return _ao(self._df, high=high, low=low, fast=fast, slow=slow, **kwargs)
+
+
+    def aroon(self, close=None, length:int = None, offset:int = None, **kwargs):
+        return _aroon(self._df, close=close, length=length, offset=offset, **kwargs)
 
 
     def bop(self, open_:str = None, high:str = None, low:str = None, close:str = None, percentage:bool = False, **kwargs):
@@ -1453,30 +1538,8 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate Arguments
-        length = int(length) if length and length > 0 else 1
-        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        offset = offset if isinstance(offset, int) else 0
-        percent = 100 if percent else 1
+        return log_return(close=close, length=length, cumulative=cumulative, percent=percent, offset=offset, **kwargs)
 
-        # Calculate Result
-        log_return = percent * np.log(close).diff(periods=length)
-
-        if cumulative:
-            log_return = log_return.cumsum()
-
-        # Offset
-        log_return = log_return.shift(offset)
-
-        # Name & Category
-        log_return.name = f"{'CUM_' if cumulative else ''}LOGRET_{length}"
-        log_return.category = 'performance'
-
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[log_return.name] = log_return
-
-        return log_return
 
 
     def percent_return(self, close=None, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
@@ -1503,8 +1566,6 @@ class AnalysisIndicators(BasePandasObject):
             pd.Series: New feature
         """
         df = self._df
-
-        # Get the correct column.
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -1512,30 +1573,7 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate Arguments
-        length = int(length) if length and length > 0 else 1
-        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        offset = offset if isinstance(offset, int) else 0
-        percent = 100 if percent else 1
-
-        # Calculate Result
-        pct_return = percent * close.pct_change(length)
-
-        if cumulative:
-            pct_return = percent * pct_return.cumsum()
-
-        # Offset
-        pct_return = pct_return.shift(offset)
-
-        # Name & Category
-        pct_return.name = f"{'CUM_' if cumulative else ''}PCTRET_{length}"
-        pct_return.category = 'performance'
-
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[pct_return.name] = pct_return
-
-        return pct_return
+        return percent_return(close=close, length=length, cumulative=cumulative, percent=percent, offset=offset, **kwargs)
 
 
     ## Statistics Indicators

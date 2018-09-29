@@ -19,13 +19,6 @@ from sys import float_info as sflt
 
 TA_EPSILON = sflt.epsilon
 
-def signed_series(series:pd.Series, initial:int = None):
-    """Returns a Signed Series with or without an initial value"""
-    sign = series.diff(1)
-    sign[sign > 0] = 1
-    sign[sign < 0] = -1
-    sign.iloc[0] = initial
-    return sign
 
 
 def _ao(df, high, low, fast:int = None, slow:int = None, **kwargs):

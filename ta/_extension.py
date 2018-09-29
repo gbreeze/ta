@@ -1614,7 +1614,7 @@ class AnalysisIndicators(BasePandasObject):
         return quantile(close=close, length=length, q=q, offset=offset, **kwargs)
 
 
-    def skew(self, close=None, length=None, **kwargs):
+    def skew(self, close=None, length=None, offset=None, **kwargs):
         """Skew
 
         Returns the Skew of a Series.
@@ -1642,25 +1642,10 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate Arguments
-        length = int(length) if length and length > 0 else 30
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-
-        # Calculate Result
-        skew = close.rolling(length, min_periods=min_periods).skew()
-
-        # Name & Category
-        skew.name = f"SKEW_{length}"
-        skew.category = 'statistics'
-
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[skew.name] = skew
-
-        return skew
+        return skew(close=close, length=length, offset=offset, **kwargs)
 
 
-    def stdev(self, close=None, length=None, **kwargs):
+    def stdev(self, close=None, length=None, offset=None, **kwargs):
         """Standard Deviation
 
         Returns the Standard Deviations of a Series.
@@ -1688,25 +1673,10 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate Arguments
-        length = int(length) if length and length > 0 else 30
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-
-        # Calculate Result
-        stdev = self.variance(length=length).apply(np.sqrt)
-
-        # Name & Category
-        stdev.name = f"STDEV_{length}"
-        stdev.category = 'statistics'
-
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[stdev.name] = stdev
-
-        return stdev
+        return stdev(close=close, length=length, offset=offset, **kwargs)
 
 
-    def variance(self, close=None, length=None, **kwargs):
+    def variance(self, close=None, length=None, offset=None, **kwargs):
         """Variance
 
         Returns the Variances of a Series.
@@ -1738,22 +1708,7 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate Arguments
-        length = int(length) if length and length > 1 else 30
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-
-        # Calculate Result
-        variance = close.rolling(length, min_periods=min_periods).var()
-
-        # Name & Category
-        variance.name = f"VAR_{length}"
-        variance.category = 'statistics'
-
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[variance.name] = variance
-
-        return variance
+        return variance(close=close, length=length, offset=offset, **kwargs)
 
 
 

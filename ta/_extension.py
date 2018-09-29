@@ -1174,25 +1174,7 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate Arguments
-        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else double
-        offset = offset if isinstance(offset, int) else 0
-
-        # Calculate Result
-        ohlc4 = 0.25 * (open_ + high + low + close)
-
-        # Offset
-        ohlc4 = ohlc4.shift(offset)
-
-        # Name & Category
-        ohlc4.name = "OHLC4"
-        ohlc4.category = 'overlap'
-
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[ohlc4.name] = ohlc4
-
-        return ohlc4
+        return ohlc4(open_=open_, high=high, low=low, close=close, offset=offset, **kwargs)
 
 
     def median(self, close=None, length=None, cumulative:bool = False, offset:int = None, **kwargs):

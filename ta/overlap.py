@@ -99,6 +99,7 @@ def median(close:pd.Series, length=None, offset=None, **kwargs):
     the DataFrame you are using.
     """
     # Validate Arguments
+    close = verify_series(close)
     length = int(length) if length and length > 0 else 5
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     offset = get_offset(offset)
@@ -118,3 +119,78 @@ def median(close:pd.Series, length=None, offset=None, **kwargs):
         df[median.name] = median
 
     return median
+
+
+def midpoint(close:pd.Series, length=None, offset=None, **kwargs):
+    """Midpoint of a Pandas Series
+    
+    Use help(df.ta.midpoint) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 1
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = get_offset(offset)
+
+    # Calculate Result
+    lowest = close.rolling(length, min_periods=min_periods).min()
+    highest = close.rolling(length, min_periods=min_periods).max()
+    midpoint = 0.5 * (lowest + highest)
+
+    # Offset
+    midpoint = midpoint.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        midpoint.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        midpoint.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    midpoint.name = f"MIDPOINT_{length}"
+    midpoint.category = 'overlap'
+
+    # If append, then add it to the df
+    if 'append' in kwargs and kwargs['append']:
+        df[midpoint.name] = midpoint
+
+    return midpoint
+
+
+def midprice(high:pd.Series, low:pd.Series, length=None, offset=None, **kwargs):
+    """Midprice of a Pandas Series
+    
+    Use help(df.ta.midprice) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    length = int(length) if length and length > 0 else 1
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = get_offset(offset)
+
+    # Calculate Result
+    lowest_low = low.rolling(length, min_periods=min_periods).min()
+    highest_high = high.rolling(length, min_periods=min_periods).max()
+    midprice = 0.5 * (lowest_low + highest_high)
+
+    # Offset
+    midprice = midprice.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        midprice.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        midprice.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    midprice.name = f"MIDPRICE_{length}"
+    midprice.category = 'overlap'
+
+    # If append, then add it to the df
+    if 'append' in kwargs and kwargs['append']:
+        df[midprice.name] = midprice
+
+    return midprice

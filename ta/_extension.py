@@ -1213,7 +1213,7 @@ class AnalysisIndicators(BasePandasObject):
  
 
 
-    def midpoint(self, close:str = None, length:int = None, offset=None, **kwargs):
+    def midpoint(self, close=None, length=None, offset=None, **kwargs):
         """Returns the Midpoint of a Series of a certain length.
 
         Args:
@@ -1240,37 +1240,10 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 1
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        offset = offset if isinstance(offset, int) else 0
-
-        # Calculate Result
-        lowest = close.rolling(length, min_periods=min_periods).min()
-        highest = close.rolling(length, min_periods=min_periods).max()
-        midpoint = 0.5 * (lowest + highest)
-
-        # Offset
-        midpoint = midpoint.shift(offset)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            midpoint.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            midpoint.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        midpoint.name = f"MIDPOINT_{length}"
-        midpoint.category = 'overlap'
-
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[midpoint.name] = midpoint
-
-        return midpoint
+        return midpoint(close=close, length=length, offset=offset, **kwargs)
 
 
-    def midprice(self, high:str = None, low:str = None, length:int = None, **kwargs):
+    def midprice(self, high=None, low=None, length=None, offset=None, **kwargs):
         """ midprice """
         # Get the correct column(s).
         df = self._df
@@ -1286,30 +1259,7 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 high = df[high] if high in df.columns else df.high
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 1
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-
-        # Calculate Result
-        lowest_low = low.rolling(length, min_periods=min_periods).min()
-        highest_high = high.rolling(length, min_periods=min_periods).max()
-        midprice = 0.5 * (lowest_low + highest_high)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            midprice.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            midprice.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        midprice.name = f"MIDPRICE_{length}"
-        midprice.category = 'overlap'
-
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[midprice.name] = midprice
-
-        return midprice
+        return midprice(high=high, low=low, length=length, offset=offset, **kwargs)
 
 
     def rpn(self, high=None, low=None, length=None, percentage=None, **kwargs):

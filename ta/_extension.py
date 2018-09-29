@@ -8,7 +8,7 @@ import pandas as pd
 # from .others import *
 # from .overlap import *
 from .performance import *
-# from .statistics import *
+from .statistics import *
 from .trend import *
 from .utils import signed_series
 # from .volatility import *
@@ -462,7 +462,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     # @property
-    def defaults(self, value, min_range:int= 0, max_range:int = 100, every:int = 10):
+    def defaults(self, value, min_range:int = -100, max_range:int = 100, every:int = 10):
         _levels = [x for x in range(min_range, max_range + 1) if x % every == 0]
         if value:
             for x in _levels:
@@ -479,9 +479,8 @@ class AnalysisIndicators(BasePandasObject):
         
         Not visually the same as TV Chart
         """
-        df = self._df
-
         # Get the correct column.
+        df = self._df
         if df is None or not isinstance(df, pd.DataFrame): return
         else:
             if isinstance(close, pd.Series):
@@ -528,9 +527,8 @@ class AnalysisIndicators(BasePandasObject):
 
     def bop(self, open_:str = None, high:str = None, low:str = None, close:str = None, percentage:bool = False, **kwargs):
         """ bop """
+        # Get the correct column(s).
         df = self._df
-
-        # Get the correct column.
         if df is None: return
         else:
             if isinstance(open_, pd.Series):
@@ -580,9 +578,8 @@ class AnalysisIndicators(BasePandasObject):
 
     def cci(self, high:str = None, low:str = None, close:str = None, length:int = None, c:float = None, **kwargs):
         """ cci """
+        # Get the correct column(s).
         df = self._df
-
-        # Get the correct column.
         if df is None: return
         else:
             if isinstance(high, pd.Series):
@@ -659,9 +656,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column.
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -722,9 +718,8 @@ class AnalysisIndicators(BasePandasObject):
         Not visually the same as TV Chart
 
         """
+        # Get the correct column(s).
         df = self._df
-
-        # Get the correct column.
         if df is None: return
         else:
             if isinstance(high, pd.Series):
@@ -776,9 +771,8 @@ class AnalysisIndicators(BasePandasObject):
         Incorrect
         
         """
+        # Get the correct column(s).
         df = self._df
-
-        # Get the correct column.
         if df is None: return
         else:
             if isinstance(high, pd.Series):
@@ -842,9 +836,8 @@ class AnalysisIndicators(BasePandasObject):
 
     def mom(self, close:str = None, length:int = None, **kwargs):
         """ mom """
-        df = self._df
-
         # Get the correct column.
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -878,9 +871,8 @@ class AnalysisIndicators(BasePandasObject):
 
     def ppo(self, close:str = None, fast:int = None, slow:int = None, **kwargs):
         """ ppo """
-        df = self._df
-
         # Get the correct column.
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
@@ -919,9 +911,8 @@ class AnalysisIndicators(BasePandasObject):
 
     def roc(self, close:str = None, length:int = None, **kwargs):
         """ roc """
-        df = self._df
-
         # Get the correct column.
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
@@ -957,9 +948,8 @@ class AnalysisIndicators(BasePandasObject):
         """Relative Strength Index
         
         """
-        df = self._df
-
         # Get the correct column.
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
@@ -1011,9 +1001,8 @@ class AnalysisIndicators(BasePandasObject):
 
     def willr(self, high:str = None, low:str = None, close:str = None, length:int = None, **kwargs):
         """ willr """
+        # Get the correct column(s).
         df = self._df
-
-        # Get the correct column.
         if df is None: return
         else:
             if isinstance(high, pd.Series):
@@ -1078,9 +1067,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column(s).
+        df = self._df
         if df is None: return
         else:
             if isinstance(high, pd.Series):
@@ -1135,9 +1123,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column(s).
+        df = self._df
         if df is None: return
         else:
             if isinstance(high, pd.Series):
@@ -1199,9 +1186,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column(s).
+        df = self._df
         if df is None: return
         else:
             if isinstance(open_, pd.Series):
@@ -1268,9 +1254,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column.
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -1318,9 +1303,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
+        # Get the correct column.
         df = self._df
-
-        # Get the correct column(s).
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -1360,9 +1344,8 @@ class AnalysisIndicators(BasePandasObject):
 
     def midprice(self, high:str = None, low:str = None, length:int = None, **kwargs):
         """ midprice """
-        df = self._df
-
         # Get the correct column(s).
+        df = self._df
         if df is None: return
         else:
             if isinstance(low, pd.Series):
@@ -1423,9 +1406,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column(s).
+        df = self._df
         if df is None: return
         else:
             if isinstance(high, pd.Series):
@@ -1570,7 +1552,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Statistics Indicators
-    def kurtosis(self, close=None, length=None, **kwargs):
+    def kurtosis(self, close=None, length=None, offset=None, **kwargs):
         """Kurtosis
 
         Returns the Kurtosis of a Series.
@@ -1589,9 +1571,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column.
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -1599,25 +1580,10 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate Arguments
-        length = int(length) if length and length > 0 else 30
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-
-        # Calculate Result
-        kurtosis = close.rolling(length, min_periods=min_periods).kurt()
-
-        # Name & Category
-        kurtosis.name = f"KURT_{length}"
-        kurtosis.category = 'statistics'
-
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[kurtosis.name] = kurtosis
-
-        return kurtosis
+        return kurtosis(close=close, length=length, offset=offset, **kwargs)
 
 
-    def quantile(self, close=None, length=None, q:float = None, **kwargs):
+    def quantile(self, close=None, length=None, q=None, offset=None **kwargs):
         """quantile
 
         Returns the quantile of a Series.
@@ -1636,9 +1602,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column.
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -1684,9 +1649,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column.
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -1731,9 +1695,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column.
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -1782,9 +1745,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column.
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -1930,9 +1892,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column(s).
+        df = self._df
         if df is None: return
         else:
             if isinstance(high, pd.Series):
@@ -2000,9 +1961,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column.
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -2078,9 +2038,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column.
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -2149,9 +2108,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column(s).
+        df = self._df
         if df is None: return
         else:
             if isinstance(high, pd.Series):
@@ -2246,9 +2204,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column(s).
+        df = self._df
         if df is None: return
         else:
             if isinstance(high, pd.Series):
@@ -2319,9 +2276,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column(s).
+        df = self._df
         if df is None: return
         else:
             if isinstance(high, pd.Series):
@@ -2404,9 +2360,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column(s).
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -2475,9 +2430,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column(s).
+        df = self._df
         if df is None: return
         else:
             if isinstance(high, pd.Series):
@@ -2561,9 +2515,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column(s).
+        df = self._df
         if df is None: return
         else:
             if isinstance(high, pd.Series):
@@ -2641,9 +2594,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column(s).
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -2711,9 +2663,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column(s).
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -2774,9 +2725,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column(s).
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -2839,9 +2789,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column(s).
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -2883,7 +2832,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Indicator Aliases & Categories
-    # Momentum
+    # Momentum: momomentum.py
     AbsolutePriceOscillator = apo
     AwesomeOscillator = ao
     BalanceOfPower = bop
@@ -2899,7 +2848,7 @@ class AnalysisIndicators(BasePandasObject):
     UltimateOscillator = uo
     WilliamsR = willr
 
-    # Overlap
+    # Overlap: overlap.py
     HL2 = hl2
     HLC3 = hlc3
     OHLC4 = ohlc4
@@ -2908,30 +2857,30 @@ class AnalysisIndicators(BasePandasObject):
     Midprice = midprice
     RangePercentage = rpn
 
-    # Performance
+    # Performance: performance.py
     LogReturn = log_return
     PctReturn = percent_return
 
-    # Statistics
+    # Statistics: statistics.py
     Kurtosis = kurtosis
     Quantile = quantile
     Skew = skew
     StandardDeviation = stdev
     Variance = variance
 
-    # Trend
+    # Trend: trend.py
     Decreasing = decreasing
     DetrendPriceOscillator = dpo
     Increasing = increasing
 
-    # Volatility
+    # Volatility: volatility.py
     AverageTrueRange = atr
     BollingerBands = bbands
     DonchianChannels = donchian
     KeltnerChannels = kc
     TrueRange = true_range
 
-    # Volume
+    # Volume: volume.py
     AccumDist = ad
     ChaikinMoneyFlow = cmf
     EldersForceIndex = efi
@@ -2943,5 +2892,5 @@ class AnalysisIndicators(BasePandasObject):
 
 
 ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))
-if False:
+if True:
     print(f"[i] Loaded {len(ta_indicators)} TA Indicators: {', '.join(ta_indicators)}")

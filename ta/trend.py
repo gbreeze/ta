@@ -48,6 +48,45 @@ def decreasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
     return decreasing
 
 
+def dpo(close:pd.Series, length=None, centered=True, offset=None, **kwargs):
+    """Detrend Price Oscillator of a Pandas Series
+    
+    Use help(df.ta.dpo) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 1
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = int(offset) if offset else 0
+
+    # Calculate Result
+    drift = int(0.5 * length) + 1  # int((0.5 * length) + 1)
+    # dpo = close.shift(drift) - close.rolling(length, min_periods=min_periods).mean()
+    dpo = close.shift(drift) - close.rolling(length).mean()
+    if centered:
+        dpo = dpo.shift(-drift)
+
+    # Offset
+    dpo = dpo.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        dpo.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        dpo.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    dpo.name = f"DPO_{length}"
+    dpo.category = 'trend'
+
+    # If append, then add it to the df
+    if 'append' in kwargs and kwargs['append']:
+        df[dpo.name] = dpo
+
+    return dpo
+
+
 def increasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
     """Increasing over periods of a Pandas Series
     
@@ -514,7 +553,7 @@ def cci(high, low, close, n=20, c=0.015, fillna=False):
     return pd.Series(cci, name='cci')
 
 
-def dpo(close, n=20, fillna=False):
+def dpo_depreciated(close, n=20, fillna=False):
     """Detrended Price Oscillator (DPO)
 
     Is an indicator designed to remove trend from price and make it easier to

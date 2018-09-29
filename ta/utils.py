@@ -2,6 +2,10 @@
 import math
 import pandas as pd
 
+def verify_series(series:pd.Series):
+    if not isinstance(series, pd.Series):
+        raise AttributeError(f"{type(series)} is not a Pandas Series")
+    return series
 
 def dropna(df):
     """Drop rows with "Nans" values

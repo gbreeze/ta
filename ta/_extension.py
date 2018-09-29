@@ -10,7 +10,7 @@ import pandas as pd
 from .performance import *
 # from .statistics import *
 # from .trend import *
-# from .utils import *
+from .utils import signed_series
 # from .volatility import *
 # from .volume import *
 

@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from .utils import verify_series
 
-def log_return(close, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
+def log_return(close:pd.Series, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
     """Log Return of a Pandas Series
     
     Use help(df.ta.log_return) for specific documentation where 'df' represents
@@ -35,7 +35,7 @@ def log_return(close, length=None, cumulative:bool = False, percent:bool = False
     return log_return
 
 
-def percent_return(close, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
+def percent_return(close:pd.Series, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
     """Percent Return of a Pandas Series
     
     Use help(df.ta.percent_return) for specific documentation where 'df' represents

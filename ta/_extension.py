@@ -1924,9 +1924,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column.
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -1934,34 +1933,7 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 1
-        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        offset = offset if isinstance(offset, int) else 0
-
-        # Calculate Result
-        increasing = close.diff(length) > 0
-        if asint:
-            increasing = increasing.astype(int)
-
-        # Offset
-        increasing = increasing.shift(offset)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            increasing.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            increasing.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        increasing.name = f"INC_{length}"
-        increasing.category = 'trend'
-
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[increasing.name] = increasing
-
-        return increasing
+        return increasing(close=close, length=length, asint=asint, offset=offset, **kwargs)
 
 
     ## Volatility Indicators

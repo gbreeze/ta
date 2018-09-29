@@ -1583,7 +1583,7 @@ class AnalysisIndicators(BasePandasObject):
         return kurtosis(close=close, length=length, offset=offset, **kwargs)
 
 
-    def quantile(self, close=None, length=None, q=None, offset=None **kwargs):
+    def quantile(self, close=None, length=None, q=None, offset=None, **kwargs):
         """quantile
 
         Returns the quantile of a Series.
@@ -1610,24 +1610,8 @@ class AnalysisIndicators(BasePandasObject):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-
-        # Validate Arguments
-        length = int(length) if length and length > 0 else 30
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        q = float(q) if q and q > 0 and q < 1 else 0.5
-
-        # Calculate Result
-        quantile = close.rolling(length, min_periods=min_periods).quantile(q)
-
-        # Name & Category
-        quantile.name = f"QTL_{length}_{q}"
-        quantile.category = 'statistics'
-
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[quantile.name] = quantile
-
-        return quantile
+        
+        return quantile(close=close, length=length, q=q, offset=offset, **kwargs)
 
 
     def skew(self, close=None, length=None, **kwargs):

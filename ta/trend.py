@@ -10,6 +10,42 @@ import pandas as pd
 import numpy as np
 
 from .utils import *
+# from .utils import verify_series
+
+def decreasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
+    """Decreasing over periods of a Pandas Series
+    
+    Use help(df.ta.decreasing) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 1
+    offset = offset if isinstance(offset, int) else 0
+
+    # Calculate Result
+    decreasing = close.diff(length) < 0
+    if asint:
+        decreasing = decreasing.astype(int)
+
+    # Offset
+    decreasing = decreasing.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        decreasing.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        decreasing.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    decreasing.name = f"DEC_{length}"
+    decreasing.category = 'trend'
+
+    # If append, then add it to the df
+    if 'append' in kwargs and kwargs['append']:
+        df[decreasing.name] = decreasing
+
+    return decreasing
 
 
 def macd(close, n_fast=12, n_slow=26, fillna=False):

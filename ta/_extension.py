@@ -9,7 +9,7 @@ import pandas as pd
 # from .overlap import *
 from .performance import *
 # from .statistics import *
-# from .trend import *
+from .trend import *
 from .utils import signed_series
 # from .volatility import *
 # from .volume import *
@@ -1521,9 +1521,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
-        df = self._df
-
         # Get the correct column.
+        df = self._df
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -1558,6 +1557,7 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
+        # Get the correct column.
         df = self._df
         if df is None: return
         else:
@@ -1830,9 +1830,8 @@ class AnalysisIndicators(BasePandasObject):
         Returns:
             pd.Series: New feature
         """
+        # Get the correct column.
         df = self._df
-
-        # Get the correct column(.
         if df is None: return
         else:
             if isinstance(close, pd.Series):
@@ -1840,34 +1839,7 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate Arguments
-        length = int(length) if length and length > 0 else 1
-        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        offset = offset if isinstance(offset, int) else 0
-
-        # Calculate Result
-        decreasing = close.diff(length) < 0
-        if asint:
-            decreasing = decreasing.astype(int)
-
-        # Offset
-        decreasing = decreasing.shift(offset)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            decreasing.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            decreasing.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        decreasing.name = f"DEC_{length}"
-        decreasing.category = 'trend'
-
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[decreasing.name] = decreasing
-
-        return decreasing
+        return decreasing(close=close, length=length, asint=asint, offset=offset, **kwargs)
 
 
     def dpo(self, close:str = None, length:int = None, centered:bool = True, offset=None, **kwargs):

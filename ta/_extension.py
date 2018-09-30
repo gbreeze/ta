@@ -4,7 +4,7 @@ import math
 import numpy as np
 import pandas as pd
 
-# from .momentum import *
+from .momentum import *
 # from .others import *
 from .overlap import *
 from .performance import *
@@ -780,7 +780,7 @@ class AnalysisIndicators(BasePandasObject):
         return mfi
 
 
-    def mom(self, close:str = None, length:int = None, **kwargs):
+    def mom(self, close:str = None, length:int = None, offset:int = None, **kwargs):
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -790,28 +790,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 1
-        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-
-        # Calculate Result
-        mom = close.diff(length)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            mom.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            mom.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        mom.name = f"MOM_{length}"
-        mom.category = 'momentum'
+        result = mom(close=close, length=length, offset=offset, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[mom.name] = mom
+            df[result.name] = result
 
-        return mom
+        return result
 
 
     def ppo(self, close:str = None, fast:int = None, slow:int = None, **kwargs):

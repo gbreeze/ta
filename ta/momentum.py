@@ -10,8 +10,41 @@ import numpy as np
 import pandas as pd
 
 from .utils import *
+# from .utils import get_drift, get_offset, signed_series, verify_series
 
 
+def mom(close:pd.Series, length=None, offset=None, **kwargs):
+    """Momentum of a Pandas Series
+    
+    Use help(df.ta.mom) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 1
+    offset = get_offset(offset)
+
+    # Calculate Result
+    mom = close.diff(length)
+
+    # Offset
+    mom = mom.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        mom.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        mom.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    mom.name = f"MOM_{length}"
+    mom.category = 'momentum'
+
+    return mom
+
+
+
+# Legacy code
 def rsi(close, n=14, fillna=False):
     """Relative Strength Index (RSI)
 

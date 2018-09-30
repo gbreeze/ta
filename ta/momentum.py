@@ -13,6 +13,39 @@ from .utils import *
 # from .utils import get_drift, get_offset, signed_series, verify_series
 
 
+def apo(close:pd.Series, fast=None, slow=None, offset=None, **kwargs):
+    """Absolute Price Oscillator of a Pandas Series
+    
+    Use help(df.ta.apo) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    fast = int(fast) if fast and fast > 0 else 12
+    slow = int(slow) if slow and slow > 0 else 26
+    if slow < fast:
+        fast, slow = slow, fast
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
+    offset = get_offset(offset)
+
+    # Calculate Result
+    fastma = close.rolling(fast, min_periods=min_periods).mean()
+    slowma = close.rolling(slow, min_periods=min_periods).mean()
+    apo = fastma - slowma
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        apo.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        apo.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    apo.name = f"APO_{fast}_{slow}"
+    apo.category = 'momentum'
+
+    return apo
+
+
 def mom(close:pd.Series, length=None, offset=None, **kwargs):
     """Momentum of a Pandas Series
     

@@ -456,7 +456,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Momentum Indicators
-    def apo(self, close=None, fast:int = None, slow:int = None, **kwargs):
+    def apo(self, close=None, fast:int = None, slow:int = None, offset=None, **kwargs):
         # Get the correct column.
         df = self._df
         if df is None or not isinstance(df, pd.DataFrame): return
@@ -466,33 +466,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate arguments
-        fast = int(fast) if fast and fast > 0 else 12
-        slow = int(slow) if slow and slow > 0 else 26
-        if slow < fast:
-            fast, slow = slow, fast
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
-
-        # Calculate Result
-        fastma = close.rolling(fast, min_periods=min_periods).mean()
-        slowma = close.rolling(slow, min_periods=min_periods).mean()
-        apo = fastma - slowma
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            apo.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            apo.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        apo.name = f"APO_{fast}_{slow}"
-        apo.category = 'momentum'
+        result = apo(close=close, fast=fast, slow=slow, offset=offset, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[apo.name] = apo
+            df[result.name] = result
 
-        return apo
+        return result
 
 
     def ao(self, high=None, low=None, fast:int = None, slow:int = None, **kwargs):

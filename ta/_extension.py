@@ -449,7 +449,6 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 low = df[low] if low in df.columns else df.low
 
-        print(dir())
         result = ao(high=high, low=low, fast=fast, slow=slow, offset=offset, **kwargs)
 
         # If append, then add it to the df
@@ -463,7 +462,7 @@ class AnalysisIndicators(BasePandasObject):
         return _aroon(self._df, close=close, length=length, offset=offset, **kwargs)
 
 
-    def bop(self, open_:str = None, high:str = None, low:str = None, close:str = None, percentage:bool = False, **kwargs):
+    def bop(self, open_:str = None, high:str = None, low:str = None, close:str = None, percentage:bool = False, offset=None, **kwargs):
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -474,43 +473,27 @@ class AnalysisIndicators(BasePandasObject):
                 open_ = df[open_] if open_ in df.columns else df.open
 
             if isinstance(high, pd.Series):
-                high_ = high
+                high = high
             else:
-                high_ = df[high] if high in df.columns else df.high
+                high = df[high] if high in df.columns else df.high
 
             if isinstance(low, pd.Series):
-                low_ = low
+                low = low
             else:
-                low_ = df[low] if low in df.columns else df.low
+                low = df[low] if low in df.columns else df.low
 
             if isinstance(close, pd.Series):
-                close_ = close
+                close = close
             else:
-                close_ = df[close] if close in df.columns else df.close
-
-        # Validate arguments
-        percent = 100 if percentage else 1
-
-        # Calculate Result
-        close_open_range = close_ - open_
-        high_log_range = high_ - low_
-        bop = percent * close_open_range / high_log_range
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            bop.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            bop.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        bop.name = f"BOP"
-        bop.category = 'momentum'
+                close = df[close] if close in df.columns else df.close
+        
+        result = bop(open_=open_, high=high, low=low, close=close, percentage=percentage, offset=offset, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[bop.name] = bop
+            df[result.name] = result
 
-        return bop
+        return result
 
 
     def cci(self, high:str = None, low:str = None, close:str = None, length:int = None, c:float = None, **kwargs):

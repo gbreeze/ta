@@ -52,9 +52,6 @@ def ao(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwarg
     Use help(df.ta.ao) for specific documentation where 'df' represents
     the DataFrame you are using.
     """
-    print(f"In momentum.ao")
-    print(dir())
-
     # Validate Arguments
     high = verify_series(high)
     low = verify_series(low)
@@ -82,6 +79,38 @@ def ao(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwarg
     ao.category = 'momentum'
 
     return ao
+
+
+def bop(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, percentage=False, offset=None, **kwargs):
+    """Balance of Power of a Pandas Series
+    
+    Use help(df.ta.bop) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    open_ = verify_series(open_)
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    percent = 100 if percentage else 1
+    offset = get_offset(offset)
+
+    # Calculate Result
+    close_open_range = close - open_
+    high_log_range = high - low
+    bop = percent * close_open_range / high_log_range
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        bop.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        bop.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    bop.name = f"BOP"
+    bop.category = 'momentum'
+
+    return bop
 
 
 def mom(close:pd.Series, length=None, offset=None, **kwargs):

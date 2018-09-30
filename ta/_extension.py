@@ -1815,38 +1815,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 volume = df[volume] if volume in df.columns else df.volume
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 1
-        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        initial = int(initial) if initial and initial > 0 else 1000
-        offset = offset if isinstance(offset, int) else 0
-
-        # Calculate Result
-        roc = self.roc(close=close)
-        signed_volume = signed_series(volume, initial=1)
-        nvi = signed_volume[signed_volume < 0].abs() * roc
-        nvi.fillna(0, inplace=True)
-        nvi.iloc[0]= initial
-        nvi = nvi.cumsum()
-
-        # Offset
-        nvi = nvi.shift(offset)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            nvi.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            nvi.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        nvi.name = f"NVI_{length}"
-        nvi.category = 'volume'
+        result = nvi(close=close, volume=volume, length=length, initial=initial, signed=signed, offset=offset, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[nvi.name] = nvi
+            df[result.name] = result
 
-        return nvi
+        return result
 
 
     def obv(self, close=None, volume=None, offset:int = None, **kwargs):

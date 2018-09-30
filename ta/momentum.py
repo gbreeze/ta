@@ -46,7 +46,7 @@ def mom(close:pd.Series, length=None, offset=None, **kwargs):
 def roc(close:pd.Series, length=None, offset=None, **kwargs):
     """Rate of Change (ROC) of a Pandas Series
     
-    Use help(df.ta.mom) for specific documentation where 'df' represents
+    Use help(df.ta.roc) for specific documentation where 'df' represents
     the DataFrame you are using.
     """
     # Validate Arguments

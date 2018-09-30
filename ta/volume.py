@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 
 from .utils import get_drift, get_offset, signed_series, verify_series
+from .overlap import hl2
 
 
 def ad(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, signed=True, offset=None, **kwargs):
@@ -27,7 +28,6 @@ def ad(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:p
 
     # Calculate Result
     if open_ is not None:
-        print(f"Using 'open'")
         open_ = verify_series(open_)
         ad = close - open_  # AD with Open
     else:                
@@ -70,7 +70,6 @@ def cmf(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:
 
     # Calculate Result
     if open_ is not None:
-        print(f"Using 'open'")
         open_ = verify_series(open_)
         ad = close - open_  # AD with Open
     else:                
@@ -134,7 +133,44 @@ def efi(close:pd.Series, volume:pd.Series, length=None, offset=None, mamode=None
     return efi
 
 
+def eom(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length=None, divisor=None, offset=None, ease=None, **kwargs):
+    """Elder's Force Index (EFI)
+    
+    Use help(df.ta.efi) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    volume = verify_series(volume)
+    length = int(length) if length and length > 0 else 1
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    divisor = divisor if divisor and divisor > 0 else 100000000
+    ease = int(ease) if ease and ease > 0 else 1
+    offset = get_offset(offset)
 
+    # Calculate Result
+    hl_range = high - low
+    distance = hl2(high=high, low=low) - hl2(high=high.shift(ease), low=low.shift(ease))
+    box_ratio = (volume / divisor) / hl_range
+    eom = distance / box_ratio
+    eom = eom.rolling(length, min_periods=min_periods).mean()
+
+    # Offset
+    eom = eom.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        eom.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        eom.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    eom.name = f"EOM_{length}_{divisor}"
+    eom.category = 'volume'
+
+    return eom
 
 
 

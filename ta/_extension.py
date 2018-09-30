@@ -1790,42 +1790,14 @@ class AnalysisIndicators(BasePandasObject):
 
         result = efi(close=close, volume=volume, length=length, offset=offset, mamode=mamode, drift=drift, **kwargs)
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 1
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        drift = get_drift(drift)
-        offset = get_offset(offset)
-
-        # Calculate Result
-        pv_diff = close.diff(drift) * volume
-
-        if mamode is None or mamode == 'alexander':
-            efi = pv_diff.ewm(span=length, min_periods=min_periods).mean()
-        else:
-            efi = pv_diff.rolling(length, min_periods=min_periods).mean()
-
-        # Offset
-        efi = efi.shift(offset)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            efi.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            efi.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        efi.name = f"EFI_{length}"
-        efi.category = 'volume'
-
         # If append, then add it to the df
-        # if 'append' in kwargs and kwargs['append']:
-        if kwargs.pop('append', False):
-            df[efi.name] = efi
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
 
-        return efi
+        return result
 
 
-    def eom(self, high=None, low=None, close=None, volume=None, length=None, divisor:int = None, ease:int = None, offset:int = None, **kwargs):
+    def eom(self, high=None, low=None, close=None, volume=None, length=None, divisor:int = None, offset:int = None, ease:int = None, **kwargs):
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -1850,38 +1822,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 volume = df[volume] if volume in df.columns else df.volume
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 1
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        divisor = divisor if divisor and divisor > 0 else 100000000
-        ease = int(ease) if ease and ease > 0 else 1
-        offset = offset if isinstance(offset, int) else 0
-
-        # Calculate Result
-        hl_range = high - low
-        distance = self.hl2(high=high, low=low) - self.hl2(high=high.shift(ease), low=low.shift(ease))
-        box_ratio = (volume / divisor) / hl_range
-        eom = distance / box_ratio
-        eom = eom.rolling(length, min_periods=min_periods).mean()
-
-        # Offset
-        eom = eom.shift(offset)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            eom.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            eom.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        eom.name = f"EOM_{length}_{divisor}"
-        eom.category = 'volume'
+        result = eom(high=high, low=low, close=close, volume=volume, length=length, divisor=divisor, offset=offset, ease=ease, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[eom.name] = eom
+            df[result.name] = result
 
-        return eom
+        return result
 
 
     def nvi(self, close=None, volume=None, length:int = None, initial:int = None, signed:bool = True, offset:int = None, **kwargs):

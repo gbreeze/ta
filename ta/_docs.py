@@ -1,6 +1,14 @@
 # -*- coding: utf-8 -*-
 from ._extension import *
 
+# Momentum Documentation
+apo_docs = \
+""" apo
+
+Not visually the same as TV Chart
+"""
+
+# Overlap Documentation
 hl2_docs = \
 """
 Returns the average of two series.
@@ -159,6 +167,59 @@ Returns:
 """
 
 
+# Performance Documentation
+log_return_docs = \
+"""
+Log Return with cumulative and offset
+
+Returns the Log Return of a Series.
+
+Args:
+    close (None, pd.Series, optional):
+        If None, uses local df column: 'high'
+    length (None, int, optional):
+        An integer of how periods to compute.  Default is None and one.
+    cumulative (bool):
+        Default: False.  If True, returns the cummulative returns
+    offset (None, int, optional):
+        An integer on how to shift the Series.  Default is None and zero.
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+percent_return_docs = \
+"""
+Percent Return with Length, Cumulation, Percentage and Offset Attributes
+
+Returns the Percent Change of a Series.
+
+Args:
+    close (None, pd.Series, optional):
+        If None, uses local df column: 'high'
+    length (None, int, optional):
+        An integer of how periods to compute.  Default is None and one.
+    cumulative (bool):
+        Default: False.  If True, returns the cummulative returns
+    offset (None, int, optional):
+        An integer on how to shift the Series.  Default is None and zero.
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+
+# Statistics Documentation
 kurtosis_docs = \
 """
 Kurtosis
@@ -201,7 +262,146 @@ Returns:
     pd.Series: New feature
 """
 
+skew_docs = \
+"""
+Skew
+
+Returns the Skew of a Series.
+
+Args:
+    close (None, pd.Series, optional):
+        If None, uses local df column: 'high'
+    length (None, int, optional):
+        An integer of how periods to compute.  Default is None and one.
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+stdev_docs = \
+"""
+Standard Deviation
+
+Returns the Standard Deviations of a Series.
+
+Args:
+    close (None, pd.Series, optional):
+        If None, uses local df column: 'high'
+    length (None, int, optional):
+        An integer of how periods to compute.  Default is None and one.
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+variance_docs = \
+"""
+Variance
+
+Returns the Variances of a Series.
+
+Args:
+    close (None, pd.Series, optional):
+        If None, uses local df column: 'high'
+    length (None, int, optional):
+        An integer of how periods to compute.  Default is None and one.
+    cumulative (bool):
+        Default: False.  If True, returns the cummulative returns
+    offset (None, int, optional):
+        An integer on how to shift the Series.  Default is None and zero.
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+
+# Trend Documentation
+decreasing_docs = \
+"""
+Decreasing Trend
+
+Returns if a Series is Decreasing over a certain length.
+
+Args:
+    close(None,pd.Series,pd.DataFrame): optional. If None, uses local df column: 'close'
+    length(int): How many periods long.
+    asint(bool): True.  Returns zeros and ones.
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+
+dpo_docs = \
+"""
+Detrend Price Oscillator (DPO)
+
+Is an indicator designed to remove trend from price and make it easier to
+identify cycles.
+
+http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:detrended_price_osci
+
+Args:
+    close(None,pd.Series,pd.DataFrame): Optional
+        If None, uses local df column: 'close'
+    length(int): How many periods to use.
+    asint(bool): Default: True.  Returns zeros and ones.
+
+**kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+    append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+increasing_docs = \
+"""
+Increasing Trend
+
+Returns if a Series is Increasing over a certain length.
+
+Args:
+    close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+    length(int): How many
+    asint(bool): True.  Returns zeros and ones.
+
+    append(bool): kwarg, optional.  If True, appends result to current df
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+
+
 # Momentum Documentation
+AnalysisIndicators.apo.__doc__ = apo_docs
 
 # Overlap Documentation
 AnalysisIndicators.hl2.__doc__ = hl2_docs
@@ -213,8 +413,17 @@ AnalysisIndicators.midprice.__doc__ = midprice_docs
 AnalysisIndicators.rpn.__doc__ = rpn_docs
 
 # Performance Documentation
-
+AnalysisIndicators.log_return.__doc__ = log_return_docs
+AnalysisIndicators.percent_return.__doc__ = percent_return_docs
 
 # Statistics Documentation
 AnalysisIndicators.kurtosis.__doc__ = kurtosis_docs
 AnalysisIndicators.quantile.__doc__ = quantile_docs
+AnalysisIndicators.skew.__doc__ = skew_docs
+AnalysisIndicators.stdev.__doc__ = stdev_docs
+AnalysisIndicators.variance.__doc__ = variance_docs
+
+# Trend Documentation
+AnalysisIndicators.decreasing.__doc__ = decreasing_docs
+AnalysisIndicators.dpo.__doc__ = dpo_docs
+AnalysisIndicators.increasing.__doc__ = increasing_docs

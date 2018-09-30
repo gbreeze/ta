@@ -475,10 +475,6 @@ class AnalysisIndicators(BasePandasObject):
 
     ## Momentum Indicators
     def apo(self, close=None, fast:int = None, slow:int = None, **kwargs):
-        """ apo
-        
-        Not visually the same as TV Chart
-        """
         # Get the correct column.
         df = self._df
         if df is None or not isinstance(df, pd.DataFrame): return
@@ -526,7 +522,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def bop(self, open_:str = None, high:str = None, low:str = None, close:str = None, percentage:bool = False, **kwargs):
-        """ bop """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -1221,28 +1216,6 @@ class AnalysisIndicators(BasePandasObject):
 
     ## Performance Indicators
     def log_return(self, close=None, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
-        """Log Return with cumulative and offset
-
-        Returns the Log Return of a Series.
-
-        Args:
-            close (None, pd.Series, optional):
-                If None, uses local df column: 'high'
-            length (None, int, optional):
-                An integer of how periods to compute.  Default is None and one.
-            cumulative (bool):
-                Default: False.  If True, returns the cummulative returns
-            offset (None, int, optional):
-                An integer on how to shift the Series.  Default is None and zero.
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -1257,28 +1230,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def percent_return(self, close=None, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
-        """Percent Return with Length, Cumulation, Percentage and Offset Attributes
-
-        Returns the Percent Change of a Series.
-
-        Args:
-            close (None, pd.Series, optional):
-                If None, uses local df column: 'high'
-            length (None, int, optional):
-                An integer of how periods to compute.  Default is None and one.
-            cumulative (bool):
-                Default: False.  If True, returns the cummulative returns
-            offset (None, int, optional):
-                An integer on how to shift the Series.  Default is None and zero.
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -1319,24 +1270,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def skew(self, close=None, length=None, offset=None, **kwargs):
-        """Skew
-
-        Returns the Skew of a Series.
-
-        Args:
-            close (None, pd.Series, optional):
-                If None, uses local df column: 'high'
-            length (None, int, optional):
-                An integer of how periods to compute.  Default is None and one.
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -1350,24 +1283,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def stdev(self, close=None, length=None, offset=None, **kwargs):
-        """Standard Deviation
-
-        Returns the Standard Deviations of a Series.
-
-        Args:
-            close (None, pd.Series, optional):
-                If None, uses local df column: 'high'
-            length (None, int, optional):
-                An integer of how periods to compute.  Default is None and one.
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -1381,28 +1296,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def variance(self, close=None, length=None, offset=None, **kwargs):
-        """Variance
-
-        Returns the Variances of a Series.
-
-        Args:
-            close (None, pd.Series, optional):
-                If None, uses local df column: 'high'
-            length (None, int, optional):
-                An integer of how periods to compute.  Default is None and one.
-            cumulative (bool):
-                Default: False.  If True, returns the cummulative returns
-            offset (None, int, optional):
-                An integer on how to shift the Series.  Default is None and zero.
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -1418,23 +1311,6 @@ class AnalysisIndicators(BasePandasObject):
 
     ## Trend Indicators
     def decreasing(self, close:str = None, length:int = None, asint:bool = True, offset=None, **kwargs):
-        """Decreasing Trend
-
-        Returns if a Series is Decreasing over a certain length.
-
-        Args:
-            close(None,pd.Series,pd.DataFrame): optional. If None, uses local df column: 'close'
-            length(int): How many periods long.
-            asint(bool): True.  Returns zeros and ones.
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -1448,27 +1324,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def dpo(self, close:str = None, length:int = None, centered:bool = True, offset=None, **kwargs):
-        """Detrend Price Oscillator (DPO)
-
-        Is an indicator designed to remove trend from price and make it easier to
-        identify cycles.
-
-        http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:detrended_price_osci
-
-        Args:
-            close(None,pd.Series,pd.DataFrame): Optional
-                If None, uses local df column: 'close'
-            length(int): How many periods to use.
-            asint(bool): Default: True.  Returns zeros and ones.
-        
-        **kwargs:
-            fillna (value, optional): pd.DataFrame.fillna(value)
-            fill_method (value, optional): Type of fill method
-            append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -1482,25 +1337,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def increasing(self, close:str = None, length:int = None, asint:bool = True, offset=None, **kwargs):
-        """Increasing Trend
-
-        Returns if a Series is Increasing over a certain length.
-
-        Args:
-            close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            length(int): How many
-            asint(bool): True.  Returns zeros and ones.
-
-            append(bool): kwarg, optional.  If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column.
         df = self._df
         if df is None: return

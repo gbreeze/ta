@@ -1863,36 +1863,16 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 volume = df[volume] if volume in df.columns else df.volume
 
-        # Validate arguments
-        offset = offset if isinstance(offset, int) else 0
-
-        # Calculate Result
-        if signed:
-            pvol = signed_series(close, 1) * close * volume
-        else:
-            pvol = close * volume
-
-        # Offset
-        pvol = pvol.shift(offset)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            pvol.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            pvol.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        pvol.name = f"PVOL"
-        pvol.category = 'volume'
+        result = pvol(close=close, volume=volume, signed=signed, offset=offset, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[pvol.name] = pvol
+            df[result.name] = result
 
-        return pvol
+        return result
 
 
-    def pv_trend(self, close=None, volume=None, length=None, offset:int = None, **kwargs):
+    def pvt(self, close=None, volume=None, offset:int = None, **kwargs):
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -1907,32 +1887,14 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 volume = df[volume] if volume in df.columns else df.volume
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 1
-        offset = offset if isinstance(offset, int) else 0
-
-        # Calculate Result
-        pv = self.roc(close=close, length=length) * volume
-        pvt = pv.cumsum()
-
-        # Offset
-        pvt = pvt.shift(offset)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            pvt.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            pvt.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        pvt.name = f"PVT_{length}"
-        pvt.category = 'volume'
+        result = pvt(close=close, volume=volume, offset=offset, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[pvt.name] = pvt
+            df[result.name] = result
 
-        return pvt
+        return result
+
 
 
     ## Indicator Aliases & Categories
@@ -1992,7 +1954,7 @@ class AnalysisIndicators(BasePandasObject):
     NegativeVolumeIndex = nvi
     OnBalanceVolume = obv
     PriceVolume = pvol
-    PriceVolumeTrend = pv_trend
+    PriceVolumeTrend = pvt
 
 
 ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))

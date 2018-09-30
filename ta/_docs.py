@@ -731,7 +731,7 @@ Returns:
     pd.Series: New feature
 """
 
-pv_trend_docs = \
+pvt_docs = \
 """
 Price Volume Trend
 
@@ -803,4 +803,4 @@ AnalysisIndicators.eom.__doc__ = eom_docs
 AnalysisIndicators.nvi.__doc__ = nvi_docs
 AnalysisIndicators.obv.__doc__ = obv_docs
 AnalysisIndicators.pvol.__doc__ = pvol_docs
-AnalysisIndicators.pv_trend.__doc__ = pv_trend_docs
+AnalysisIndicators.pvt.__doc__ = pvt_docs

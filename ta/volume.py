@@ -242,6 +242,70 @@ def obv(close:pd.Series, volume:pd.Series, offset=None, **kwargs):
 
     return obv
 
+def pvol(close:pd.Series, volume:pd.Series, signed=True, offset=None, **kwargs):
+    """Price-Volume (PVOL)
+    
+    Use help(df.ta.pvol) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    close = verify_series(close)
+    volume = verify_series(volume)
+    offset = get_offset(offset)
+
+    # Calculate Result
+    if signed:
+        pvol = signed_series(close, 1) * close * volume
+    else:
+        pvol = close * volume
+
+    # Offset
+    pvol = pvol.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        pvol.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        pvol.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    pvol.name = f"PVOL"
+    pvol.category = 'volume'
+
+    return pvol
+
+
+def pvt(close:pd.Series, volume:pd.Series, offset=None, **kwargs):
+    """Price-Volume Trend (PVT)
+    
+    Use help(df.ta.pvt) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    close = verify_series(close)
+    volume = verify_series(volume)
+    offset = get_offset(offset)
+
+    # Calculate Result
+    pv = roc(close=close) * volume
+    pvt = pv.cumsum()
+
+    # Offset
+    pvt = pvt.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        pvt.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        pvt.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    pvt.name = f"PVT_{length}"
+    pvt.category = 'volume'
+
+    return pvt
+
+
 
 # Legacy Code
 def acc_dist_index(high, low, close, volume, fillna=False):

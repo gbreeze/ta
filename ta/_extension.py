@@ -321,26 +321,8 @@ def _tsi(df, close=None, fast:int = None, slow:int = None, drift:int = None, **k
     return tsi
 
 
-def _uo(df, high=None, low=None, close=None, fast:int = None, medium:int = None, slow:int = None, fast_w:int = None, medium_w:int = None, slow_w:int = None, drift:int = None, **kwargs):
+def _uo(high=None, low=None, close=None, fast:int = None, medium:int = None, slow:int = None, fast_w:int = None, medium_w:int = None, slow_w:int = None, drift:int = None, **kwargs):
     """Ultimate Oscillator - uso"""
-    if df is None: return
-    else:
-        # Get the correct column.
-        if isinstance(high, pd.Series):
-            high = high
-        else:
-            high = df[high] if high in df.columns else df.high
-
-        if isinstance(low, pd.Series):
-            low = low
-        else:
-            low = df[low] if low in df.columns else df.low
-
-        if isinstance(close, pd.Series):
-            close = close
-        else:
-            close = df[close] if close in df.columns else df.close
-
     # Validate arguments
     fast = int(fast) if fast and fast > 0 else 7
     fast_w = float(fast_w) if fast_w and fast_w > 0 else 4.0
@@ -572,7 +554,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def cci(self, high:str = None, low:str = None, close:str = None, length:int = None, c:float = None, **kwargs):
-        """ cci """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -631,26 +612,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def macd(self, close=None, fast:int = None, slow:int = None, signal:int = None, **kwargs):
-        """Moving Average Convergence Divergence
-
-        Returns a DataFrame with high, mid, and low values.  The high channel is max()
-        and the low channel is the min() over a rolling period length of the source.
-        The mid is the average of the high and low channels.
-
-        Args:
-            close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            length(int): How many
-
-            append(bool): kwarg, optional.  If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -708,11 +669,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def massi(self, high:str = None, low:str = None, fast=None, slow=None, **kwargs):
-        """Mass Index
-        
-        Not visually the same as TV Chart
-
-        """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -761,11 +717,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def mfi(self, high:str = None, low:str = None, close:str = None, volume:str = None, length:int = None, drift:int = None, **kwargs):
-        """Money Flow Index
-
-        Incorrect
-        
-        """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -830,7 +781,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def mom(self, close:str = None, length:int = None, **kwargs):
-        """ mom """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -865,7 +815,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def ppo(self, close:str = None, fast:int = None, slow:int = None, **kwargs):
-        """ ppo """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -940,9 +889,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def rsi(self, close:str = None, length:int = None, drift:int = None, **kwargs):
-        """Relative Strength Index
-        
-        """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -990,12 +936,29 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def uo(self, high=None, low=None, close=None, fast:int = None, medium:int = None, slow:int = None, fast_w:int = None, medium_w:int = None, slow_w:int = None, drift:int = None, **kwargs):
-        return _uo(self._df, high=high, low=low, close=close, fast=fast, medium=medium, slow=slow, fast_w=fast_w, medium_w=medium_w, slow_w=slow_w, drift=drift, **kwargs)
-        # return None
+        # Get the correct column(s).
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        return _uo(high=high, low=low, close=close, fast=fast, medium=medium, slow=slow, fast_w=fast_w, medium_w=medium_w, slow_w=slow_w, drift=drift, **kwargs)
 
 
     def willr(self, high:str = None, low:str = None, close:str = None, length:int = None, **kwargs):
-        """ willr """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -1351,26 +1314,6 @@ class AnalysisIndicators(BasePandasObject):
 
     ## Volatility Indicators
     def atr(self, high=None, low=None, close=None, length=None, mamode:str = None, **kwargs):
-        """Average True Range
-
-        Returns a Series of the Average True Range.
-
-        Args:
-            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-            signed (bool): True.  Returns zeros and ones.
-            offset (int): How many
-
-            append(bool): kwarg, optional.  If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -1420,26 +1363,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def bbands(self, close=None, length:int = None, stdev:float = None, mamode:str = None, **kwargs):
-        """Bollinger Bands
-
-        Returns a DataFrame with high, mid, and low values.  The high channel is max()
-        and the low channel is the min() over a rolling period length of the source.
-        The mid is the average of the high and low channels.
-
-        Args:
-            close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            length(int): How many
-
-            append(bool): kwarg, optional.  If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -1497,26 +1420,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def donchian(self, close=None, length:int = None, **kwargs):
-        """Donchian Channels
-
-        Returns a DataFrame with high, mid, and low values.  The high channel is max()
-        and the low channel is the min() over a rolling period length of the source.
-        The mid is the average of the high and low channels.
-
-        Args:
-            close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            length(int): How many
-
-            append(bool): kwarg, optional.  If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -1567,26 +1470,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def kc(self, high=None, low=None, close=None, length=None, scalar=None, mamode:str = None, **kwargs):
-        """Keltner Channels
-
-        Returns a DataFrame with high, mid, and low values.  The high channel is max()
-        and the low channel is the min() over a rolling period length of the source.
-        The mid is the average of the high and low channels.
-
-        Args:
-            close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            length(int): How many
-
-            append(bool): kwarg, optional.  If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -1663,26 +1546,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def true_range(self, high=None, low=None, close=None, length=None, drift:int = None, **kwargs):
-        """True Range
-
-        Returns a Series of the product of Price and Volume.
-
-        Args:
-            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-            signed (bool): True.  Returns zeros and ones.
-            offset (int): How many
-
-            append(bool): kwarg, optional.  If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -1732,29 +1595,6 @@ class AnalysisIndicators(BasePandasObject):
 
     ## Volume Indicators
     def ad(self, high=None, low=None, close=None, volume=None, open_=None, signed:bool = True, offset:int = None, **kwargs):
-        """Accumulation/Distribution
-
-        Returns a Series of the product of Price and Volume.
-
-        Args:
-            high (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'high'
-            low (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'low'
-            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-            open_ (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'open_'
-            signed (bool): True.  Returns zeros and ones.
-            offset (int): How many
-
-            append(bool): kwarg, optional.  If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -1818,97 +1658,7 @@ class AnalysisIndicators(BasePandasObject):
         return ad
 
 
-    def efi(self, close=None, volume=None, length=None, mamode:str = None, offset:int = None, drift:int = None, **kwargs):
-        """Elder's Force Index
-
-        Returns a Series of the product of Price and Volume.
-
-        Args:
-            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-            signed (bool): True.  Returns zeros and ones.
-            offset (int): How many
-
-            append(bool): kwarg, optional.  If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
-        # Get the correct column(s).
-        df = self._df
-        if df is None: return
-        else:
-            if isinstance(close, pd.Series):
-                close = close
-            else:
-                close = df[close] if close in df.columns else df.close
-
-            if isinstance(volume, pd.Series):
-                volume = volume
-            else:
-                volume = df[volume] if volume in df.columns else df.volume
-
-        # Validate arguments
-        length = int(length) if length and length > 0 else 1
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        drift = int(drift) if drift and drift != 0 else 1
-        offset = offset if isinstance(offset, int) else 0
-
-        # Calculate Result
-        pv_diff = close.diff(drift) * volume
-
-        if mamode is None or mamode == 'alexander':
-            efi = pv_diff.ewm(span=length, min_periods=min_periods).mean()
-        else:
-            efi = pv_diff.rolling(length, min_periods=min_periods).mean()
-
-        # Offset
-        efi = efi.shift(offset)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            efi.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            efi.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        efi.name = f"EFI_{length}"
-        efi.category = 'volume'
-
-        # If append, then add it to the df
-        # if 'append' in kwargs and kwargs['append']:
-        if kwargs.pop('append', False):
-            df[efi.name] = efi
-
-        return efi
-
-
     def cmf(self, high=None, low=None, close=None, volume=None, length=None, open_=None, offset:int = None, **kwargs):
-        """Chaikin Money Flow
-
-        Returns a Series of the product of Price and Volume.
-
-        Args:
-            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-            signed (bool): True.  Returns zeros and ones.
-            offset (int): How many
-
-            append(bool): kwarg, optional.  If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -1973,27 +1723,57 @@ class AnalysisIndicators(BasePandasObject):
         return cmf
 
 
+    def efi(self, close=None, volume=None, length=None, mamode:str = None, offset:int = None, drift:int = None, **kwargs):
+        # Get the correct column(s).
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+            if isinstance(volume, pd.Series):
+                volume = volume
+            else:
+                volume = df[volume] if volume in df.columns else df.volume
+
+        # Validate arguments
+        length = int(length) if length and length > 0 else 1
+        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+        drift = int(drift) if drift and drift != 0 else 1
+        offset = offset if isinstance(offset, int) else 0
+
+        # Calculate Result
+        pv_diff = close.diff(drift) * volume
+
+        if mamode is None or mamode == 'alexander':
+            efi = pv_diff.ewm(span=length, min_periods=min_periods).mean()
+        else:
+            efi = pv_diff.rolling(length, min_periods=min_periods).mean()
+
+        # Offset
+        efi = efi.shift(offset)
+
+        # Handle fills
+        if 'fillna' in kwargs:
+            efi.fillna(kwargs['fillna'], inplace=True)
+        if 'fill_method' in kwargs:
+            efi.fillna(method=kwargs['fill_method'], inplace=True)
+
+        # Name and Categorize it
+        efi.name = f"EFI_{length}"
+        efi.category = 'volume'
+
+        # If append, then add it to the df
+        # if 'append' in kwargs and kwargs['append']:
+        if kwargs.pop('append', False):
+            df[efi.name] = efi
+
+        return efi
+
+
     def eom(self, high=None, low=None, close=None, volume=None, length=None, divisor:int = None, ease:int = None, offset:int = None, **kwargs):
-        """Ease of Movement
-
-        Returns a Series of the product of Price and Volume.
-
-        Args:
-            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-            signed (bool): True.  Returns zeros and ones.
-            offset (int): How many
-
-            append(bool): kwarg, optional.  If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -2053,26 +1833,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def nvi(self, close=None, volume=None, length:int = None, initial:int = None, signed:bool = True, offset:int = None, **kwargs):
-        """Negative Volume Index
-
-        Returns a Series of the product of Price and Volume.
-
-        Args:
-            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-            signed (bool): True.  Returns zeros and ones.
-            offset (int): How many
-
-            append(bool): kwarg, optional.  If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -2122,26 +1882,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def obv(self, close=None, volume=None, offset:int = None, **kwargs):
-        """On Balance Volume
-
-        Returns a Series of the product of Price and Volume.
-
-        Args:
-            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-            signed (bool): True.  Returns zeros and ones.
-            offset (int): How many
-
-            append(bool): kwarg, optional.  If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -2184,26 +1924,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def pvol(self, close:str = None, volume:str = None, signed:bool = True, offset:int = None, **kwargs):
-        """Price Volume
-
-        Returns a Series of the product of Price and Volume.
-
-        Args:
-            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-            signed (bool): True.  Returns zeros and ones.
-            offset (int): How many
-
-            append(bool): kwarg, optional.  If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -2248,26 +1968,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def pv_trend(self, close=None, volume=None, length=None, offset:int = None, **kwargs):
-        """Price Volume Trend
-
-        Returns a Series of the product of Price and Volume.
-
-        Args:
-            close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-            volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-            signed (bool): True.  Returns zeros and ones.
-            offset (int): How many
-
-            append(bool): kwarg, optional.  If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column(s).
         df = self._df
         if df is None: return

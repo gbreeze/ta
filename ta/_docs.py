@@ -8,6 +8,53 @@ apo_docs = \
 Not visually the same as TV Chart
 """
 
+macd_docs = \
+"""
+Moving Average Convergence Divergence
+
+Returns a DataFrame with high, mid, and low values.  The high channel is max()
+and the low channel is the min() over a rolling period length of the source.
+The mid is the average of the high and low channels.
+
+Args:
+    close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+    length(int): How many
+
+    append(bool): kwarg, optional.  If True, appends result to current df
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+massi_docs = \
+"""
+Mass Index
+
+Not visually the same as TV Chart
+
+"""
+
+mfi_docs = \
+"""
+Money Flow Index
+
+Incorrect
+
+"""
+
+rsi_docs = \
+"""
+Relative Strength Index
+
+"""
+
+
+
 # Overlap Documentation
 hl2_docs = \
 """
@@ -167,6 +214,7 @@ Returns:
 """
 
 
+
 # Performance Documentation
 log_return_docs = \
 """
@@ -217,6 +265,7 @@ Args:
 Returns:
     pd.Series: New feature
 """
+
 
 
 # Statistics Documentation
@@ -330,6 +379,7 @@ Returns:
 """
 
 
+
 # Trend Documentation
 decreasing_docs = \
 """
@@ -350,7 +400,6 @@ Args:
 Returns:
     pd.Series: New feature
 """
-
 
 dpo_docs = \
 """
@@ -400,8 +449,319 @@ Returns:
 
 
 
+# Volatility Documentation
+atr_docs = \
+"""
+Average True Range
+
+Returns a Series of the Average True Range.
+
+Args:
+    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+    signed (bool): True.  Returns zeros and ones.
+    offset (int): How many
+
+    append(bool): kwarg, optional.  If True, appends result to current df
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+bbands_docs = \
+"""
+Bollinger Bands
+
+Returns a DataFrame with high, mid, and low values.  The high channel is max()
+and the low channel is the min() over a rolling period length of the source.
+The mid is the average of the high and low channels.
+
+Args:
+    close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+    length(int): How many
+
+    append(bool): kwarg, optional.  If True, appends result to current df
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+donchian_docs = \
+"""
+Donchian Channels
+
+Returns a DataFrame with high, mid, and low values.  The high channel is max()
+and the low channel is the min() over a rolling period length of the source.
+The mid is the average of the high and low channels.
+
+Args:
+    close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+    length(int): How many
+
+    append(bool): kwarg, optional.  If True, appends result to current df
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+kc_docs = \
+"""
+Keltner Channels
+
+Returns a DataFrame with high, mid, and low values.  The high channel is max()
+and the low channel is the min() over a rolling period length of the source.
+The mid is the average of the high and low channels.
+
+Args:
+    close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+    length(int): How many
+
+    append(bool): kwarg, optional.  If True, appends result to current df
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+true_range_docs = \
+"""
+True Range
+
+Returns a Series of the product of Price and Volume.
+
+Args:
+    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+    signed (bool): True.  Returns zeros and ones.
+    offset (int): How many
+
+    append(bool): kwarg, optional.  If True, appends result to current df
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+
+# Volume Documentation
+ad_docs = \
+"""
+Accumulation/Distribution
+
+Returns a Series of the product of Price and Volume.
+
+Args:
+    high (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'high'
+    low (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'low'
+    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+    open_ (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'open_'
+    signed (bool): True.  Returns zeros and ones.
+    offset (int): How many
+
+    append(bool): kwarg, optional.  If True, appends result to current df
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+cmf_docs = \
+"""
+Chaikin Money Flow
+
+Returns a Series of the product of Price and Volume.
+
+Args:
+    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+    signed (bool): True.  Returns zeros and ones.
+    offset (int): How many
+
+    append(bool): kwarg, optional.  If True, appends result to current df
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+efi_docs = \
+"""
+Elder's Force Index
+
+Returns a Series of the product of Price and Volume.
+
+Args:
+    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+    signed (bool): True.  Returns zeros and ones.
+    offset (int): How many
+
+    append(bool): kwarg, optional.  If True, appends result to current df
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+eom_docs = \
+"""
+Ease of Movement
+
+Returns a Series of the product of Price and Volume.
+
+Args:
+    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+    signed (bool): True.  Returns zeros and ones.
+    offset (int): How many
+
+    append(bool): kwarg, optional.  If True, appends result to current df
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+nvi_docs = \
+"""
+Negative Volume Index
+
+Returns a Series of the product of Price and Volume.
+
+Args:
+    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+    signed (bool): True.  Returns zeros and ones.
+    offset (int): How many
+
+    append(bool): kwarg, optional.  If True, appends result to current df
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+obv_docs = \
+"""
+On Balance Volume
+
+Returns a Series of the product of Price and Volume.
+
+Args:
+    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+    signed (bool): True.  Returns zeros and ones.
+    offset (int): How many
+
+    append(bool): kwarg, optional.  If True, appends result to current df
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+pvol_docs = \
+"""
+Price Volume
+
+Returns a Series of the product of Price and Volume.
+
+Args:
+    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+    signed (bool): True.  Returns zeros and ones.
+    offset (int): How many
+
+    append(bool): kwarg, optional.  If True, appends result to current df
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+pv_trend_docs = \
+"""
+Price Volume Trend
+
+Returns a Series of the product of Price and Volume.
+
+Args:
+    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
+    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
+    signed (bool): True.  Returns zeros and ones.
+    offset (int): How many
+
+    append(bool): kwarg, optional.  If True, appends result to current df
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+
+
 # Momentum Documentation
 AnalysisIndicators.apo.__doc__ = apo_docs
+AnalysisIndicators.macd.__doc__ = macd_docs
+AnalysisIndicators.massi.__doc__ = massi_docs
+AnalysisIndicators.mfi.__doc__ = mfi_docs
+AnalysisIndicators.rsi.__doc__ = rsi_docs
 
 # Overlap Documentation
 AnalysisIndicators.hl2.__doc__ = hl2_docs
@@ -427,3 +787,20 @@ AnalysisIndicators.variance.__doc__ = variance_docs
 AnalysisIndicators.decreasing.__doc__ = decreasing_docs
 AnalysisIndicators.dpo.__doc__ = dpo_docs
 AnalysisIndicators.increasing.__doc__ = increasing_docs
+
+# Volatility Documentation
+AnalysisIndicators.atr.__doc__ = atr_docs
+AnalysisIndicators.bbands.__doc__ = bbands_docs
+AnalysisIndicators.donchian.__doc__ = donchian_docs
+AnalysisIndicators.kc.__doc__ = kc_docs
+AnalysisIndicators.true_range.__doc__ = true_range_docs
+
+# Volume Documentation
+AnalysisIndicators.ad.__doc__ = ad_docs
+AnalysisIndicators.cmf.__doc__ = cmf_docs
+AnalysisIndicators.efi.__doc__ = efi_docs
+AnalysisIndicators.eom.__doc__ = eom_docs
+AnalysisIndicators.nvi.__doc__ = nvi_docs
+AnalysisIndicators.obv.__doc__ = obv_docs
+AnalysisIndicators.pvol.__doc__ = pvol_docs
+AnalysisIndicators.pv_trend.__doc__ = pv_trend_docs

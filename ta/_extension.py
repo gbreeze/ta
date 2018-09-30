@@ -1049,24 +1049,6 @@ class AnalysisIndicators(BasePandasObject):
 
     ## Overlap Indicators
     def hl2(self, high=None, low=None, offset=None, **kwargs):
-        """Returns the average of two series.
-
-        Args:
-            high: None or a Series or DataFrame, optional
-                If None, uses local df column: 'high'
-            low: None or a Series or DataFrame, optional
-                If None, uses local df column: 'low'
-            append: bool, kwarg, optional
-                If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -1091,26 +1073,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def hlc3(self, high=None, low=None, close=None, offset=None, **kwargs):
-        """Returns the average of three series.
-
-        Args:
-            high: None or a Series or DataFrame, optional
-                If None, uses local df column: 'high'
-            low: None or a Series or DataFrame, optional
-                If None, uses local df column: 'low'
-            close: None or a Series or DataFrame, optional
-                If None, uses local df column: 'close'
-            append: bool, kwarg, optional
-                If True, appends result to current df
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -1162,28 +1124,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def median(self, close=None, length=None, offset:int = None, **kwargs):
-        """Median Price
-
-        Returns the Median of a Series.
-
-        Args:
-            close (None, pd.Series, optional):
-                If None, uses local df column: 'high'
-            length (None, int, optional):
-                An integer of how periods to compute.  Default is None and one.
-            cumulative (bool):
-                Default: False.  If True, returns the cummulative returns
-            offset (None, int, optional):
-                An integer on how to shift the Series.  Default is None and zero.
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -1198,23 +1138,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def midpoint(self, close=None, length=None, offset=None, **kwargs):
-        """Returns the Midpoint of a Series of a certain length.
-
-        Args:
-            close (None, str, pd.Series, optional):
-                pd.Series: A seperate Series not in the current DataFrame.
-                str: Looksup column in DataFrame under 'str' name.
-                None: Default.  Uses current DataFrame column 'close'.
-            length (int): Lookback length. Defaults to 1.
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -1228,7 +1151,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def midprice(self, high=None, low=None, length=None, offset=None, **kwargs):
-        """ midprice """
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -1247,27 +1169,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def rpn(self, high=None, low=None, length=None, offset=None, percentage=None, **kwargs):
-        """Range Percentage
-
-        Returns the Series of values that are a percentage of the absolute difference of two Series.
-
-        Args:
-            high: None or a Series or DataFrame, optional
-                If None, uses local df column: 'high'
-            low: None or a Series or DataFrame, optional
-                If None, uses local df column: 'low'
-            append: bool, kwarg, optional
-                If True, appends result to current df
-
-            **kwargs:
-                withLow (bool, optional): If true, adds low value to result
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column(s).
         df = self._df
         if df is None: return

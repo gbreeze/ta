@@ -513,7 +513,7 @@ def mass_index(high, low, n=9, n2=25, fillna=False):
     return pd.Series(mass, name='mass_index_'+str(n))
 
 
-def cci(high, low, close, n=20, c=0.015, fillna=False):
+def cci_depreciated(high, low, close, n=20, c=0.015, fillna=False):
     """Commodity Channel Index (CCI)
 
     CCI measures the difference between a security's price change and its

@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 
 from .utils import *
+from .overlap import hlc3
 # from .utils import get_drift, get_offset, signed_series, verify_series
 
 
@@ -100,6 +101,9 @@ def bop(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, percent
     high_log_range = high - low
     bop = percent * close_open_range / high_log_range
 
+    # Offset
+    bop = bop.shift(offset)
+
     # Handle fills
     if 'fillna' in kwargs:
         bop.fillna(kwargs['fillna'], inplace=True)
@@ -111,6 +115,48 @@ def bop(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, percent
     bop.category = 'momentum'
 
     return bop
+
+
+def cci(high:pd.Series, low:pd.Series, close:pd.Series, length=None, c=None, offset=None, **kwargs):
+    """Commodity Channel Index of a Pandas Series
+    
+    Use help(df.ta.cci) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 20
+    c = float(c) if c and c > 0 else 0.015
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = get_offset(offset)
+
+    # Calculate Result
+    def mad(series):
+        """Mean Absolute Deviation"""
+        return np.fabs(series - series.mean()).mean()
+
+    typical_price = hlc3(high=high, low=low, close=close)
+    mean_typical_price = typical_price.rolling(length, min_periods=min_periods).mean()
+    mad_typical_price = typical_price.rolling(length).apply(mad, raw=True)
+
+    cci = (typical_price - mean_typical_price) / (c * mad_typical_price)
+
+    # Offset
+    cci = cci.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        cci.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        cci.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    cci.name = f"CCI_{length}_{c}"
+    cci.category = 'momentum'
+
+    return cci
 
 
 def mom(close:pd.Series, length=None, offset=None, **kwargs):

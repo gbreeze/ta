@@ -435,7 +435,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def ao(self, high=None, low=None, fast:int = None, slow:int = None, offset=None, **kwargs):
-      # Get the correct column.
+        # Get the correct column(s).
         df = self._df
         if df is None or not isinstance(df, pd.DataFrame): return
         else:
@@ -459,7 +459,13 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def aroon(self, close=None, length:int = None, offset:int = None, **kwargs):
-        return _aroon(self._df, close=close, length=length, offset=offset, **kwargs)
+        result = _aroon(self._df, close=close, length=length, offset=offset, **kwargs)
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+
+        return result
 
 
     def bop(self, open_:str = None, high:str = None, low:str = None, close:str = None, percentage:bool = False, offset=None, **kwargs):
@@ -496,7 +502,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def cci(self, high:str = None, low:str = None, close:str = None, length:int = None, c:float = None, **kwargs):
+    def cci(self, high:str = None, low:str = None, close:str = None, length:int = None, c:float = None, offset=None, **kwargs):
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -516,42 +522,23 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 20
-        c = float(c) if c and c > 0 else 0.015
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        
-        # Calculate Result
-        def mad(series):
-            """Mean Absolute Deviation"""
-            return np.fabs(series - series.mean()).mean()
-
-        typical_price = self.hlc3(high=high, low=low, close=close)
-        mean_typical_price = typical_price.rolling(length, min_periods=min_periods).mean()
-        mad_typical_price = typical_price.rolling(length).apply(mad, raw=True)
-
-        cci = (typical_price - mean_typical_price) / (c * mad_typical_price)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            cci.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            cci.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        # bop.name = f"BOP_{length}"
-        cci.name = f"CCI_{length}_{c}"
-        cci.category = 'momentum'
+        result = cci(high=high, low=low, close=close, length=length, c=c, offset=offset, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[cci.name] = cci
+            df[result.name] = result
 
-        return cci
+        return result
 
 
     def kst(self, close=None, roc1:int = None, roc2:int = None, roc3:int = None, roc4:int = None, sma1:int = None, sma2:int = None, sma3:int = None, sma4:int = None, signal:int = None, **kwargs):
-        return _kst(self._df, close=close, roc1=roc1, roc2=roc2, roc3=roc3, roc4=roc4, sma1=sma1, sma2=sma2, sma3=sma3, sma4=sma4, signal=signal, **kwargs)
+        result = _kst(self._df, close=close, roc1=roc1, roc2=roc2, roc3=roc3, roc4=roc4, sma1=sma1, sma2=sma2, sma3=sma3, sma4=sma4, signal=signal, **kwargs)
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+
+        return result
 
 
     def macd(self, close=None, fast:int = None, slow:int = None, signal:int = None, **kwargs):
@@ -844,7 +831,13 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def tsi(self, close=None, fast:int = None, slow:int = None, **kwargs):
-        return _tsi(self._df, close=close, fast=fast, slow=slow, **kwargs)
+        result = _tsi(self._df, close=close, fast=fast, slow=slow, **kwargs)
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+
+        return result
 
 
     def uo(self, high=None, low=None, close=None, fast:int = None, medium:int = None, slow:int = None, fast_w:int = None, medium_w:int = None, slow_w:int = None, drift:int = None, **kwargs):
@@ -867,7 +860,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        return _uo(high=high, low=low, close=close, fast=fast, medium=medium, slow=slow, fast_w=fast_w, medium_w=medium_w, slow_w=slow_w, drift=drift, **kwargs)
+        result = _uo(high=high, low=low, close=close, fast=fast, medium=medium, slow=slow, fast_w=fast_w, medium_w=medium_w, slow_w=slow_w, drift=drift, **kwargs)
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+
+        return result
 
 
     def willr(self, high:str = None, low:str = None, close:str = None, length:int = None, **kwargs):

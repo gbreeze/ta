@@ -1225,7 +1225,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        return log_return(close=close, length=length, cumulative=cumulative, percent=percent, offset=offset, **kwargs)
+        result = log_return(close=close, length=length, cumulative=cumulative, percent=percent, offset=offset, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
 
 
     def percent_return(self, close=None, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
@@ -1238,7 +1244,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        return percent_return(close=close, length=length, cumulative=cumulative, percent=percent, offset=offset, **kwargs)
+        result = percent_return(close=close, length=length, cumulative=cumulative, percent=percent, offset=offset, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
 
 
 
@@ -1253,7 +1265,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        return kurtosis(close=close, length=length, offset=offset, **kwargs)
+        result = kurtosis(close=close, length=length, offset=offset, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
 
 
     def quantile(self, close=None, length=None, q=None, offset=None, **kwargs):
@@ -1266,7 +1284,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
         
-        return quantile(close=close, length=length, q=q, offset=offset, **kwargs)
+        result = quantile(close=close, length=length, q=q, offset=offset, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
 
 
     def skew(self, close=None, length=None, offset=None, **kwargs):
@@ -1279,7 +1303,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        return skew(close=close, length=length, offset=offset, **kwargs)
+        result = skew(close=close, length=length, offset=offset, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
 
 
     def stdev(self, close=None, length=None, offset=None, **kwargs):
@@ -1292,7 +1322,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        return stdev(close=close, length=length, offset=offset, **kwargs)
+        result = stdev(close=close, length=length, offset=offset, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
 
 
     def variance(self, close=None, length=None, offset=None, **kwargs):
@@ -1305,7 +1341,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        return variance(close=close, length=length, offset=offset, **kwargs)
+        result = variance(close=close, length=length, offset=offset, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
 
 
 
@@ -1320,7 +1362,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        return decreasing(close=close, length=length, asint=asint, offset=offset, **kwargs)
+        result = decreasing(close=close, length=length, asint=asint, offset=offset, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
 
 
     def dpo(self, close:str = None, length:int = None, centered:bool = True, offset=None, **kwargs):
@@ -1333,7 +1381,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        return dpo(close=close, length=length, centered=centered, offset=offset, **kwargs)
+        result = dpo(close=close, length=length, centered=centered, offset=offset, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
 
 
     def increasing(self, close:str = None, length:int = None, asint:bool = True, offset=None, **kwargs):
@@ -1346,7 +1400,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        return increasing(close=close, length=length, asint=asint, offset=offset, **kwargs)
+        result = increasing(close=close, length=length, asint=asint, offset=offset, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
 
 
 

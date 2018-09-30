@@ -27,10 +27,6 @@ def kurtosis(close:pd.Series, length=None, offset=None, **kwargs):
     kurtosis.name = f"KURT_{length}"
     kurtosis.category = 'statistics'
 
-    # If 'append', then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[kurtosis.name] = kurtosis
-
     return kurtosis
 
 
@@ -57,10 +53,6 @@ def quantile(close:pd.Series, length=None, q=None, offset=None, **kwargs):
     quantile.name = f"QTL_{length}_{q}"
     quantile.category = 'statistics'
 
-    # If 'append', then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[quantile.name] = quantile
-
     return quantile
 
 
@@ -85,10 +77,6 @@ def skew(close:pd.Series, length=None, offset=None, **kwargs):
     # Name & Category
     skew.name = f"SKEW_{length}"
     skew.category = 'statistics'
-
-    # If 'append', then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[skew.name] = skew
 
     return skew
 
@@ -115,10 +103,6 @@ def stdev(close:pd.Series, length=None, offset=None, **kwargs):
     stdev.name = f"STDEV_{length}"
     stdev.category = 'statistics'
 
-    # If 'append', then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[stdev.name] = stdev
-
     return stdev
 
 
@@ -143,10 +127,6 @@ def variance(close:pd.Series, length=None, offset=None, **kwargs):
     # Name & Category
     variance.name = f"VAR_{length}"
     variance.category = 'statistics'
-
-    # If 'append', then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[variance.name] = variance
 
     return variance
 

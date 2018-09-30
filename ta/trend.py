@@ -41,10 +41,6 @@ def decreasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
     decreasing.name = f"DEC_{length}"
     decreasing.category = 'trend'
 
-    # If append, then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[decreasing.name] = decreasing
-
     return decreasing
 
 
@@ -80,10 +76,6 @@ def dpo(close:pd.Series, length=None, centered=True, offset=None, **kwargs):
     dpo.name = f"DPO_{length}"
     dpo.category = 'trend'
 
-    # If append, then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[dpo.name] = dpo
-
     return dpo
 
 
@@ -116,15 +108,13 @@ def increasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
     increasing.name = f"INC_{length}"
     increasing.category = 'trend'
 
-    # If append, then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[increasing.name] = increasing
-
     return increasing
 
 
+# Legacy Code
 def macd(close, n_fast=12, n_slow=26, fillna=False):
-    """Moving Average Convergence Divergence (MACD)
+    """
+    Moving Average Convergence Divergence (MACD)
 
     Is a trend-following momentum indicator that shows the relationship between
     two moving averages of prices.

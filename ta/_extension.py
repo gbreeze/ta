@@ -1766,7 +1766,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def eom(self, high=None, low=None, close=None, volume=None, length=None, divisor:int = None, offset:int = None, ease:int = None, **kwargs):
+    def eom(self, high=None, low=None, close=None, volume=None, length=None, divisor:int = None, offset:int = None, drift:int = None, **kwargs):
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -1791,7 +1791,7 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 volume = df[volume] if volume in df.columns else df.volume
 
-        result = eom(high=high, low=low, close=close, volume=volume, length=length, divisor=divisor, offset=offset, ease=ease, **kwargs)
+        result = eom(high=high, low=low, close=close, volume=volume, length=length, divisor=divisor, offset=offset, drift=drift, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
@@ -1946,7 +1946,7 @@ class AnalysisIndicators(BasePandasObject):
     KeltnerChannels = kc
     TrueRange = true_range
 
-    # Volume: volume.py
+    # Volume: volume.py ✅
     AccumDist = ad
     ChaikinMoneyFlow = cmf
     EldersForceIndex = efi

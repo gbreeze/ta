@@ -134,7 +134,7 @@ def efi(close:pd.Series, volume:pd.Series, length=None, offset=None, mamode=None
     return efi
 
 
-def eom(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length=None, divisor=None, offset=None, ease=None, **kwargs):
+def eom(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length=None, divisor=None, offset=None, drift=None, **kwargs):
     """Elder's Force Index (EFI)
     
     Use help(df.ta.efi) for specific documentation where 'df' represents
@@ -148,12 +148,12 @@ def eom(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length
     length = int(length) if length and length > 0 else 1
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     divisor = divisor if divisor and divisor > 0 else 100000000
-    ease = int(ease) if ease and ease > 0 else 1
+    drift = get_drift(drift)
     offset = get_offset(offset)
 
     # Calculate Result
     hl_range = high - low
-    distance = hl2(high=high, low=low) - hl2(high=high.shift(ease), low=low.shift(ease))
+    distance = hl2(high=high, low=low) - hl2(high=high.shift(drift), low=low.shift(drift))
     box_ratio = (volume / divisor) / hl_range
     eom = distance / box_ratio
     eom = eom.rolling(length, min_periods=min_periods).mean()
@@ -300,7 +300,7 @@ def pvt(close:pd.Series, volume:pd.Series, offset=None, **kwargs):
         pvt.fillna(method=kwargs['fill_method'], inplace=True)
 
     # Name and Categorize it
-    pvt.name = f"PVT_{length}"
+    pvt.name = f"PVT"
     pvt.category = 'volume'
 
     return pvt

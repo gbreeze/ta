@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 
 
+# Legacy Code, relocated to performance
 def daily_return(close, fillna=False):
     """Daily Return (DR)
 

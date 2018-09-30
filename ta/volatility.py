@@ -12,6 +12,7 @@ import pandas as pd
 from .utils import *
 
 
+# Legacy Code
 def average_true_range(high, low, close, n=14, fillna=False):
     """Average True Range (ATR)
 

@@ -9,9 +9,51 @@
 import numpy as np
 import pandas as pd
 
-from .utils import get_offset, verify_series
+from .utils import get_offset, signed_series, verify_series
 
 
+def ad(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, signed=True, offset=None, **kwargs):
+    """Accumulation/Distribution of a Pandas Series
+    
+    Use help(df.ta.ad) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    volume = verify_series(volume)
+    offset = get_offset(offset)
+
+    # Calculate Result
+    if open_ is not None:
+        print(f"Using 'open'")
+        open_ = verify_series(open_)
+        ad = close - open_  # AD with Open
+    else:                
+        ad = 2 * close - high - low  # AD with High, Low, Close
+
+    hl_range = high - low
+    ad *= volume / hl_range
+    ad = ad.cumsum()
+
+    # Offset
+    ad = ad.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        ad.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        ad.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    ad.name = f"AD"
+    ad.category = 'volume'
+
+    return ad
+
+
+# Legacy Code
 def acc_dist_index(high, low, close, volume, fillna=False):
     """Accumulation/Distribution Index (ADI)
 

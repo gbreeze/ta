@@ -12,7 +12,7 @@ from .statistics import *
 from .trend import *
 from .utils import signed_series
 # from .volatility import *
-# from .volume import *
+from .volume import *
 
 from pandas.core.base import PandasObject
 from sys import float_info as sflt
@@ -1724,37 +1724,13 @@ class AnalysisIndicators(BasePandasObject):
                 else:
                     open_ = df[open_] if open_ in df.columns else df.open
 
-                ad - close - open_  # AD with Open
-            else:                
-                ad = 2 * close - high - low  # AD with High, Low, Close
-
-        # Validate arguments
-        offset = offset if isinstance(offset, int) else 0
-        # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-
-        # Calculate Result
-        hl_range = high - low
-        ad *= volume / hl_range
-        ad = ad.cumsum()
-
-        # Offset
-        ad = ad.shift(offset)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            ad.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            ad.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        ad.name = f"AD"
-        ad.category = 'volume'
+        result = ad(high=high, low=low, close=close, volume=volume, open_=open_, signed=signed, offset=offset, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[ad.name] = ad
+            df[result.name] = result
 
-        return ad
+        return result
 
 
     def cmf(self, high=None, low=None, close=None, volume=None, length=None, open_=None, offset:int = None, **kwargs):

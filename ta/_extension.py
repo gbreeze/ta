@@ -1788,11 +1788,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 volume = df[volume] if volume in df.columns else df.volume
 
+        result = efi(close=close, volume=volume, length=length, offset=offset, mamode=mamode, drift=drift, **kwargs)
+
         # Validate arguments
         length = int(length) if length and length > 0 else 1
         min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        drift = int(drift) if drift and drift != 0 else 1
-        offset = offset if isinstance(offset, int) else 0
+        drift = get_drift(drift)
+        offset = get_offset(offset)
 
         # Calculate Result
         pv_diff = close.diff(drift) * volume

@@ -9,7 +9,7 @@
 import numpy as np
 import pandas as pd
 
-from .utils import get_offset, signed_series, verify_series
+from .utils import get_drift, get_offset, signed_series, verify_series
 
 
 def ad(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, signed=True, offset=None, **kwargs):
@@ -94,6 +94,48 @@ def cmf(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:
     cmf.category = 'volume'
 
     return cmf
+
+
+def efi(close:pd.Series, volume:pd.Series, length=None, offset=None, mamode=None, drift=None, **kwargs):
+    """Elder's Force Index (EFI)
+    
+    Use help(df.ta.efi) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    close = verify_series(close)
+    volume = verify_series(volume)
+    length = int(length) if length and length > 0 else 1
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    drift = get_drift(drift)
+    offset = get_offset(offset)
+
+    # Calculate Result
+    pv_diff = close.diff(drift) * volume
+
+    if mamode is None or mamode == 'alexander':
+        efi = pv_diff.ewm(span=length, min_periods=min_periods).mean()
+    else:
+        efi = pv_diff.rolling(length, min_periods=min_periods).mean()
+
+    # Offset
+    efi = efi.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        efi.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        efi.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    efi.name = f"EFI_{length}"
+    efi.category = 'volume'
+
+    return efi
+
+
+
+
 
 
 # Legacy Code

@@ -18,7 +18,13 @@ def ema(series:pd.Series, periods:int):
     return pd.concat([sma, rest]).ewm(span=periods, adjust=False).mean()
 
 
+def get_drift(x:int):
+    """Returns an int if not zero, otherwise defaults to one."""
+    return int(x) if x and x != 0 else 1
+
+
 def get_offset(x:int):
+    """Returns an int, otherwise defaults to zero."""
     return int(x) if x else 0
 
 

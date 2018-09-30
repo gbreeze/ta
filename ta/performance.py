@@ -30,10 +30,6 @@ def log_return(close:pd.Series, length=None, cumulative:bool = False, percent:bo
     log_return.name = f"{'CUM_' if cumulative else ''}LOGRET_{length}"
     log_return.category = 'performance'
 
-    # If 'append', then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[log_return.name] = log_return
-
     return log_return
 
 
@@ -61,9 +57,5 @@ def percent_return(close:pd.Series, length=None, cumulative:bool = False, percen
     # Name & Category
     pct_return.name = f"{'CUM_' if cumulative else ''}PCTRET_{length}"
     pct_return.category = 'performance'
-
-    # If 'append', then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[pct_return.name] = pct_return
 
     return pct_return

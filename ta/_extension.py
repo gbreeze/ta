@@ -1839,31 +1839,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 volume = df[volume] if volume in df.columns else df.volume
 
-        # Validate arguments
-        offset = offset if isinstance(offset, int) else 0
-
-        # Calculate Result
-        signed_volume = signed_series(close, initial=1) * volume
-        obv = signed_volume.cumsum()
-
-        # Offset
-        obv = obv.shift(offset)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            obv.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            obv.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        obv.name = f"OBV"
-        obv.category = 'volume'
+        result = obv(close=close, volume=volume, offset=offset, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[obv.name] = obv
+            df[result.name] = result
 
-        return obv
+        return result
 
 
     def pvol(self, close:str = None, volume:str = None, signed:bool = True, offset:int = None, **kwargs):

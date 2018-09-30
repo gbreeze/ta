@@ -212,6 +212,37 @@ def nvi(close:pd.Series, volume:pd.Series, length=None, initial=None, signed=Tru
     return nvi
 
 
+def obv(close:pd.Series, volume:pd.Series, offset=None, **kwargs):
+    """On Balance Volume (OBV)
+    
+    Use help(df.ta.obv) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    close = verify_series(close)
+    volume = verify_series(volume)
+    offset = get_offset(offset)
+
+    # Calculate Result
+    signed_volume = signed_series(close, initial=1) * volume
+    obv = signed_volume.cumsum()
+
+    # Offset
+    obv = obv.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        obv.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        obv.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    obv.name = f"OBV"
+    obv.category = 'volume'
+
+    return obv
+
+
 # Legacy Code
 def acc_dist_index(high, low, close, volume, fillna=False):
     """Accumulation/Distribution Index (ADI)

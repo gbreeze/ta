@@ -53,6 +53,49 @@ def ad(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:p
     return ad
 
 
+def cmf(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, length=None, offset=None, **kwargs):
+    """Chaikin Money Flow (CMF)
+    
+    Use help(df.ta.cmf) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    volume = verify_series(volume)
+    length = int(length) if length and length > 0 else 1
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = get_offset(offset)
+
+    # Calculate Result
+    if open_ is not None:
+        print(f"Using 'open'")
+        open_ = verify_series(open_)
+        ad = close - open_  # AD with Open
+    else:                
+        ad = 2 * close - high - low  # AD with High, Low, Close
+
+    hl_range = high - low
+    ad *= volume / hl_range
+    cmf = ad.rolling(length).sum() / volume.rolling(length).sum()
+
+    # Offset
+    cmf = cmf.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        cmf.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        cmf.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    cmf.name = f"CMF_{length}"
+    cmf.category = 'volume'
+
+    return cmf
+
+
 # Legacy Code
 def acc_dist_index(high, low, close, volume, fillna=False):
     """Accumulation/Distribution Index (ADI)

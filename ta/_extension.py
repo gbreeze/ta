@@ -1733,7 +1733,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def cmf(self, high=None, low=None, close=None, volume=None, length=None, open_=None, offset:int = None, **kwargs):
+    def cmf(self, high=None, low=None, close=None, volume=None, open_=None, length=None, offset:int = None, **kwargs):
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -1762,40 +1762,15 @@ class AnalysisIndicators(BasePandasObject):
                 if isinstance(open_, pd.Series):
                     open_ = open_
                 else:
-                    open_ = df[open_] if open_open_ in df.columns else df.open
-                
-                ad = close - open_  # AD with Open
-            else:
-                ad = 2 * close - high - low  # AD with High, Low, Close
+                    open_ = df[open_] if open_ in df.columns else df.open
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 1
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        offset = offset if isinstance(offset, int) else 0
-
-        # Calculate Result
-        hl_range = high - low
-        ad *= volume / hl_range
-        cmf = ad.rolling(length).sum() / volume.rolling(length).sum()
-
-        # Offset
-        cmf = cmf.shift(offset)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            cmf.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            cmf.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        cmf.name = f"CMF_{length}"
-        cmf.category = 'volume'
+        result = cmf(high=high, low=low, close=close, volume=volume, open_=open_, length=length, offset=offset, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[cmf.name] = cmf
+            df[result.name] = result
 
-        return cmf
+        return result
 
 
     def efi(self, close=None, volume=None, length=None, mamode:str = None, offset:int = None, drift:int = None, **kwargs):

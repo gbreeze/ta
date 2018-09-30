@@ -51,10 +51,6 @@ def hlc3(high:pd.Series, low:pd.Series, close:pd.Series, offset=None, **kwargs):
     hlc3.name = "HLC3"
     hlc3.category = 'overlap'
 
-    # If 'append', then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[hlc3.name] = hlc3
-
     return hlc3
 
 
@@ -81,10 +77,6 @@ def ohlc4(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, offse
     ohlc4.name = "OHLC4"
     ohlc4.category = 'overlap'
 
-    # If 'append', then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[ohlc4.name] = ohlc4
-
     return ohlc4
 
 
@@ -109,10 +101,6 @@ def median(close:pd.Series, length=None, offset=None, **kwargs):
     # Name & Category
     median.name = f"MEDIAN_{length}"
     median.category = 'overlap'
-
-    # If 'append', then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[median.name] = median
 
     return median
 
@@ -146,10 +134,6 @@ def midpoint(close:pd.Series, length=None, offset=None, **kwargs):
     # Name and Categorize it
     midpoint.name = f"MIDPOINT_{length}"
     midpoint.category = 'overlap'
-
-    # If append, then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[midpoint.name] = midpoint
 
     return midpoint
 
@@ -185,10 +169,6 @@ def midprice(high:pd.Series, low:pd.Series, length=None, offset=None, **kwargs):
     midprice.name = f"MIDPRICE_{length}"
     midprice.category = 'overlap'
 
-    # If append, then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[midprice.name] = midprice
-
     return midprice
 
 
@@ -217,9 +197,5 @@ def rpn(high:pd.Series, low:pd.Series, length=None, offset=None, percentage=None
     # Name & Category
     rp.name = f"RP_{length}_{percentage}"
     rp.category = 'overlap'
-
-    # If 'append', then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[rp.name] = rp
 
     return rp

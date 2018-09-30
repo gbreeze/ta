@@ -1050,7 +1050,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        return hlc3(high=high, low=low, close=close, offset=offset, **kwargs)
+        result = hlc3(high=high, low=low, close=close, offset=offset, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
 
 
     def ohlc4(self, open_=None, high=None, low=None, close=None, offset=None, **kwargs):
@@ -1078,7 +1084,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        return ohlc4(open_=open_, high=high, low=low, close=close, offset=offset, **kwargs)
+        result = ohlc4(open_=open_, high=high, low=low, close=close, offset=offset, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
 
 
     def median(self, close=None, length=None, offset:int = None, **kwargs):
@@ -1091,7 +1103,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        return median(close=close, length=length, offset=offset, **kwargs)
+        result = median(close=close, length=length, offset=offset, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
  
 
 
@@ -1105,7 +1123,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        return midpoint(close=close, length=length, offset=offset, **kwargs)
+        result = midpoint(close=close, length=length, offset=offset, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
 
 
     def midprice(self, high=None, low=None, length=None, offset=None, **kwargs):
@@ -1123,7 +1147,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 high = df[high] if high in df.columns else df.high
 
-        return midprice(high=high, low=low, length=length, offset=offset, **kwargs)
+        result = midprice(high=high, low=low, length=length, offset=offset, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
 
 
     def rpn(self, high=None, low=None, length=None, offset=None, percentage=None, **kwargs):
@@ -1141,7 +1171,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 low = df[low] if low in df.columns else df.low
 
-        return rpn(high=high, low=low, length=length, offset=offset, percentage=percentage, **kwargs)
+        result = rpn(high=high, low=low, length=length, offset=offset, percentage=percentage, **kwargs)
+
+        # If 'append', then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+        
+        return result
 
 
     # def wma(self, close:str = None, length:int = None, asc:bool = True, **kwargs):
@@ -1177,6 +1213,7 @@ class AnalysisIndicators(BasePandasObject):
     #     return wma
 
 
+
     ## Performance Indicators
     def log_return(self, close=None, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
         # Get the correct column.
@@ -1191,7 +1228,6 @@ class AnalysisIndicators(BasePandasObject):
         return log_return(close=close, length=length, cumulative=cumulative, percent=percent, offset=offset, **kwargs)
 
 
-
     def percent_return(self, close=None, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
         # Get the correct column.
         df = self._df
@@ -1203,6 +1239,7 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         return percent_return(close=close, length=length, cumulative=cumulative, percent=percent, offset=offset, **kwargs)
+
 
 
     ## Statistics Indicators
@@ -1310,6 +1347,7 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         return increasing(close=close, length=length, asint=asint, offset=offset, **kwargs)
+
 
 
     ## Volatility Indicators
@@ -1591,6 +1629,7 @@ class AnalysisIndicators(BasePandasObject):
             df[true_range.name] = true_range
 
         return true_range
+
 
 
     ## Volume Indicators

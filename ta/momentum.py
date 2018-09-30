@@ -43,6 +43,36 @@ def mom(close:pd.Series, length=None, offset=None, **kwargs):
     return mom
 
 
+def roc(close:pd.Series, length=None, offset=None, **kwargs):
+    """Rate of Change (ROC) of a Pandas Series
+    
+    Use help(df.ta.mom) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 1
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = get_offset(offset)
+
+    # Calculate Result
+    roc = 100 * mom(close=close, length=length) / close.shift(length)
+
+    # Offset
+    roc = roc.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        roc.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        roc.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    roc.name = f"ROC_{length}"
+    roc.category = 'momentum'
+
+    return roc
+
 
 # Legacy code
 def rsi(close, n=14, fillna=False):

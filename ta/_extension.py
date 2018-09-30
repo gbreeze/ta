@@ -838,8 +838,7 @@ class AnalysisIndicators(BasePandasObject):
         return ppo
 
 
-    def roc(self, close:str = None, length:int = None, **kwargs):
-        """ roc """
+    def roc(self, close:str = None, length:int = None, offset:int = None, **kwargs):
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -849,28 +848,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 1
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-
-        # Calculate Result
-        roc = 100 * self.mom(close=close, length=length) / close.shift(length)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            roc.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            roc.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        roc.name = f"ROC_{length}"
-        roc.category = 'momentum'
+        result = roc(close=close, length=length, offset=offset, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[roc.name] = roc
+            df[result.name] = result
 
-        return roc
+        return result
 
 
     def rsi(self, close:str = None, length:int = None, drift:int = None, **kwargs):

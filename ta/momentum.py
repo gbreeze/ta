@@ -46,6 +46,44 @@ def apo(close:pd.Series, fast=None, slow=None, offset=None, **kwargs):
     return apo
 
 
+def ao(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwargs):
+    """Awesome Oscillator of a Pandas Series
+    
+    Use help(df.ta.ao) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    print(f"In momentum.ao")
+    print(dir())
+
+    # Validate Arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    fast = int(fast) if fast and fast > 0 else 5
+    slow = int(slow) if slow and slow > 0 else 34
+    if slow < fast:
+        fast, slow = slow, fast
+    offset = get_offset(offset)
+
+    # Calculate Result
+    median_price = 0.5 * (high + low)
+    ao = median_price.rolling(fast).mean() - median_price.rolling(slow).mean()
+
+    # Offset
+    ao = ao.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        ao.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        ao.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    ao.name = f"AO_{fast}_{slow}"
+    ao.category = 'momentum'
+
+    return ao
+
+
 def mom(close:pd.Series, length=None, offset=None, **kwargs):
     """Momentum of a Pandas Series
     
@@ -369,7 +407,7 @@ def wr(high, low, close, lbp=14, fillna=False):
     return pd.Series(wr, name='wr')
 
 
-def ao(high, low, s=5, l=34, fillna=False):
+def ao_depreciated(high, low, s=5, l=34, fillna=False):
     """Awesome Oscillator
 
     From: https://www.tradingview.com/wiki/Awesome_Oscillator_(AO)

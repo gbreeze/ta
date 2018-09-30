@@ -21,47 +21,6 @@ TA_EPSILON = sflt.epsilon
 
 
 
-def _ao(df, high, low, fast:int = None, slow:int = None, **kwargs):
-    """Awesome Oscillator"""
-
-    if df is None: return
-    else:
-        # Get the correct column.
-        if isinstance(high, pd.Series):
-            high = high
-        else:
-            high = df[high] if high in df.columns else df.high
-
-        if isinstance(low, pd.Series):
-            low = low
-        else:
-            low = df[low] if low in df.columns else df.low
-
-    # Validate arguments
-    fast = fast if fast and fast > 0 else 5
-    slow = slow if slow and slow > 0 else 34
-
-    # Calculate Result
-    median_price = 0.5 * (high + low)
-    ao = median_price.rolling(fast).mean() - median_price.rolling(slow).mean()
-
-    # Handle fills
-    if 'fillna' in kwargs:
-        ao.fillna(kwargs['fillna'], inplace=True)
-    if 'fill_method' in kwargs:
-        ao.fillna(method=kwargs['fill_method'], inplace=True)
-
-    # Name and Categorize it
-    ao.name = f"AO_{fast}_{slow}"
-    ao.category = 'momentum'
-
-    # If append, then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[ao.name] = ao
-
-    return ao
-
-
 def _aroon(df, close, length:int = None, offset:int = None, **kwargs):
     """Aroon
     
@@ -475,8 +434,29 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def ao(self, high=None, low=None, fast:int = None, slow:int = None, **kwargs):
-        return _ao(self._df, high=high, low=low, fast=fast, slow=slow, **kwargs)
+    def ao(self, high=None, low=None, fast:int = None, slow:int = None, offset=None, **kwargs):
+      # Get the correct column.
+        df = self._df
+        if df is None or not isinstance(df, pd.DataFrame): return
+        else:
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+        print(dir())
+        result = ao(high=high, low=low, fast=fast, slow=slow, offset=offset, **kwargs)
+
+        # If append, then add it to the df
+        if 'append' in kwargs and kwargs['append']:
+            df[result.name] = result
+
+        return result
 
 
     def aroon(self, close=None, length:int = None, offset:int = None, **kwargs):

@@ -1293,24 +1293,6 @@ class AnalysisIndicators(BasePandasObject):
 
     ## Statistics Indicators
     def kurtosis(self, close=None, length=None, offset=None, **kwargs):
-        """Kurtosis
-
-        Returns the Kurtosis of a Series.
-
-        Args:
-            close (None, pd.Series, optional):
-                If None, uses local df column: 'high'
-            length (None, int, optional):
-                An integer of how periods to compute.  Default is None and one.
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -1324,24 +1306,6 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def quantile(self, close=None, length=None, q=None, offset=None, **kwargs):
-        """quantile
-
-        Returns the quantile of a Series.
-
-        Args:
-            close (None, pd.Series, optional):
-                If None, uses local df column: 'high'
-            length (None, int, optional):
-                An integer of how periods to compute.  Default is None and one.
-
-            **kwargs:
-                fillna (value, optional): pd.DataFrame.fillna(value)
-                fill_method (value, optional): Type of fill method
-                append (bool, optional): If True, appends result to current df.
-
-        Returns:
-            pd.Series: New feature
-        """
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -2572,4 +2536,4 @@ class AnalysisIndicators(BasePandasObject):
 
 ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))
 if True:
-    print(f"[i] Loaded {len(ta_indicators)} TA Indicators: {', '.join(ta_indicators)}")
+    print(f"[i] Loaded {len(ta_indicators)} TA Indicators:\n{', '.join(ta_indicators)}")

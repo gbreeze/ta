@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ._extension import *
 
-ai_hl2 = \
+hl2_docs = \
 """
 Returns the average of two series.
 
@@ -22,7 +22,7 @@ Returns:
     pd.Series: New feature
 """
 
-ai_hlc3 = \
+hlc3_docs = \
 """
 Returns the average of three series.
 
@@ -45,7 +45,7 @@ Returns:
     pd.Series: New feature
 """
 
-ai_ohlc4 = \
+ohlc4_docs = \
 """
 Calculates and returns the average of four series.
 
@@ -70,7 +70,7 @@ Returns:
     pd.Series: New feature
 """
 
-ai_median = \
+median_docs = \
 """
 Median Price
 
@@ -95,7 +95,7 @@ Returns:
     pd.Series: New feature
 """
 
-ai_midpoint = """
+midpoint_docs = """
 Returns the Midpoint of a Series of a certain length.
 
 Args:
@@ -114,7 +114,7 @@ Returns:
     pd.Series: New feature
 """
 
-ai_midprice = \
+midprice_docs = \
 """
 Returns the Midprice of a Series of a certain length.
 
@@ -134,7 +134,7 @@ Returns:
     pd.Series: New feature
 """
 
-ai_rpn = \
+rpn_docs = \
 """
 Range Percentage
 
@@ -158,19 +158,63 @@ Returns:
     pd.Series: New feature
 """
 
+
+kurtosis_docs = \
+"""
+Kurtosis
+
+Returns the Kurtosis of a Series.
+
+Args:
+    close (None, pd.Series, optional):
+        If None, uses local df column: 'high'
+    length (None, int, optional):
+        An integer of how periods to compute.  Default is None and one.
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
+quantile_docs = \
+"""
+quantile
+
+Returns the quantile of a Series.
+
+Args:
+    close (None, pd.Series, optional):
+        If None, uses local df column: 'high'
+    length (None, int, optional):
+        An integer of how periods to compute.  Default is None and one.
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
 # Momentum Documentation
 
 # Overlap Documentation
-AnalysisIndicators.hl2.__doc__ = ai_hl2
-AnalysisIndicators.hlc3.__doc__ = ai_hlc3
-AnalysisIndicators.ohlc4.__doc__ = ai_ohlc4
-AnalysisIndicators.median.__doc__ = ai_median
-AnalysisIndicators.midpoint.__doc__ = ai_midpoint
-AnalysisIndicators.midprice.__doc__ = ai_midprice
-AnalysisIndicators.rpn.__doc__ = ai_rpn
+AnalysisIndicators.hl2.__doc__ = hl2_docs
+AnalysisIndicators.hlc3.__doc__ = hlc3_docs
+AnalysisIndicators.ohlc4.__doc__ = ohlc4_docs
+AnalysisIndicators.median.__doc__ = median_docs
+AnalysisIndicators.midpoint.__doc__ = midpoint_docs
+AnalysisIndicators.midprice.__doc__ = midprice_docs
+AnalysisIndicators.rpn.__doc__ = rpn_docs
 
 # Performance Documentation
 
 
 # Statistics Documentation
-
+AnalysisIndicators.kurtosis.__doc__ = kurtosis_docs
+AnalysisIndicators.quantile.__doc__ = quantile_docs

@@ -6,9 +6,10 @@
 .. moduleauthor:: Dario Lopez Padial (Bukosabino)
 
 """
-
-import pandas as pd
 import numpy as np
+import pandas as pd
+
+from .utils import get_offset, verify_series
 
 
 def acc_dist_index(high, low, close, volume, fillna=False):

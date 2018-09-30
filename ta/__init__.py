@@ -9,3 +9,4 @@ on pandas python library.
 from .wrapper import *
 from .utils import *
 from ._extension import *
+from ._docs import *

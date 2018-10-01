@@ -430,7 +430,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def rsi(self, close:str = None, length:int = None, drift:int = None, **kwargs):
+    def rsi(self, close:str = None, length:int = None, drift:int = None, offset:int = None, **kwargs):
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -440,37 +440,11 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 14
-        drift = int(drift) if drift and drift > 0 else 1
+        result = rsi(close=close, length=length, drift=drift, offset=offset, **kwargs)
 
-        # Calculate Result
-        negative = close.diff(drift)
-        positive = negative.copy()
+        self._append(result, **kwargs)
 
-        positive[positive < 0] = 0  # Make negatives 0 for the postive series
-        negative[negative > 0] = 0  # Make postives 0 for the negative series
-
-        positive_avg = positive.ewm(com=length, adjust=False).mean()
-        negative_avg = negative.ewm(com=length, adjust=False).mean().abs()
-
-        rsi = 100 * positive_avg / (positive_avg + negative_avg)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            rsi.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            rsi.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        rsi.name = f"RSI_{length}"
-        rsi.category = 'momentum'
-
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[rsi.name] = rsi
-
-        return rsi
+        return result
 
 
     def tsi(self, close=None, fast:int = None, slow:int = None, drift:int = None, offset=None, **kwargs):

@@ -295,6 +295,41 @@ def roc(close:pd.Series, length=None, offset=None, **kwargs):
     return roc
 
 
+def rsi(close:pd.Series, length=None, drift=None, offset=None, **kwargs):
+    # Validate arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 14
+    drift = get_drift(drift)
+    offset = get_offset(offset)
+
+    # Calculate Result
+    negative = close.diff(drift)
+    positive = negative.copy()
+
+    positive[positive < 0] = 0  # Make negatives 0 for the postive series
+    negative[negative > 0] = 0  # Make postives 0 for the negative series
+
+    positive_avg = positive.ewm(com=length, adjust=False).mean()
+    negative_avg = negative.ewm(com=length, adjust=False).mean().abs()
+
+    rsi = 100 * positive_avg / (positive_avg + negative_avg)
+
+    # Offset
+    rsi = rsi.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        rsi.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        rsi.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    rsi.name = f"RSI_{length}"
+    rsi.category = 'momentum'
+
+    return rsi
+
+
 def _stoch(df, high, low, close, fast_k:int = None, slow_k:int = None, slow_d:int = None, **kwargs):
     """Stochastic"""
     if df is None: return

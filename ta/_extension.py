@@ -234,52 +234,6 @@ def _stoch(df, high, low, close, fast_k:int = None, slow_k:int = None, slow_d:in
     return stochdf
 
 
-def _tsi(df, close=None, fast:int = None, slow:int = None, drift:int = None, **kwargs):
-    """True Strength Index - tsi"""
-    # Get the correct column.
-    if df is None: return
-    else:
-        if isinstance(close, pd.Series):
-            close = close
-        else:
-            close = df[close] if close in df.columns else df.close
-
-    # Validate arguments
-    fast = int(fast) if fast and fast > 0 else 13
-    slow = int(slow) if slow and slow > 0 else 25
-    if slow < fast:
-        fast, slow = slow, fast
-    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
-    drift = int(drift) if drift and drift > 0 else 1
-
-    # Calculate Result
-    diff = close.diff(drift)
-
-    _m = diff.ewm(span=slow).mean()
-    m = _m.ewm(span=fast).mean()
-
-    _ma = abs(diff).ewm(span=slow).mean()
-    ma = _ma.ewm(span=fast).mean()
-
-    tsi = 100 * m / ma
-
-    # Handle fills
-    if 'fillna' in kwargs:
-        tsi.fillna(kwargs['fillna'], inplace=True)
-    if 'fill_method' in kwargs:
-        tsi.fillna(method=kwargs['fill_method'], inplace=True)
-
-    # Name and Categorize it
-    tsi.name = f"TSI_{fast}_{slow}"
-    tsi.category = 'momentum'
-
-    # If append, then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[tsi.name] = tsi
-
-    return tsi
-
-
 def _uo(high=None, low=None, close=None, fast:int = None, medium:int = None, slow:int = None, fast_w:int = None, medium_w:int = None, slow_w:int = None, drift:int = None, **kwargs):
     """Ultimate Oscillator - uso"""
     # Validate arguments
@@ -806,8 +760,17 @@ class AnalysisIndicators(BasePandasObject):
         return rsi
 
 
-    def tsi(self, close=None, fast:int = None, slow:int = None, **kwargs):
-        result = _tsi(self._df, close=close, fast=fast, slow=slow, **kwargs)
+    def tsi(self, close=None, fast:int = None, slow:int = None, drift:int = None, offset=None, **kwargs):
+        # Get the correct column.
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        result = tsi(close=close, fast=fast, slow=slow, drift=drift, offset=offset, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
@@ -1817,18 +1780,18 @@ class AnalysisIndicators(BasePandasObject):
 
     ## Indicator Aliases & Categories
     # Momentum: momomentum.py #⏸
-    AbsolutePriceOscillator = apo
+    AbsolutePriceOscillator = apo #🤦🏻‍♂️
     AwesomeOscillator = ao
     BalanceOfPower = bop
     CommodityChannelIndex = cci
     KnowSureThing = kst #⏸
     MACD = macd #⏸
-    MassIndex = massi #⏸
+    MassIndex = massi #🤦🏻‍♂️
     Momentum = mom
     PercentagePriceOscillator = ppo #⏸
     RateOfChange = roc
     RelativeStrengthIndex = rsi #⏸
-    TrueStrengthIndex = tsi #⏸
+    TrueStrengthIndex = tsi
     UltimateOscillator = uo #⏸
     WilliamsR = willr #⏸
 

@@ -260,6 +260,48 @@ def roc(close:pd.Series, length=None, offset=None, **kwargs):
     return roc
 
 
+def tsi(close:pd.Series, fast=None, slow=None, drift=None, offset=None, **kwargs):
+    """True Strength Index of a Pandas Series
+    
+    Use help(df.ta.tsi) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    fast = int(fast) if fast and fast > 0 else 13
+    slow = int(slow) if slow and slow > 0 else 25
+    if slow < fast:
+        fast, slow = slow, fast
+    drift = get_drift(drift)
+    offset = get_offset(offset)
+
+    # Calculate Result
+    diff = close.diff(drift)
+
+    slow_ema = diff.ewm(span=slow).mean()
+    fast_slow_ema = slow_ema.ewm(span=fast).mean()
+
+    _ma = abs(diff).ewm(span=slow).mean()
+    ma = _ma.ewm(span=fast).mean()
+
+    tsi = 100 * fast_slow_ema / ma
+
+    # Offset
+    tsi = tsi.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        tsi.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        tsi.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    tsi.name = f"TSI_{fast}_{slow}"
+    tsi.category = 'momentum'
+
+    return tsi
+
+
 # Legacy code
 def rsi(close, n=14, fillna=False):
     """Relative Strength Index (RSI)
@@ -347,7 +389,7 @@ def money_flow_index(high, low, close, volume, n=14, fillna=False):
     return pd.Series(mr, name='mfi_'+str(n))
 
 
-def tsi(close, r=25, s=13, fillna=False):
+def tsi_depreciated(close, r=25, s=13, fillna=False):
     """True strength index (TSI)
 
     Shows both trend direction and overbought/oversold conditions.

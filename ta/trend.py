@@ -9,7 +9,8 @@
 import numpy as np
 import pandas as pd
 
-from .utils import get_offset, verify_series
+from .utils import get_drift, get_offset, verify_series
+from .momentum import roc
 
 
 def aroon(close:pd.Series, length=None, offset=None, **kwargs):
@@ -24,11 +25,6 @@ def aroon(close:pd.Series, length=None, offset=None, **kwargs):
     offset = get_offset(offset)
 
     # Calculate Result
-    # def linear_weights(w):
-    #     def _compute(x):
-    #         return (w * x).sum() / total_weight
-    #     return _compute
-
     def maxidx(x):
         return 100 * (int(np.argmax(x)) + 1) / length
 
@@ -38,11 +34,6 @@ def aroon(close:pd.Series, length=None, offset=None, **kwargs):
     _close = close.rolling(length)
     aroon_up = _close.apply(maxidx, raw=True)
     aroon_down = _close.apply(minidx, raw=True)
-    # idxmin = close[-n,-n+1].idxmin()
-    # print(f"idxmin: {idxmin}")
-    # aroon_up = close.rolling(length).apply(lambda x: 100 * float(np.argmax(x) - 1) / length, raw=True)
-    # aroon_down = close.rolling(length).apply(lambda x: 100 * float(np.argmin(x) - 1) / length, raw=True)
-    # return
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -166,9 +157,63 @@ def increasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
     return increasing
 
 
+def kst(close:pd.Series, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, sma2=None, sma3=None, sma4=None, signal=None, drift=None, offset=None, **kwargs):
+    # Validate arguments
+    close = verify_series(close)
+    roc1 = int(roc1) if roc1 and roc1 > 0 else 10
+    roc2 = int(roc2) if roc2 and roc2 > 0 else 15
+    roc3 = int(roc3) if roc3 and roc3 > 0 else 20
+    roc4 = int(roc4) if roc4 and roc4 > 0 else 30
+
+    sma1 = int(sma1) if sma1 and sma1 > 0 else 10
+    sma2 = int(sma2) if sma2 and sma2 > 0 else 10
+    sma3 = int(sma3) if sma3 and sma3 > 0 else 10
+    sma4 = int(sma4) if sma4 and sma4 > 0 else 15
+
+    signal = int(signal) if signal and signal > 0 else 9
+    drift = get_drift(drift)
+    offset = get_offset(offset)
+
+    # Calculate Result
+    # rocma1 = (close.diff(roc1) / close.shift(roc1)).rolling(sma1).mean()
+    # rocma2 = (close.diff(roc2) / close.shift(roc2)).rolling(sma2).mean()
+    # rocma3 = (close.diff(roc3) / close.shift(roc3)).rolling(sma3).mean()
+    # rocma4 = (close.diff(roc4) / close.shift(roc4)).rolling(sma4).mean()
+    rocma1 = roc(close, roc1).rolling(sma1).mean()
+    rocma2 = roc(close, roc2).rolling(sma2).mean()
+    rocma3 = roc(close, roc3).rolling(sma3).mean()
+    rocma4 = roc(close, roc4).rolling(sma4).mean()
+
+    kst = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
+    kst_signal = kst.rolling(signal).mean()
+
+    # Offset
+    kst = kst.shift(offset)
+    kst_signal = kst_signal.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        kst.fillna(kwargs['fillna'], inplace=True)
+        kst_signal.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        kst.fillna(method=kwargs['fill_method'], inplace=True)
+        kst_signal.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    kst.name = f"KST_{roc1}_{roc2}_{roc3}_{roc4}_{sma1}_{sma2}_{sma3}_{sma4}"
+    kst_signal.name = f"KSTS_{signal}"
+    kst.category = kst_signal.category = 'momentum'
+
+    # Prepare DataFrame to return
+    data = {kst.name: kst, kst_signal.name: kst_signal}
+    kstdf = pd.DataFrame(data)
+    kstdf.name = f"KST_{roc1}_{roc2}_{roc3}_{roc4}_{sma1}_{sma2}_{sma3}_{sma4}_{signal}"
+    kstdf.category = 'momentum'
+
+    return kstdf
 
 # Legacy Code
-def macd(close, n_fast=12, n_slow=26, fillna=False):
+def macd_depreciated(close, n_fast=12, n_slow=26, fillna=False):
     """
     Moving Average Convergence Divergence (MACD)
 
@@ -194,7 +239,7 @@ def macd(close, n_fast=12, n_slow=26, fillna=False):
     return pd.Series(macd, name='MACD_%d_%d' % (n_fast, n_slow))
 
 
-def macd_signal(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
+def macd_signal_depreciated(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
     """Moving Average Convergence Divergence (MACD Signal)
 
     Shows EMA of MACD.
@@ -220,7 +265,7 @@ def macd_signal(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
     return pd.Series(macd_signal, name='MACD_sign')
 
 
-def macd_diff(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
+def macd_diff_depreciated(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
     """Moving Average Convergence Divergence (MACD Diff)
 
     Shows the relationship between MACD and MACD Signal.
@@ -247,7 +292,7 @@ def macd_diff(close, n_fast=12, n_slow=26, n_sign=9, fillna=False):
     return pd.Series(macd_diff, name='MACD_diff')
 
 
-def ema_indicator(close, n=12, fillna=False):
+def ema_indicator_depreciated(close, n=12, fillna=False):
     """EMA
 
     Exponential Moving Average via Pandas
@@ -266,7 +311,7 @@ def ema_indicator(close, n=12, fillna=False):
     return pd.Series(ema_, name='ema')
 
 
-def adx(high, low, close, n=14, fillna=False):
+def adx_depreciated(high, low, close, n=14, fillna=False):
     """Average Directional Movement Index (ADX)
 
     The Plus Directional Indicator (+DI) and Minus Directional Indicator (-DI)
@@ -315,7 +360,7 @@ def adx(high, low, close, n=14, fillna=False):
     return pd.Series(adx, name='adx')
 
 
-def adx_pos(high, low, close, n=14, fillna=False):
+def adx_pos_depreciated(high, low, close, n=14, fillna=False):
     """Average Directional Movement Index Positive (ADX)
 
     The Plus Directional Indicator (+DI) and Minus Directional Indicator (-DI)
@@ -360,7 +405,7 @@ def adx_pos(high, low, close, n=14, fillna=False):
     return pd.Series(dip, name='adx_pos')
 
 
-def adx_neg(high, low, close, n=14, fillna=False):
+def adx_neg_depreciated(high, low, close, n=14, fillna=False):
     """Average Directional Movement Index Negative (ADX)
 
     The Plus Directional Indicator (+DI) and Minus Directional Indicator (-DI)
@@ -405,7 +450,7 @@ def adx_neg(high, low, close, n=14, fillna=False):
     return pd.Series(din, name='adx_neg')
 
 
-def adx_indicator(high, low, close, n=14, fillna=False):
+def adx_indicator_depreciated(high, low, close, n=14, fillna=False):
     """Average Directional Movement Index Indicator (ADX)
 
     Returns 1, if Plus Directional Indicator (+DI) is higher than Minus
@@ -451,7 +496,7 @@ def adx_indicator(high, low, close, n=14, fillna=False):
     return pd.Series(adx_ind, name='adx_ind')
 
 
-def vortex_indicator_pos(high, low, close, n=14, fillna=False):
+def vortex_indicator_pos_depreciated(high, low, close, n=14, fillna=False):
     """Vortex Indicator (VI)
 
     It consists of two oscillators that capture positive and negative trend
@@ -482,7 +527,7 @@ def vortex_indicator_pos(high, low, close, n=14, fillna=False):
     return pd.Series(vip, name='vip')
 
 
-def vortex_indicator_neg(high, low, close, n=14, fillna=False):
+def vortex_indicator_neg_depreciated(high, low, close, n=14, fillna=False):
     """Vortex Indicator (VI)
 
     It consists of two oscillators that capture positive and negative trend
@@ -513,7 +558,7 @@ def vortex_indicator_neg(high, low, close, n=14, fillna=False):
     return pd.Series(vin, name='vin')
 
 
-def trix(close, n=15, fillna=False):
+def trix_depreciated(close, n=15, fillna=False):
     """Trix (TRIX)
 
     Shows the percent rate of change of a triple exponentially smoothed moving
@@ -539,7 +584,7 @@ def trix(close, n=15, fillna=False):
     return pd.Series(trix, name='trix_'+str(n))
 
 
-def mass_index(high, low, n=9, n2=25, fillna=False):
+def mass_index_depreciated(high, low, n=9, n2=25, fillna=False):
     """Mass Index (MI)
 
     It uses the high-low range to identify trend reversals based on range
@@ -621,7 +666,7 @@ def dpo_depreciated(close, n=20, fillna=False):
     return pd.Series(dpo, name='dpo_'+str(n))
 
 
-def kst(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, fillna=False):
+def kst_depreciated(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, fillna=False):
     """KST Oscillator (KST)
 
     It is useful to identify major stock market cycle junctures because its
@@ -693,7 +738,7 @@ def kst_sig(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=
     return pd.Series(kst_sig, name='kst_sig')
 
 
-def ichimoku_a(high, low, n1=9, n2=26, fillna=False):
+def ichimoku_a_depreciated(high, low, n1=9, n2=26, fillna=False):
     """Ichimoku Kinkō Hyō (Ichimoku)
 
     It identifies the trend and look for potential signals within that trend.
@@ -720,7 +765,7 @@ def ichimoku_a(high, low, n1=9, n2=26, fillna=False):
     return pd.Series(spana, name='ichimoku_a_'+str(n2))
 
 
-def ichimoku_b(high, low, n2=26, n3=52, fillna=False):
+def ichimoku_b_depreciated(high, low, n2=26, n3=52, fillna=False):
     """Ichimoku Kinkō Hyō (Ichimoku)
 
     It identifies the trend and look for potential signals within that trend.
@@ -744,7 +789,7 @@ def ichimoku_b(high, low, n2=26, n3=52, fillna=False):
     return pd.Series(spanb, name='ichimoku_b_'+str(n2))
 
 
-def aroon_up(close, n=25, fillna=False):
+def aroon_up_depreciated(close, n=25, fillna=False):
     """Aroon Indicator (AI)
 
     Identify when trends are likely to change direction (uptrend).
@@ -767,7 +812,7 @@ def aroon_up(close, n=25, fillna=False):
     return pd.Series(aroon_up, name='aroon_up'+str(n))
 
 
-def aroon_down(close, n=25, fillna=False):
+def aroon_down_depreciated(close, n=25, fillna=False):
     """Aroon Indicator (AI)
 
     Identify when trends are likely to change direction (downtrend).

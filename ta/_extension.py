@@ -15,144 +15,9 @@ from .utils import signed_series
 from .volume import *
 
 from pandas.core.base import PandasObject
-from sys import float_info as sflt
+# from sys import float_info as sflt
 
-TA_EPSILON = sflt.epsilon
-
-
-
-def _wma(df, length:int = None, asc:bool = True, **kwargs):
-    length = length if length and length > 0 else 1
-    total_weight = 0.5 * length * (length + 1)
-    weights_ = pd.Series(np.arange(1, length + 1))
-    weights = weights_ if asc else weights_[::-1]
-
-    def linear_weights(w):
-        def _compute(x):
-            return (w * x).sum() / total_weight
-        return _compute
-
-    return df.rolling(length, min_periods=length).apply(linear_weights(weights), raw=True)        
-
-def _kst(close=None, roc1:int = None, roc2:int = None, roc3:int = None, roc4:int = None, sma1:int = None, sma2:int = None, sma3:int = None, sma4:int = None, signal:int = None, drift:int = None, **kwargs):
-    # Validate arguments
-    close = verify_series(close)
-    roc1 = int(roc1) if roc1 and roc1 > 0 else 10
-    roc2 = int(roc2) if roc2 and roc2 > 0 else 15
-    roc3 = int(roc3) if roc3 and roc3 > 0 else 20
-    roc4 = int(roc4) if roc4 and roc4 > 0 else 30
-
-    sma1 = int(sma1) if sma1 and sma1 > 0 else 10
-    sma2 = int(sma2) if sma2 and sma2 > 0 else 10
-    sma3 = int(sma3) if sma3 and sma3 > 0 else 10
-    sma4 = int(sma4) if sma4 and sma4 > 0 else 15
-
-    signal = int(signal) if signal and signal > 0 else 9
-
-    # Calculate Result
-    rocma1 = (close.diff(roc1) / close.shift(roc1)).rolling(sma1).mean()
-    rocma2 = (close.diff(roc2) / close.shift(roc2)).rolling(sma2).mean()
-    rocma3 = (close.diff(roc3) / close.shift(roc3)).rolling(sma3).mean()
-    rocma4 = (close.diff(roc4) / close.shift(roc4)).rolling(sma4).mean()
-
-    kst = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
-    kst_signal = kst.rolling(signal).mean()
-
-    # Handle fills
-    if 'fillna' in kwargs:
-        kst.fillna(kwargs['fillna'], inplace=True)
-        kst_signal.fillna(kwargs['fillna'], inplace=True)
-    if 'fill_method' in kwargs:
-        kst.fillna(method=kwargs['fill_method'], inplace=True)
-        kst_signal.fillna(method=kwargs['fill_method'], inplace=True)
-
-    # Name and Categorize it
-    kst.name = f"KST_{roc1}_{roc2}_{roc3}_{roc4}_{sma1}_{sma2}_{sma3}_{sma4}"
-    kst_signal.name = f"KSTS_{signal}"
-    kst.category = kst_signal.category = 'momentum'
-
-    # If append, then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[kst.name] = kst
-        df[kst_signal.name] = kst_signal
-
-    # Prepare DataFrame to return
-    data = {kst.name: kst, kst_signal.name: kst_signal}
-    kstdf = pd.DataFrame(data)
-    kstdf.name = f"KST_{roc1}_{roc2}_{roc3}_{roc4}_{sma1}_{sma2}_{sma3}_{sma4}_{signal}"
-    kstdf.category = 'momentum'
-
-    return kstdf
-
-
-def _stoch(df, high, low, close, fast_k:int = None, slow_k:int = None, slow_d:int = None, **kwargs):
-    """Stochastic"""
-    if df is None: return
-    else:
-        # Get the correct column.
-        if isinstance(high, pd.Series):
-            high = high
-        else:
-            high = df[high] if high in df.columns else df.high
-
-        if isinstance(low, pd.Series):
-            low = low
-        else:
-            low = df[low] if low in df.columns else df.low
-
-        if isinstance(close, pd.Series):
-            close = close
-        else:
-            close = df[close] if close in df.columns else df.close
-
-    # Validate arguments
-    fast_k = fast_k if fast_k and fast_k > 0 else 14
-    slow_k = slow_k if slow_k and slow_k > 0 else 5
-    slow_d = slow_d if slow_d and slow_d > 0 else 3
-
-    # Calculate Result
-    lowest_low   =  low.rolling(fast_k, min_periods=fast_k - 1).min()
-    highest_high = high.rolling(fast_k, min_periods=fast_k - 1).max()
-
-    fastk = 100 * (close - lowest_low) / (highest_high - lowest_low)
-    fastd = fastk.rolling(slow_d, min_periods=slow_d - 1).mean()
-
-    slowk = fastk.rolling(slow_k, min_periods=slow_k).mean()
-    slowd = slowk.rolling(slow_d, min_periods=slow_d).mean()
-
-    # Handle fills
-    if 'fillna' in kwargs:
-        fastk.fillna(kwargs['fillna'], inplace=True)
-        fastd.fillna(kwargs['fillna'], inplace=True)
-        slowk.fillna(kwargs['fillna'], inplace=True)
-        slowd.fillna(kwargs['fillna'], inplace=True)
-    if 'fill_method' in kwargs:
-        fastk.fillna(method=kwargs['fill_method'], inplace=True)
-        fastd.fillna(method=kwargs['fill_method'], inplace=True)
-        slowk.fillna(method=kwargs['fill_method'], inplace=True)
-        slowd.fillna(method=kwargs['fill_method'], inplace=True)
-
-    # Name and Categorize it
-    fastk.name = f"STOCHF_{fast_k}"
-    fastd.name = f"STOCHF_{slow_d}"
-    slowk.name = f"STOCH_{slow_k}"
-    slowd.name = f"STOCH_{slow_d}"
-    fastk.category = fastd.category = slowk.category = slowd.category = 'momentum'
-
-    # If append, then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[fastk.name] = fastk
-        df[fastd.name] = fastd
-        df[slowk.name] = slowk
-        df[slowd.name] = slowd
-
-    # Prepare DataFrame to return
-    data = {fastk.name: fastk, fastd.name: fastd, slowk.name: slowk, slowd.name: slowd}
-    stochdf = pd.DataFrame(data)
-    stochdf.name = f"STOCH_{fast_k}_{slow_k}_{slow_d}"
-    stochdf.category = 'volatility'
-
-    return stochdf
+# TA_EPSILON = sflt.epsilon
 
 
 class BasePandasObject(PandasObject):
@@ -240,8 +105,9 @@ class AnalysisIndicators(BasePandasObject):
             for x in _levels:
                 del self._df[f'{x}']
 
+
     def _append(self, result=None, **kwargs):
-        """Appends a Pandas Series or DataFrame columns from the result."""
+        """Appends a Pandas Series or DataFrame columns of the result to self._df."""
         if 'append' in kwargs and kwargs['append']:
             df = self._df
             if df is None or result is None: return
@@ -363,22 +229,6 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         result = cci(high=high, low=low, close=close, length=length, c=c, offset=offset, **kwargs)
-
-        self._append(result, **kwargs)
-
-        return result
-
-
-    def kst(self, close=None, roc1:int = None, roc2:int = None, roc3:int = None, roc4:int = None, sma1:int = None, sma2:int = None, sma3:int = None, sma4:int = None, signal:int = None, offset:int = None, **kwargs):
-        # Get the correct column.
-        if df is None: return
-        else:
-            if isinstance(close, pd.Series):
-                close = close
-            else:
-                close = df[close] if close in df.columns else df.close
-
-        result = _kst(close=close, roc1=roc1, roc2=roc2, roc3=roc3, roc4=roc4, sma1=sma1, sma2=sma2, sma3=sma3, sma4=sma4, signal=signal, offset=offset, **kwargs)
 
         self._append(result, **kwargs)
 
@@ -1062,6 +912,23 @@ class AnalysisIndicators(BasePandasObject):
 
         self._append(result, **kwargs)
         
+        return result
+
+
+    def kst(self, close=None, roc1:int = None, roc2:int = None, roc3:int = None, roc4:int = None, sma1:int = None, sma2:int = None, sma3:int = None, sma4:int = None, signal:int = None, offset:int = None, **kwargs):
+        # Get the correct column.
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        result = kst(close=close, roc1=roc1, roc2=roc2, roc3=roc3, roc4=roc4, sma1=sma1, sma2=sma2, sma3=sma3, sma4=sma4, signal=signal, offset=offset, **kwargs)
+
+        self._append(result, **kwargs)
+
         return result
 
 

@@ -295,6 +295,76 @@ def roc(close:pd.Series, length=None, offset=None, **kwargs):
     return roc
 
 
+def _stoch(df, high, low, close, fast_k:int = None, slow_k:int = None, slow_d:int = None, **kwargs):
+    """Stochastic"""
+    if df is None: return
+    else:
+        # Get the correct column.
+        if isinstance(high, pd.Series):
+            high = high
+        else:
+            high = df[high] if high in df.columns else df.high
+
+        if isinstance(low, pd.Series):
+            low = low
+        else:
+            low = df[low] if low in df.columns else df.low
+
+        if isinstance(close, pd.Series):
+            close = close
+        else:
+            close = df[close] if close in df.columns else df.close
+
+    # Validate arguments
+    fast_k = fast_k if fast_k and fast_k > 0 else 14
+    slow_k = slow_k if slow_k and slow_k > 0 else 5
+    slow_d = slow_d if slow_d and slow_d > 0 else 3
+
+    # Calculate Result
+    lowest_low   =  low.rolling(fast_k, min_periods=fast_k - 1).min()
+    highest_high = high.rolling(fast_k, min_periods=fast_k - 1).max()
+
+    fastk = 100 * (close - lowest_low) / (highest_high - lowest_low)
+    fastd = fastk.rolling(slow_d, min_periods=slow_d - 1).mean()
+
+    slowk = fastk.rolling(slow_k, min_periods=slow_k).mean()
+    slowd = slowk.rolling(slow_d, min_periods=slow_d).mean()
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        fastk.fillna(kwargs['fillna'], inplace=True)
+        fastd.fillna(kwargs['fillna'], inplace=True)
+        slowk.fillna(kwargs['fillna'], inplace=True)
+        slowd.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        fastk.fillna(method=kwargs['fill_method'], inplace=True)
+        fastd.fillna(method=kwargs['fill_method'], inplace=True)
+        slowk.fillna(method=kwargs['fill_method'], inplace=True)
+        slowd.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    fastk.name = f"STOCHF_{fast_k}"
+    fastd.name = f"STOCHF_{slow_d}"
+    slowk.name = f"STOCH_{slow_k}"
+    slowd.name = f"STOCH_{slow_d}"
+    fastk.category = fastd.category = slowk.category = slowd.category = 'momentum'
+
+    # If append, then add it to the df
+    if 'append' in kwargs and kwargs['append']:
+        df[fastk.name] = fastk
+        df[fastd.name] = fastd
+        df[slowk.name] = slowk
+        df[slowd.name] = slowd
+
+    # Prepare DataFrame to return
+    data = {fastk.name: fastk, fastd.name: fastd, slowk.name: slowk, slowd.name: slowd}
+    stochdf = pd.DataFrame(data)
+    stochdf.name = f"STOCH_{fast_k}_{slow_k}_{slow_d}"
+    stochdf.category = 'volatility'
+
+    return stochdf
+
+
 def tsi(close:pd.Series, fast=None, slow=None, drift=None, offset=None, **kwargs):
     """True Strength Index of a Pandas Series
     
@@ -394,6 +464,11 @@ def uo(high:pd.Series, low:pd.Series, close:pd.Series, fast=None, medium=None, s
 
 
 def willr(high=None, low=None, close=None, length=None, percentage=True, offset=None, **kwargs):
+    """William's Percent R of a Pandas Series
+    
+    Use help(df.ta.willr) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
     # Validate arguments
     high = verify_series(high)
     low = verify_series(low)
@@ -427,7 +502,7 @@ def willr(high=None, low=None, close=None, length=None, percentage=True, offset=
 
 
 # Legacy code
-def rsi(close, n=14, fillna=False):
+def rsi_depreciated(close, n=14, fillna=False):
     """Relative Strength Index (RSI)
 
     Compares the magnitude of recent gains and losses over a specified time
@@ -460,7 +535,7 @@ def rsi(close, n=14, fillna=False):
     return pd.Series(rsi, name='rsi')
 
 
-def money_flow_index(high, low, close, volume, n=14, fillna=False):
+def money_flow_index_depreciated(high, low, close, volume, n=14, fillna=False):
     """Money Flow Index (MFI)
 
     Uses both price and volume to measure buying and selling pressure. It is
@@ -585,7 +660,8 @@ def uo_depreciated(high, low, close, s=7, m=14, l=28, ws=4.0, wm=2.0, wl=1.0, fi
         uo = uo.replace([np.inf, -np.inf], np.nan).fillna(50)
     return pd.Series(uo, name='uo')
 
-def stoch(high, low, close, n=14, fillna=False):
+
+def stoch_depreciated(high, low, close, n=14, fillna=False):
     """Stochastic Oscillator
 
     Developed in the late 1950s by George Lane. The stochastic
@@ -613,7 +689,8 @@ def stoch(high, low, close, n=14, fillna=False):
         stoch_k = stoch_k.replace([np.inf, -np.inf], np.nan).fillna(50)
     return pd.Series(stoch_k, name='stoch_k')
 
-def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
+
+def stoch_signal_depreciated(high, low, close, n=14, d_n=3, fillna=False):
     """Stochastic Oscillator Signal
 
     Shows SMA of Stochastic Oscillator. Typically a 3 day SMA.
@@ -639,7 +716,7 @@ def stoch_signal(high, low, close, n=14, d_n=3, fillna=False):
     return pd.Series(stoch_d, name='stoch_d')
 
 
-def wr(high, low, close, lbp=14, fillna=False):
+def wr_depreciated(high, low, close, lbp=14, fillna=False):
     """Williams %R
 
     From: http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:williams_r

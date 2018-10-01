@@ -199,3 +199,17 @@ def rpn(high:pd.Series, low:pd.Series, length=None, offset=None, percentage=None
     rp.category = 'overlap'
 
     return rp
+
+
+def _wma(df, length:int = None, asc:bool = True, **kwargs):
+    length = length if length and length > 0 else 1
+    total_weight = 0.5 * length * (length + 1)
+    weights_ = pd.Series(np.arange(1, length + 1))
+    weights = weights_ if asc else weights_[::-1]
+
+    def linear_weights(w):
+        def _compute(x):
+            return (w * x).sum() / total_weight
+        return _compute
+
+    return df.rolling(length, min_periods=length).apply(linear_weights(weights), raw=True)        

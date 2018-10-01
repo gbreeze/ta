@@ -351,7 +351,7 @@ def willr(high=None, low=None, close=None, length=None, percentage=True, offset=
     lowest_low = low.rolling(length, min_periods=min_periods).min()
     highest_high = high.rolling(length, min_periods=min_periods).max()
 
-    willr = 100 * ((close - lowest_low) / (highest_high - lowest_low) - 1)
+    willr = percent * ((close - lowest_low) / (highest_high - lowest_low) - 1)
 
     # Offset
     willr = willr.shift(offset)

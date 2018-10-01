@@ -163,9 +163,15 @@ def _stoch(df, high, low, close, fast_k:int = None, slow_k:int = None, slow_d:in
     return stochdf
 
 
-def _uo(high=None, low=None, close=None, fast:int = None, medium:int = None, slow:int = None, fast_w:int = None, medium_w:int = None, slow_w:int = None, drift:int = None, **kwargs):
-    """Ultimate Oscillator - uso"""
+def uo(high=None, low=None, close=None, fast:int = None, medium:int = None, slow:int = None, fast_w:int = None, medium_w:int = None, slow_w:int = None, percentage:bool = True, drift:int = None, offset:int = None, **kwargs):
     # Validate arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    percent = 100 if percentage else 1
+    drift = get_drift(drift)
+    offset = get_offset(offset)
+
     fast = int(fast) if fast and fast > 0 else 7
     fast_w = float(fast_w) if fast_w and fast_w > 0 else 4.0
 
@@ -175,8 +181,7 @@ def _uo(high=None, low=None, close=None, fast:int = None, medium:int = None, slo
     slow = int(slow) if slow and slow > 0 else 28
     slow_w = float(slow_w) if slow_w and slow_w > 0 else 1.0
 
-    drift = int(drift) if drift and drift > 0 else 1
-    # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
+    print(f"uo:\ndir: {dir()}\nkwargs: {kwargs}")
 
     # Calculate Result
     min_l_or_pc = close.shift(drift).combine(low, min)
@@ -191,8 +196,11 @@ def _uo(high=None, low=None, close=None, fast:int = None, medium:int = None, slo
 
     total_weight =  fast_w + medium_w + slow_w
     weights = (fast_w * fast_avg) + (medium_w * medium_avg) + (slow_w * slow_avg)
-    uo = 100 * weights / total_weight
-    
+    uo = percent * weights / total_weight
+
+    # Offset
+    uo = uo.shift(offset)
+
     # Handle fills
     if 'fillna' in kwargs:
         uo.fillna(kwargs['fillna'], inplace=True)
@@ -202,10 +210,6 @@ def _uo(high=None, low=None, close=None, fast:int = None, medium:int = None, slo
     # Name and Categorize it
     uo.name = f"UO_{fast}_{medium}_{slow}"
     uo.category = 'momentum'
-
-    # If append, then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[uo.name] = uo
 
     return uo
 
@@ -295,6 +299,17 @@ class AnalysisIndicators(BasePandasObject):
             for x in _levels:
                 del self._df[f'{x}']
 
+    def _append(self, result=None, **kwargs):
+        """Appends a Pandas Series or DataFrame columns from the result."""
+        if 'append' in kwargs and kwargs['append']:
+            df = self._df
+            if df is None or result is None: return
+            else:                
+                if isinstance(result, pd.DataFrame):
+                    for i, column in enumerate(result.columns):
+                        df[column] = result.iloc[:,i]
+                else:
+                    df[result.name] = result
 
 
     ## Momentum Indicators
@@ -310,9 +325,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = apo(close=close, fast=fast, slow=slow, offset=offset, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -334,9 +347,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = ao(high=high, low=low, fast=fast, slow=slow, offset=offset, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -353,14 +364,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = aroon(close=close, length=length, offset=offset, **kwargs)
 
-        # # If append, then add it to the df
-        # if 'append' in kwargs and kwargs['append']:
-        #     df[result.name] = result
-
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.columns[0].name] = result.columns[0]  # aroon_up
-            df[result.columns[1].name] = result.columns[1]  # aroon_down
+        self._append(result, **kwargs)
 
         return result
 
@@ -392,9 +396,7 @@ class AnalysisIndicators(BasePandasObject):
         
         result = bop(open_=open_, high=high, low=low, close=close, percentage=percentage, offset=offset, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -421,9 +423,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = cci(high=high, low=low, close=close, length=length, c=c, offset=offset, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -431,9 +431,7 @@ class AnalysisIndicators(BasePandasObject):
     def kst(self, close=None, roc1:int = None, roc2:int = None, roc3:int = None, roc4:int = None, sma1:int = None, sma2:int = None, sma3:int = None, sma4:int = None, signal:int = None, **kwargs):
         result = _kst(self._df, close=close, roc1=roc1, roc2=roc2, roc3=roc3, roc4=roc4, sma1=sma1, sma2=sma2, sma3=sma3, sma4=sma4, signal=signal, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -512,9 +510,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = massi(high=high, low=low, fast=fast, slow=slow, offset=offset, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -595,9 +591,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = mom(close=close, length=length, offset=offset, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -614,9 +608,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = ppo(close=close, fast=fast, slow=slow, percentage=percentage, offset=offset, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -634,9 +626,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = roc(close=close, length=length, offset=offset, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -696,9 +686,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = tsi(close=close, fast=fast, slow=slow, drift=drift, offset=offset, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -725,9 +713,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = _uo(high=high, low=low, close=close, fast=fast, medium=medium, slow=slow, fast_w=fast_w, medium_w=medium_w, slow_w=slow_w, drift=drift, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -754,11 +740,10 @@ class AnalysisIndicators(BasePandasObject):
         
         result = willr(high=high, low=low, close=close, length=length, percentage=percentage, offset=offset, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
+
 
 
     ## Overlap Indicators
@@ -779,9 +764,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = hl2(high=high, low=low, offset=offset, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
 
@@ -808,9 +791,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = hlc3(high=high, low=low, close=close, offset=offset, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
 
@@ -842,9 +823,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = ohlc4(open_=open_, high=high, low=low, close=close, offset=offset, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
 
@@ -861,9 +840,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = median(close=close, length=length, offset=offset, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
  
@@ -881,9 +858,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = midpoint(close=close, length=length, offset=offset, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
 
@@ -905,9 +880,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = midprice(high=high, low=low, length=length, offset=offset, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
 
@@ -929,9 +902,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = rpn(high=high, low=low, length=length, offset=offset, percentage=percentage, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
 
@@ -983,9 +954,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = log_return(close=close, length=length, cumulative=cumulative, percent=percent, offset=offset, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
 
@@ -1002,9 +971,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = percent_return(close=close, length=length, cumulative=cumulative, percent=percent, offset=offset, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
 
@@ -1023,9 +990,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = kurtosis(close=close, length=length, offset=offset, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
 
@@ -1042,9 +1007,7 @@ class AnalysisIndicators(BasePandasObject):
         
         result = quantile(close=close, length=length, q=q, offset=offset, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
 
@@ -1061,9 +1024,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = skew(close=close, length=length, offset=offset, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
 
@@ -1080,9 +1041,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = stdev(close=close, length=length, offset=offset, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
 
@@ -1099,9 +1058,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = variance(close=close, length=length, offset=offset, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
 
@@ -1120,9 +1077,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = decreasing(close=close, length=length, asint=asint, offset=offset, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
 
@@ -1139,9 +1094,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = dpo(close=close, length=length, centered=centered, offset=offset, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
 
@@ -1158,9 +1111,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = increasing(close=close, length=length, asint=asint, offset=offset, **kwargs)
 
-        # If 'append', then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
         
         return result
 
@@ -1396,7 +1347,10 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def stoch(self, high:str = None, low:str = None, close:str = None, fast_k:int = None, slow_k:int = None, slow_d:int = None, **kwargs):
-        return _stoch(self._df, high=high, low=low, close=close, fast_k=fast_k, slow_k=slow_k, slow_d=slow_d, **kwargs)
+        result =  _stoch(self._df, high=high, low=low, close=close, fast_k=fast_k, slow_k=slow_k, slow_d=slow_d, **kwargs)
+
+        # self._append(result, **kwargs)
+        return result
 
 
     def true_range(self, high=None, low=None, close=None, length=None, drift:int = None, **kwargs):
@@ -1482,9 +1436,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = ad(high=high, low=low, close=close, volume=volume, open_=open_, signed=signed, offset=offset, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -1522,9 +1474,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = cmf(high=high, low=low, close=close, volume=volume, open_=open_, length=length, offset=offset, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -1546,9 +1496,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = efi(close=close, volume=volume, length=length, offset=offset, mamode=mamode, drift=drift, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -1580,9 +1528,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = eom(high=high, low=low, close=close, volume=volume, length=length, divisor=divisor, offset=offset, drift=drift, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -1604,9 +1550,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = nvi(close=close, volume=volume, length=length, initial=initial, signed=signed, offset=offset, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -1628,9 +1572,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = obv(close=close, volume=volume, offset=offset, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -1652,9 +1594,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = pvol(close=close, volume=volume, signed=signed, offset=offset, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -1676,9 +1616,7 @@ class AnalysisIndicators(BasePandasObject):
 
         result = pvt(close=close, volume=volume, offset=offset, **kwargs)
 
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+        self._append(result, **kwargs)
 
         return result
 
@@ -1699,7 +1637,7 @@ class AnalysisIndicators(BasePandasObject):
     RelativeStrengthIndex = rsi #⏸
     TrueStrengthIndex = tsi
     UltimateOscillator = uo #⏸
-    WilliamsR = willr #⏸
+    WilliamsR = willr
 
     # Overlap: overlap.py ✅
     HL2 = hl2

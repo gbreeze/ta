@@ -374,6 +374,33 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    def stoch(self, high:str = None, low:str = None, close:str = None, fast_k:int = None, slow_k:int = None, slow_d:int = None, offset:int = None, **kwargs):
+        # Get the correct column(s).
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        result = stoch(high=high, low=low, close=close, fast_k=fast_k, slow_k=slow_k, slow_d=slow_d, offset=offset, **kwargs)
+
+        self._append(result, **kwargs)
+
+        return result
+
+
     def tsi(self, close=None, fast:int = None, slow:int = None, drift:int = None, offset=None, **kwargs):
         # Get the correct column.
         df = self._df
@@ -1061,13 +1088,6 @@ class AnalysisIndicators(BasePandasObject):
         kcdf.category = 'volatility'
 
         return kcdf
-
-
-    def stoch(self, high:str = None, low:str = None, close:str = None, fast_k:int = None, slow_k:int = None, slow_d:int = None, **kwargs):
-        result =  _stoch(self._df, high=high, low=low, close=close, fast_k=fast_k, slow_k=slow_k, slow_d=slow_d, **kwargs)
-
-        # self._append(result, **kwargs)
-        return result
 
 
     def true_range(self, high=None, low=None, close=None, length=None, drift:int = None, **kwargs):

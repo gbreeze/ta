@@ -14,39 +14,6 @@ from .overlap import hlc3
 # from .utils import get_drift, get_offset, signed_series, verify_series
 
 
-def apo(close:pd.Series, fast=None, slow=None, offset=None, **kwargs):
-    """Absolute Price Oscillator of a Pandas Series
-    
-    Use help(df.ta.apo) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
-    # Validate Arguments
-    close = verify_series(close)
-    fast = int(fast) if fast and fast > 0 else 12
-    slow = int(slow) if slow and slow > 0 else 26
-    if slow < fast:
-        fast, slow = slow, fast
-    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
-    offset = get_offset(offset)
-
-    # Calculate Result
-    fastma = close.rolling(fast, min_periods=min_periods).mean()
-    slowma = close.rolling(slow, min_periods=min_periods).mean()
-    apo = fastma - slowma
-
-    # Handle fills
-    if 'fillna' in kwargs:
-        apo.fillna(kwargs['fillna'], inplace=True)
-    if 'fill_method' in kwargs:
-        apo.fillna(method=kwargs['fill_method'], inplace=True)
-
-    # Name and Categorize it
-    apo.name = f"APO_{fast}_{slow}"
-    apo.category = 'momentum'
-
-    return apo
-
-
 def ao(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwargs):
     """Awesome Oscillator of a Pandas Series
     
@@ -80,6 +47,39 @@ def ao(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwarg
     ao.category = 'momentum'
 
     return ao
+
+
+def apo(close:pd.Series, fast=None, slow=None, offset=None, **kwargs):
+    """Absolute Price Oscillator of a Pandas Series
+    
+    Use help(df.ta.apo) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    fast = int(fast) if fast and fast > 0 else 12
+    slow = int(slow) if slow and slow > 0 else 26
+    if slow < fast:
+        fast, slow = slow, fast
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
+    offset = get_offset(offset)
+
+    # Calculate Result
+    fastma = close.rolling(fast, min_periods=min_periods).mean()
+    slowma = close.rolling(slow, min_periods=min_periods).mean()
+    apo = fastma - slowma
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        apo.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        apo.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    apo.name = f"APO_{fast}_{slow}"
+    apo.category = 'momentum'
+
+    return apo
 
 
 def bop(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, percentage=False, offset=None, **kwargs):
@@ -213,36 +213,6 @@ def macd(close:pd.Series, fast=None, slow=None, signal=None, offset=None, **kwar
     return macddf
 
 
-def mom(close:pd.Series, length=None, offset=None, **kwargs):
-    """Momentum of a Pandas Series
-    
-    Use help(df.ta.mom) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
-    # Validate Arguments
-    close = verify_series(close)
-    length = int(length) if length and length > 0 else 1
-    offset = get_offset(offset)
-
-    # Calculate Result
-    mom = close.diff(length)
-
-    # Offset
-    mom = mom.shift(offset)
-
-    # Handle fills
-    if 'fillna' in kwargs:
-        mom.fillna(kwargs['fillna'], inplace=True)
-    if 'fill_method' in kwargs:
-        mom.fillna(method=kwargs['fill_method'], inplace=True)
-
-    # Name and Categorize it
-    mom.name = f"MOM_{length}"
-    mom.category = 'momentum'
-
-    return mom
-
-
 def massi(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwargs):
     """Mass Index of a Pandas Series
     
@@ -328,6 +298,36 @@ def mfi(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length
     mfi.category = 'momentum'
 
     return mfi
+
+
+def mom(close:pd.Series, length=None, offset=None, **kwargs):
+    """Momentum of a Pandas Series
+    
+    Use help(df.ta.mom) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 1
+    offset = get_offset(offset)
+
+    # Calculate Result
+    mom = close.diff(length)
+
+    # Offset
+    mom = mom.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        mom.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        mom.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    mom.name = f"MOM_{length}"
+    mom.category = 'momentum'
+
+    return mom
 
 
 def ppo(close:pd.Series, fast=None, slow=None, percentage=True, offset=None, **kwargs):
@@ -430,30 +430,20 @@ def rsi(close:pd.Series, length=None, drift=None, offset=None, **kwargs):
     return rsi
 
 
-def _stoch(df, high, low, close, fast_k:int = None, slow_k:int = None, slow_d:int = None, **kwargs):
-    """Stochastic"""
-    if df is None: return
-    else:
-        # Get the correct column.
-        if isinstance(high, pd.Series):
-            high = high
-        else:
-            high = df[high] if high in df.columns else df.high
-
-        if isinstance(low, pd.Series):
-            low = low
-        else:
-            low = df[low] if low in df.columns else df.low
-
-        if isinstance(close, pd.Series):
-            close = close
-        else:
-            close = df[close] if close in df.columns else df.close
-
+def stoch(high:pd.Series, low:pd.Series, close:pd.Series, fast_k=None, slow_k=None, slow_d=None, offset=None, **kwargs):
+    """Stochastics of a Pandas Series
+    
+    Use help(df.ta.stoch) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
     # Validate arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
     fast_k = fast_k if fast_k and fast_k > 0 else 14
     slow_k = slow_k if slow_k and slow_k > 0 else 5
     slow_d = slow_d if slow_d and slow_d > 0 else 3
+    offset = get_offset(offset)
 
     # Calculate Result
     lowest_low   =  low.rolling(fast_k, min_periods=fast_k - 1).min()
@@ -464,6 +454,12 @@ def _stoch(df, high, low, close, fast_k:int = None, slow_k:int = None, slow_d:in
 
     slowk = fastk.rolling(slow_k, min_periods=slow_k).mean()
     slowd = slowk.rolling(slow_d, min_periods=slow_d).mean()
+
+    # Offset
+    fastk = fastk.shift(offset)
+    fastd = fastd.shift(offset)
+    slowk = slowk.shift(offset)
+    slowd = slowd.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -483,13 +479,6 @@ def _stoch(df, high, low, close, fast_k:int = None, slow_k:int = None, slow_d:in
     slowk.name = f"STOCH_{slow_k}"
     slowd.name = f"STOCH_{slow_d}"
     fastk.category = fastd.category = slowk.category = slowd.category = 'momentum'
-
-    # If append, then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[fastk.name] = fastk
-        df[fastd.name] = fastd
-        df[slowk.name] = slowk
-        df[slowd.name] = slowd
 
     # Prepare DataFrame to return
     data = {fastk.name: fastk, fastd.name: fastd, slowk.name: slowk, slowd.name: slowd}

@@ -34,17 +34,9 @@ def _wma(df, length:int = None, asc:bool = True, **kwargs):
 
     return df.rolling(length, min_periods=length).apply(linear_weights(weights), raw=True)        
 
-def _kst(df, close=None, roc1:int = None, roc2:int = None, roc3:int = None, roc4:int = None, sma1:int = None, sma2:int = None, sma3:int = None, sma4:int = None, signal:int = None, drift:int = None, **kwargs):
-    """Know Sure Thing - kst"""
-    if df is None: return
-    else:
-        # Get the correct column.
-        if isinstance(close, pd.Series):
-            close = close
-        else:
-            close = df[close] if close in df.columns else df.close
-
+def _kst(close=None, roc1:int = None, roc2:int = None, roc3:int = None, roc4:int = None, sma1:int = None, sma2:int = None, sma3:int = None, sma4:int = None, signal:int = None, drift:int = None, **kwargs):
     # Validate arguments
+    close = verify_series(close)
     roc1 = int(roc1) if roc1 and roc1 > 0 else 10
     roc2 = int(roc2) if roc2 and roc2 > 0 else 15
     roc3 = int(roc3) if roc3 and roc3 > 0 else 20
@@ -161,57 +153,6 @@ def _stoch(df, high, low, close, fast_k:int = None, slow_k:int = None, slow_d:in
     stochdf.category = 'volatility'
 
     return stochdf
-
-
-def uo(high=None, low=None, close=None, fast:int = None, medium:int = None, slow:int = None, fast_w:int = None, medium_w:int = None, slow_w:int = None, percentage:bool = True, drift:int = None, offset:int = None, **kwargs):
-    # Validate arguments
-    high = verify_series(high)
-    low = verify_series(low)
-    close = verify_series(close)
-    percent = 100 if percentage else 1
-    drift = get_drift(drift)
-    offset = get_offset(offset)
-
-    fast = int(fast) if fast and fast > 0 else 7
-    fast_w = float(fast_w) if fast_w and fast_w > 0 else 4.0
-
-    medium = int(medium) if medium and medium > 0 else 14
-    medium_w = float(medium_w) if medium_w and medium_w > 0 else 2.0
-
-    slow = int(slow) if slow and slow > 0 else 28
-    slow_w = float(slow_w) if slow_w and slow_w > 0 else 1.0
-
-    print(f"uo:\ndir: {dir()}\nkwargs: {kwargs}")
-
-    # Calculate Result
-    min_l_or_pc = close.shift(drift).combine(low, min)
-    max_h_or_pc = close.shift(drift).combine(high, max)
-
-    bp = close - min_l_or_pc
-    tr = max_h_or_pc - min_l_or_pc
-
-    fast_avg = bp.rolling(fast).sum() / tr.rolling(fast).sum()
-    medium_avg = bp.rolling(medium).sum() / tr.rolling(medium).sum()
-    slow_avg = bp.rolling(slow).sum() / tr.rolling(slow).sum()
-
-    total_weight =  fast_w + medium_w + slow_w
-    weights = (fast_w * fast_avg) + (medium_w * medium_avg) + (slow_w * slow_avg)
-    uo = percent * weights / total_weight
-
-    # Offset
-    uo = uo.shift(offset)
-
-    # Handle fills
-    if 'fillna' in kwargs:
-        uo.fillna(kwargs['fillna'], inplace=True)
-    if 'fill_method' in kwargs:
-        uo.fillna(method=kwargs['fill_method'], inplace=True)
-
-    # Name and Categorize it
-    uo.name = f"UO_{fast}_{medium}_{slow}"
-    uo.category = 'momentum'
-
-    return uo
 
 
 class BasePandasObject(PandasObject):
@@ -428,8 +369,16 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def kst(self, close=None, roc1:int = None, roc2:int = None, roc3:int = None, roc4:int = None, sma1:int = None, sma2:int = None, sma3:int = None, sma4:int = None, signal:int = None, **kwargs):
-        result = _kst(self._df, close=close, roc1=roc1, roc2=roc2, roc3=roc3, roc4=roc4, sma1=sma1, sma2=sma2, sma3=sma3, sma4=sma4, signal=signal, **kwargs)
+    def kst(self, close=None, roc1:int = None, roc2:int = None, roc3:int = None, roc4:int = None, sma1:int = None, sma2:int = None, sma3:int = None, sma4:int = None, signal:int = None, offset:int = None, **kwargs):
+        # Get the correct column.
+        if df is None: return
+        else:
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        result = _kst(close=close, roc1=roc1, roc2=roc2, roc3=roc3, roc4=roc4, sma1=sma1, sma2=sma2, sma3=sma3, sma4=sma4, signal=signal, offset=offset, **kwargs)
 
         self._append(result, **kwargs)
 
@@ -691,7 +640,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def uo(self, high=None, low=None, close=None, fast:int = None, medium:int = None, slow:int = None, fast_w:int = None, medium_w:int = None, slow_w:int = None, drift:int = None, **kwargs):
+    def uo(self, high=None, low=None, close=None, fast:int = None, medium:int = None, slow:int = None, fast_w:int = None, medium_w:int = None, slow_w:int = None, drift:int = None, offset:int = None, **kwargs):
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -711,7 +660,7 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        result = _uo(high=high, low=low, close=close, fast=fast, medium=medium, slow=slow, fast_w=fast_w, medium_w=medium_w, slow_w=slow_w, drift=drift, **kwargs)
+        result = uo(high=high, low=low, close=close, fast=fast, medium=medium, slow=slow, fast_w=fast_w, medium_w=medium_w, slow_w=slow_w, drift=drift, offset=offset, **kwargs)
 
         self._append(result, **kwargs)
 

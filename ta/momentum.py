@@ -337,6 +337,62 @@ def tsi(close:pd.Series, fast=None, slow=None, drift=None, offset=None, **kwargs
     return tsi
 
 
+def uo(high:pd.Series, low:pd.Series, close:pd.Series, fast=None, medium=None, slow=None, fast_w=None, medium_w=None, slow_w=None, percentage=True, drift=None, offset=None, **kwargs):
+    """Ultimate Oscillator of a Pandas Series
+    
+    Use help(df.ta.uo) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    percent = 100 if percentage else 1
+    drift = get_drift(drift)
+    offset = get_offset(offset)
+
+    fast = int(fast) if fast and fast > 0 else 7
+    fast_w = float(fast_w) if fast_w and fast_w > 0 else 4.0
+
+    medium = int(medium) if medium and medium > 0 else 14
+    medium_w = float(medium_w) if medium_w and medium_w > 0 else 2.0
+
+    slow = int(slow) if slow and slow > 0 else 28
+    slow_w = float(slow_w) if slow_w and slow_w > 0 else 1.0
+
+    print(f"uo:\ndir: {dir()}\nkwargs: {kwargs}")
+
+    # Calculate Result
+    min_l_or_pc = close.shift(drift).combine(low, min)
+    max_h_or_pc = close.shift(drift).combine(high, max)
+
+    bp = close - min_l_or_pc
+    tr = max_h_or_pc - min_l_or_pc
+
+    fast_avg = bp.rolling(fast).sum() / tr.rolling(fast).sum()
+    medium_avg = bp.rolling(medium).sum() / tr.rolling(medium).sum()
+    slow_avg = bp.rolling(slow).sum() / tr.rolling(slow).sum()
+
+    total_weight =  fast_w + medium_w + slow_w
+    weights = (fast_w * fast_avg) + (medium_w * medium_avg) + (slow_w * slow_avg)
+    uo = percent * weights / total_weight
+
+    # Offset
+    uo = uo.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        uo.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        uo.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    uo.name = f"UO_{fast}_{medium}_{slow}"
+    uo.category = 'momentum'
+
+    return uo
+
+
 def willr(high=None, low=None, close=None, length=None, percentage=True, offset=None, **kwargs):
     # Validate arguments
     high = verify_series(high)
@@ -482,7 +538,7 @@ def tsi_depreciated(close, r=25, s=13, fillna=False):
         tsi = tsi.replace([np.inf, -np.inf], np.nan).fillna(0)
     return pd.Series(tsi, name='tsi')
 
-def uo(high, low, close, s=7, m=14, l=28, ws=4.0, wm=2.0, wl=1.0, fillna=False):
+def uo_depreciated(high, low, close, s=7, m=14, l=28, ws=4.0, wm=2.0, wl=1.0, fillna=False):
     """Ultimate Oscillator
 
     Larry Williams' (1976) signal, a momentum oscillator designed to capture momentum

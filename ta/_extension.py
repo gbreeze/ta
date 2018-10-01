@@ -5,13 +5,12 @@ import numpy as np
 import pandas as pd
 
 from .momentum import *
-# from .others import *
 from .overlap import *
 from .performance import *
 from .statistics import *
 from .trend import *
-from .utils import signed_series
-# from .volatility import *
+# from .utils import signed_series
+from .volatility import *
 from .volume import *
 
 from pandas.core.base import PandasObject
@@ -1090,7 +1089,7 @@ class AnalysisIndicators(BasePandasObject):
         return kcdf
 
 
-    def true_range(self, high=None, low=None, close=None, length=None, drift:int = None, **kwargs):
+    def true_range(self, high=None, low=None, close=None, length=None, drift:int = None, offset:int = None, **kwargs):
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -1110,32 +1109,11 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 1
-        drift = int(drift) if drift and drift != 0 else 1
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+        result = true_range(high=high, low=low, close=close, length=length, drift=drift, offset=offset, **kwargs)
 
-        # Calculate Result
-        prev_close = close.shift(drift)
-        ranges = [high - low, high - prev_close, low - prev_close]
-        true_range = pd.DataFrame(ranges).T
-        true_range = true_range.abs().max(axis=1)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            true_range.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            true_range.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        true_range.name = f"TRUERANGE_{length}"
-        true_range.category = 'volatility'
-
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[true_range.name] = true_range
-
-        return true_range
+        self._append(result, **kwargs)
+        
+        return result
 
 
 
@@ -1359,20 +1337,20 @@ class AnalysisIndicators(BasePandasObject):
 
 
 
-    ## Indicator Aliases by Category
-    # Momentum: momomentum.py #⏸
+    ## Indicator Aliases by Category, more to be added later...
+    # Momentum: momomentum.py ✅
     AbsolutePriceOscillator = apo #🤦🏻‍♂️
     AwesomeOscillator = ao
     BalanceOfPower = bop
     CommodityChannelIndex = cci
     KnowSureThing = kst
-    MACD = macd #⏸
+    MACD = macd
     MassIndex = massi #🤦🏻‍♂️
     Momentum = mom
     PercentagePriceOscillator = ppo
     RateOfChange = roc
     RelativeStrengthIndex = rsi
-    Stochastic = stoch #⏸
+    Stochastic = stoch
     TrueStrengthIndex = tsi
     UltimateOscillator = uo
     WilliamsR = willr

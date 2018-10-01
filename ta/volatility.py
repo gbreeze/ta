@@ -12,6 +12,41 @@ import pandas as pd
 from .utils import *
 
 
+
+def true_range(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drift=None, offset=None, **kwargs):
+    """True Range of a Pandas Series
+    
+    Use help(df.ta.true_range) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 1
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    drift = get_drift(drift)
+    offset = get_offset(offset)
+
+    # Calculate Result
+    prev_close = close.shift(drift)
+    ranges = [high - low, high - prev_close, low - prev_close]
+    true_range = pd.DataFrame(ranges).T
+    true_range = true_range.abs().max(axis=1)
+    
+    # Handle fills
+    if 'fillna' in kwargs:
+        true_range.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        true_range.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    true_range.name = f"TRUERANGE_{length}"
+    true_range.category = 'volatility'
+
+    return true_range
+
+
 # Legacy Code
 def average_true_range(high, low, close, n=14, fillna=False):
     """Average True Range (ATR)

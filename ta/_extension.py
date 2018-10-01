@@ -235,7 +235,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def macd(self, close=None, fast:int = None, slow:int = None, signal:int = None, **kwargs):
+    def macd(self, close=None, fast:int = None, slow:int = None, signal:int = None, offset:int = None, **kwargs):
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -245,51 +245,11 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate arguments
-        fast = int(fast) if fast and fast > 0 else 12
-        slow = int(slow) if slow and slow > 0 else 26
-        signal = int(signal) if signal and signal > 0 else 9
-        if slow < fast:
-            fast, slow = slow, fast
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
+        result = macd(close=close, fast=fast, slow=slow, signal=signal, offset=offset, **kwargs)
 
-        # Calculate Result
-        fastma = close.ewm(span=fast, min_periods=min_periods).mean()
-        slowma = close.ewm(span=slow, min_periods=min_periods).mean()
-        macd = fastma - slowma
+        self._append(result, **kwargs)
 
-        signalma = macd.ewm(span=signal, min_periods=min_periods).mean()
-        histogram = macd - signalma
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            macd.fillna(kwargs['fillna'], inplace=True)
-            histogram.fillna(kwargs['fillna'], inplace=True)
-            signalma.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            macd.fillna(method=kwargs['fill_method'], inplace=True)
-            histogram.fillna(method=kwargs['fill_method'], inplace=True)
-            signalma.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        macd.name = f"MACD_{fast}_{slow}_{signal}"
-        histogram.name = f"MACDH_{fast}_{slow}_{signal}"
-        signalma.name = f"MACDS_{fast}_{slow}_{signal}"
-        macd.category = histogram.category = signalma.category = 'momentum'
-
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[macd.name] = macd
-            df[histogram.name] = histogram
-            df[signalma.name] = signalma
-
-        # Prepare DataFrame to return
-        data = {macd.name: macd, histogram.name: histogram, signalma.name: signalma}
-        macddf = pd.DataFrame(data)
-        macddf.name = f"MACD_{fast}_{slow}_{signal}"
-        macddf.category = 'momentum'
-
-        return macddf
+        return result
 
 
     def massi(self, high:str = None, low:str = None, fast=None, slow=None, offset=None, **kwargs):
@@ -1392,6 +1352,7 @@ class AnalysisIndicators(BasePandasObject):
     PercentagePriceOscillator = ppo
     RateOfChange = roc
     RelativeStrengthIndex = rsi
+    Stochastic = stoch #⏸
     TrueStrengthIndex = tsi
     UltimateOscillator = uo
     WilliamsR = willr

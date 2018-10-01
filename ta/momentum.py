@@ -159,6 +159,60 @@ def cci(high:pd.Series, low:pd.Series, close:pd.Series, length=None, c=None, off
     return cci
 
 
+def macd(close:pd.Series, fast=None, slow=None, signal=None, offset=None, **kwargs):
+    """Moving Average, Convergence/Divergence (MACD) of a Pandas Series
+    
+    Use help(df.ta.macd) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    close = verify_series(close)
+    fast = int(fast) if fast and fast > 0 else 12
+    slow = int(slow) if slow and slow > 0 else 26
+    signal = int(signal) if signal and signal > 0 else 9
+    if slow < fast:
+        fast, slow = slow, fast
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
+    offset = get_offset(offset)
+
+    # Calculate Result
+    fastma = close.ewm(span=fast, min_periods=min_periods).mean()
+    slowma = close.ewm(span=slow, min_periods=min_periods).mean()
+
+    macd = fastma - slowma
+    signalma = macd.ewm(span=signal, min_periods=min_periods).mean()
+    histogram = macd - signalma
+
+    # Offset
+    macd = macd.shift(offset)
+    histogram = histogram.shift(offset)
+    signalma = signalma.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        macd.fillna(kwargs['fillna'], inplace=True)
+        histogram.fillna(kwargs['fillna'], inplace=True)
+        signalma.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        macd.fillna(method=kwargs['fill_method'], inplace=True)
+        histogram.fillna(method=kwargs['fill_method'], inplace=True)
+        signalma.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    macd.name = f"MACD_{fast}_{slow}_{signal}"
+    histogram.name = f"MACDH_{fast}_{slow}_{signal}"
+    signalma.name = f"MACDS_{fast}_{slow}_{signal}"
+    macd.category = histogram.category = signalma.category = 'momentum'
+
+    # Prepare DataFrame to return
+    data = {macd.name: macd, histogram.name: histogram, signalma.name: signalma}
+    macddf = pd.DataFrame(data)
+    macddf.name = f"MACD_{fast}_{slow}_{signal}"
+    macddf.category = 'momentum'
+
+    return macddf
+
+
 def mom(close:pd.Series, length=None, offset=None, **kwargs):
     """Momentum of a Pandas Series
     

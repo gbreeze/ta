@@ -314,7 +314,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def mfi(self, high:str = None, low:str = None, close:str = None, volume:str = None, length:int = None, drift:int = None, **kwargs):
+    def mfi(self, high:str = None, low:str = None, close:str = None, volume:str = None, length:int = None, drift:int = None, offset:int = None, **kwargs):
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -339,43 +339,11 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 volume = df[volume] if volume in df.columns else df.volume
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 14
-        drift = int(drift) if drift and drift > 0 else 1
+        result = mfi(high=high, low=low, close=close, volume=volume, length=length, drift=drift, offset=offset, **kwargs)
 
-        # Calculate Result
-        typical_price = self.hlc3(high=high, low=low, close=close)
-        raw_money_flow = typical_price * volume
+        self._append(result, **kwargs)
 
-        tdf = pd.DataFrame({'diff': 0, 'rmf': raw_money_flow, '+mf': 0, '-mf': 0})
-
-        tdf.loc[(typical_price.diff(drift) > 0), 'diff'] =  1
-        tdf.loc[tdf['diff'] ==  1, '+mf'] = raw_money_flow
-
-        tdf.loc[(typical_price.diff(drift) < 0), 'diff'] = -1
-        tdf.loc[tdf['diff'] == -1, '-mf'] = raw_money_flow
-
-        psum = tdf['+mf'].rolling(length).sum()
-        nsum = tdf['-mf'].rolling(length).sum()
-        tdf['mr'] = psum / nsum
-        mfi = 100 * psum / (psum + nsum)
-        tdf['mfi'] = mfi
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            mfi.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            mfi.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        mfi.name = f"MFI_{length}"
-        mfi.category = 'momentum'
-
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[mfi.name] = mfi
-
-        return mfi
+        return result
 
 
     def mom(self, close:str = None, length:int = None, offset:int = None, **kwargs):
@@ -410,7 +378,6 @@ class AnalysisIndicators(BasePandasObject):
         self._append(result, **kwargs)
 
         return result
-
 
 
     def roc(self, close:str = None, length:int = None, offset:int = None, **kwargs):
@@ -1418,15 +1385,15 @@ class AnalysisIndicators(BasePandasObject):
     AwesomeOscillator = ao
     BalanceOfPower = bop
     CommodityChannelIndex = cci
-    KnowSureThing = kst #⏸
+    KnowSureThing = kst
     MACD = macd #⏸
     MassIndex = massi #🤦🏻‍♂️
     Momentum = mom
     PercentagePriceOscillator = ppo
     RateOfChange = roc
-    RelativeStrengthIndex = rsi #⏸
+    RelativeStrengthIndex = rsi
     TrueStrengthIndex = tsi
-    UltimateOscillator = uo #⏸
+    UltimateOscillator = uo
     WilliamsR = willr
 
     # Overlap: overlap.py ✅

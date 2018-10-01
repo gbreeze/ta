@@ -230,6 +230,52 @@ def massi(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kw
     return massi
 
 
+def mfi(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length=None, drift=None, offset=None, **kwargs):
+    """Money Flow Index of a Pandas Series
+    
+    Use help(df.ta.mfi) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    volume = verify_series(volume)
+    length = int(length) if length and length > 0 else 14
+    drift = get_drift(drift)
+    offset = get_offset(offset)
+
+    # Calculate Result
+    typical_price = hlc3(high=high, low=low, close=close)
+    raw_money_flow = typical_price * volume
+
+    tdf = pd.DataFrame({'diff': 0, 'rmf': raw_money_flow, '+mf': 0, '-mf': 0})
+
+    tdf.loc[(typical_price.diff(drift) > 0), 'diff'] =  1
+    tdf.loc[tdf['diff'] ==  1, '+mf'] = raw_money_flow
+
+    tdf.loc[(typical_price.diff(drift) < 0), 'diff'] = -1
+    tdf.loc[tdf['diff'] == -1, '-mf'] = raw_money_flow
+
+    psum = tdf['+mf'].rolling(length).sum()
+    nsum = tdf['-mf'].rolling(length).sum()
+    tdf['mr'] = psum / nsum
+    mfi = 100 * psum / (psum + nsum)
+    tdf['mfi'] = mfi
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        mfi.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        mfi.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    mfi.name = f"MFI_{length}"
+    mfi.category = 'momentum'
+
+    return mfi
+
+
 def ppo(close:pd.Series, fast=None, slow=None, percentage=True, offset=None, **kwargs):
     """Percentage Price Oscillator of a Pandas Series
     
@@ -464,8 +510,6 @@ def uo(high:pd.Series, low:pd.Series, close:pd.Series, fast=None, medium=None, s
 
     slow = int(slow) if slow and slow > 0 else 28
     slow_w = float(slow_w) if slow_w and slow_w > 0 else 1.0
-
-    print(f"uo:\ndir: {dir()}\nkwargs: {kwargs}")
 
     # Calculate Result
     min_l_or_pc = close.shift(drift).combine(low, min)

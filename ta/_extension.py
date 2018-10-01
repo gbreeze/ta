@@ -598,7 +598,7 @@ class AnalysisIndicators(BasePandasObject):
         return macddf
 
 
-    def massi(self, high:str = None, low:str = None, fast=None, slow=None, **kwargs):
+    def massi(self, high:str = None, low:str = None, fast=None, slow=None, offset=None, **kwargs):
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -613,37 +613,13 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 low = df[low] if low in df.columns else df.low
 
-        # Validate arguments
-        fast = int(fast) if fast and fast > 0 else 9
-        slow = int(slow) if slow and slow > 0 else 25
-        if slow < fast:
-            fast, slow = slow, fast
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
-
-        # Calculate Result
-        hl_range = high - low
-        hl_ema1 = hl_range.ewm(span=fast, min_periods=min_periods).mean()
-        hl_ema2 =  hl_ema1.ewm(span=fast, min_periods=min_periods).mean()
-
-        mass = hl_ema1 / hl_ema2
-        massi = mass.rolling(slow, min_periods=slow).sum()
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            massi.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            massi.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        # bop.name = f"BOP_{length}"
-        massi.name = f"MASSI_{fast}_{slow}"
-        massi.category = 'momentum'
+        result = massi(high=high, low=low, fast=fast, slow=slow, offset=offset, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[massi.name] = massi
+            df[result.name] = result
 
-        return massi
+        return result
 
 
     def mfi(self, high:str = None, low:str = None, close:str = None, volume:str = None, length:int = None, drift:int = None, **kwargs):
@@ -1840,21 +1816,21 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Indicator Aliases & Categories
-    # Momentum: momomentum.py
+    # Momentum: momomentum.py #⏸
     AbsolutePriceOscillator = apo
     AwesomeOscillator = ao
     BalanceOfPower = bop
     CommodityChannelIndex = cci
-    KnowSureThing = kst
-    MACD = macd
-    MassIndex = massi
+    KnowSureThing = kst #⏸
+    MACD = macd #⏸
+    MassIndex = massi #⏸
     Momentum = mom
-    PercentagePriceOscillator = ppo
+    PercentagePriceOscillator = ppo #⏸
     RateOfChange = roc
-    RelativeStrengthIndex = rsi
-    TrueStrengthIndex = tsi
-    UltimateOscillator = uo
-    WilliamsR = willr
+    RelativeStrengthIndex = rsi #⏸
+    TrueStrengthIndex = tsi #⏸
+    UltimateOscillator = uo #⏸
+    WilliamsR = willr #⏸
 
     # Overlap: overlap.py ✅
     HL2 = hl2
@@ -1881,7 +1857,7 @@ class AnalysisIndicators(BasePandasObject):
     DetrendPriceOscillator = dpo
     Increasing = increasing
 
-    # Volatility: volatility.py
+    # Volatility: volatility.py #⏸
     AverageTrueRange = atr
     BollingerBands = bbands
     DonchianChannels = donchian

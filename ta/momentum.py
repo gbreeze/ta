@@ -189,6 +189,46 @@ def mom(close:pd.Series, length=None, offset=None, **kwargs):
     return mom
 
 
+def massi(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwargs):
+    """Mass Index of a Pandas Series
+    
+    Use help(df.ta.massi) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    fast = int(fast) if fast and fast > 0 else 9
+    slow = int(slow) if slow and slow > 0 else 25
+    if slow < fast:
+        fast, slow = slow, fast
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
+    offset = get_offset(offset)
+
+    # Calculate Result
+    hl_range = high - low
+    hl_ema1 = hl_range.ewm(span=fast, min_periods=min_periods).mean()
+    hl_ema2 =  hl_ema1.ewm(span=fast, min_periods=min_periods).mean()
+
+    mass = hl_ema1 / hl_ema2
+    massi = mass.rolling(slow, min_periods=slow).sum()
+
+    # Offset
+    massi = massi.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        massi.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        massi.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    # bop.name = f"BOP_{length}"
+    massi.name = f"MASSI_{fast}_{slow}"
+    massi.category = 'momentum'
+
+    return massi
+
 def roc(close:pd.Series, length=None, offset=None, **kwargs):
     """Rate of Change (ROC) of a Pandas Series
     

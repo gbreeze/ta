@@ -21,77 +21,6 @@ TA_EPSILON = sflt.epsilon
 
 
 
-def _aroon(df, close, length:int = None, offset:int = None, **kwargs):
-    """Aroon
-    
-    Chart a little off from TV
-    """
-
-    if df is None: return
-    else:
-        # Get the correct column.
-        if isinstance(close, pd.Series):
-            close = close
-        else:
-            close = df[close] if close in df.columns else df.close
-
-    # Validate arguments
-    length = length if length and length > 0 else 14
-
-    # Calculate Result
-    # def linear_weights(w):
-    #     def _compute(x):
-    #         return (w * x).sum() / total_weight
-    #     return _compute
-
-    def maxidx(x):
-        # def _compute(x):
-        return 100 * (int(np.argmax(x)) + 1) / length
-        # return _compute
-
-    def minidx(x):
-        # def _compute(x):
-        return 100 * (int(np.argmin(x)) + 1) / length
-        # return _compute
-
-
-    _close = close.rolling(length)
-    aroon_up = _close.apply(maxidx, raw=True)
-    aroon_down = _close.apply(minidx, raw=True)
-    # idxmin = close[-n,-n+1].idxmin()
-    # print(f"idxmin: {idxmin}")
-    # aroon_up = close.rolling(length).apply(lambda x: 100 * float(np.argmax(x) - 1) / length, raw=True)
-    # aroon_down = close.rolling(length).apply(lambda x: 100 * float(np.argmin(x) - 1) / length, raw=True)
-    # return
-
-    # Handle fills
-    if 'fillna' in kwargs:
-        aroon_up.fillna(kwargs['fillna'], inplace=True)
-        aroon_down.fillna(kwargs['fillna'], inplace=True)
-    if 'fill_method' in kwargs:
-        aroon_up.fillna(method=kwargs['fill_method'], inplace=True)
-        aroon_down.fillna(method=kwargs['fill_method'], inplace=True)
-
-    # Name and Categorize it
-    aroon_up.name = f"AROONU_{length}"
-    aroon_down.name = f"AROOND_{length}"
-
-    # If append, then add it to the df
-    if 'append' in kwargs and kwargs['append']:
-        df[aroon_up.name] = aroon_up
-        df[aroon_down.name] = aroon_down
-
-    aroon_down.category = aroon_up.category = '' #?  trend
-
-    # Prepare DataFrame to return
-    data = {aroon_up.name: aroon_up, aroon_down.name: aroon_down}
-    aroondf = pd.DataFrame(data)
-    aroondf.name = f"ARRON_{length}"
-    aroondf.category = ''
-
-    return aroondf
-
-
 def _wma(df, length:int = None, asc:bool = True, **kwargs):
     length = length if length and length > 0 else 1
     total_weight = 0.5 * length * (length + 1)
@@ -372,7 +301,7 @@ class AnalysisIndicators(BasePandasObject):
     def apo(self, close=None, fast:int = None, slow:int = None, offset=None, **kwargs):
         # Get the correct column.
         df = self._df
-        if df is None or not isinstance(df, pd.DataFrame): return
+        if df is None: return
         else:
             if isinstance(close, pd.Series):
                 close = close
@@ -391,7 +320,7 @@ class AnalysisIndicators(BasePandasObject):
     def ao(self, high=None, low=None, fast:int = None, slow:int = None, offset=None, **kwargs):
         # Get the correct column(s).
         df = self._df
-        if df is None or not isinstance(df, pd.DataFrame): return
+        if df is None: return
         else:
             if isinstance(high, pd.Series):
                 high = high
@@ -413,11 +342,25 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def aroon(self, close=None, length:int = None, offset:int = None, **kwargs):
-        result = _aroon(self._df, close=close, length=length, offset=offset, **kwargs)
+        # Get the correct column.
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        result = aroon(close=close, length=length, offset=offset, **kwargs)
+
+        # # If append, then add it to the df
+        # if 'append' in kwargs and kwargs['append']:
+        #     df[result.name] = result
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[result.name] = result
+            df[result.columns[0].name] = result.columns[0]  # aroon_up
+            df[result.columns[1].name] = result.columns[1]  # aroon_down
 
         return result
 
@@ -659,43 +602,24 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def ppo(self, close:str = None, fast:int = None, slow:int = None, **kwargs):
+    def ppo(self, close:str = None, fast:int = None, slow:int = None, percentage=True, offset=None, **kwargs):
         # Get the correct column.
         df = self._df
         if df is None: return
         else:
-            if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
+            if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate arguments
-        fast = int(fast) if fast and fast > 0 else 12
-        slow = int(slow) if slow and slow > 0 else 26
-        if slow < fast:
-            fast, slow = slow, fast
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
-
-        # Calculate Result
-        fastma = close.rolling(fast, min_periods=min_periods).mean()
-        slowma = close.rolling(slow, min_periods=min_periods).mean()
-        ppo = 100 * (fastma - slowma) / slowma
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            ppo.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            ppo.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        ppo.name = f"PPO_{fast}_{slow}"
-        ppo.category = 'momentum'
+        result = ppo(close=close, fast=fast, slow=slow, percentage=percentage, offset=offset, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[ppo.name] = ppo
+            df[result.name] = result
 
-        return ppo
+        return result
+
 
 
     def roc(self, close:str = None, length:int = None, offset:int = None, **kwargs):
@@ -703,7 +627,7 @@ class AnalysisIndicators(BasePandasObject):
         df = self._df
         if df is None: return
         else:
-            if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
+            if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
@@ -722,7 +646,7 @@ class AnalysisIndicators(BasePandasObject):
         df = self._df
         if df is None: return
         else:
-            if isinstance(close, pd.DataFrame) or isinstance(close, pd.Series):
+            if isinstance(close, pd.Series):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
@@ -1778,7 +1702,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
 
-    ## Indicator Aliases & Categories
+    ## Indicator Aliases by Category
     # Momentum: momomentum.py #⏸
     AbsolutePriceOscillator = apo #🤦🏻‍♂️
     AwesomeOscillator = ao

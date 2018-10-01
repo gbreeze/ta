@@ -12,6 +12,61 @@ import pandas as pd
 from .utils import get_offset, verify_series
 
 
+def aroon(close:pd.Series, length=None, offset=None, **kwargs):
+    """Aroon Oscillator of a Pandas Series
+    
+    Use help(df.ta.aroon) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = length if length and length > 0 else 14
+    offset = get_offset(offset)
+
+    # Calculate Result
+    # def linear_weights(w):
+    #     def _compute(x):
+    #         return (w * x).sum() / total_weight
+    #     return _compute
+
+    def maxidx(x):
+        return 100 * (int(np.argmax(x)) + 1) / length
+
+    def minidx(x):
+        return 100 * (int(np.argmin(x)) + 1) / length
+
+    _close = close.rolling(length)
+    aroon_up = _close.apply(maxidx, raw=True)
+    aroon_down = _close.apply(minidx, raw=True)
+    # idxmin = close[-n,-n+1].idxmin()
+    # print(f"idxmin: {idxmin}")
+    # aroon_up = close.rolling(length).apply(lambda x: 100 * float(np.argmax(x) - 1) / length, raw=True)
+    # aroon_down = close.rolling(length).apply(lambda x: 100 * float(np.argmin(x) - 1) / length, raw=True)
+    # return
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        aroon_up.fillna(kwargs['fillna'], inplace=True)
+        aroon_down.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        aroon_up.fillna(method=kwargs['fill_method'], inplace=True)
+        aroon_down.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    aroon_up.name = f"AROONU_{length}"
+    aroon_down.name = f"AROOND_{length}"
+
+    aroon_down.category = aroon_up.category = 'trend'
+
+    # Prepare DataFrame to return
+    data = {aroon_up.name: aroon_up, aroon_down.name: aroon_down}
+    aroondf = pd.DataFrame(data)
+    aroondf.name = f"AROON_{length}"
+    aroondf.category = 'trend'
+
+    return aroondf
+
+
 def decreasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
     """Decreasing over periods of a Pandas Series
     

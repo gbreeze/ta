@@ -337,6 +337,39 @@ def tsi(close:pd.Series, fast=None, slow=None, drift=None, offset=None, **kwargs
     return tsi
 
 
+def willr(high=None, low=None, close=None, length=None, percentage=True, offset=None, **kwargs):
+    # Validate arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 14
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    percent = 100 if percentage else 1
+    offset = get_offset(offset)
+
+    # Calculate Result
+    lowest_low = low.rolling(length, min_periods=min_periods).min()
+    highest_high = high.rolling(length, min_periods=min_periods).max()
+
+    willr = 100 * ((close - lowest_low) / (highest_high - lowest_low) - 1)
+
+    # Offset
+    willr = willr.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        willr.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        willr.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    willr.name = f"WILLR_{length}"
+    willr.category = 'momentum'
+
+    return willr
+
+
+
 # Legacy code
 def rsi(close, n=14, fillna=False):
     """Relative Strength Index (RSI)

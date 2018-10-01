@@ -166,6 +166,7 @@ def increasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
     return increasing
 
 
+
 # Legacy Code
 def macd(close, n_fast=12, n_slow=26, fillna=False):
     """

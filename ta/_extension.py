@@ -732,7 +732,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def willr(self, high:str = None, low:str = None, close:str = None, length:int = None, **kwargs):
+    def willr(self, high:str = None, low:str = None, close:str = None, length:int = None, percentage:bool = True, offset:int = None,**kwargs):
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -751,32 +751,14 @@ class AnalysisIndicators(BasePandasObject):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
-
-        # Validate arguments
-        length = int(length) if length and length > 0 else 14
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-
-        # Calculate Result
-        lowest_low = low.rolling(length, min_periods=min_periods).min()
-        highest_high = high.rolling(length, min_periods=min_periods).max()
-
-        willr = 100 * ((close - lowest_low) / (highest_high - lowest_low) - 1)
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            willr.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            willr.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        willr.name = f"WILLR_{length}"
-        willr.category = 'momentum'
+        
+        result = willr(high=high, low=low, close=close, length=length, percentage=percentage, offset=offset, **kwargs)
 
         # If append, then add it to the df
         if 'append' in kwargs and kwargs['append']:
-            df[willr.name] = willr
+            df[result.name] = result
 
-        return willr
+        return result
 
 
     ## Overlap Indicators
@@ -1712,7 +1694,7 @@ class AnalysisIndicators(BasePandasObject):
     MACD = macd #⏸
     MassIndex = massi #🤦🏻‍♂️
     Momentum = mom
-    PercentagePriceOscillator = ppo #⏸
+    PercentagePriceOscillator = ppo
     RateOfChange = roc
     RelativeStrengthIndex = rsi #⏸
     TrueStrengthIndex = tsi

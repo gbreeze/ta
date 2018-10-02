@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 
 from .utils import get_offset, verify_series
+# from .volatility import 
 
 
 def hl2(high:pd.Series, low:pd.Series, offset=None, **kwargs):
@@ -199,6 +200,34 @@ def rpn(high:pd.Series, low:pd.Series, length=None, offset=None, percentage=None
     rp.category = 'overlap'
 
     return rp
+
+
+def vwap(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, offset=None, **kwargs):
+    """Volume Weighted Average Price (VWAP)
+    
+    Use help(df.ta.vwap) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    volume = verify_series(volume)
+    offset = get_offset(offset)
+
+    # Calculate Result
+    tp = hlc3(high=high, low=low, close=close)
+    tpv = tp * volume
+    vwap = tpv.cumsum() / volume.cumsum()
+
+    # Offset
+    vwap = vwap.shift(offset)
+
+    # Name & Category
+    vwap.name = "VWAP"
+    vwap.category = 'overlap'
+
+    return vwap
 
 
 def _wma(df, length:int = None, asc:bool = True, **kwargs):

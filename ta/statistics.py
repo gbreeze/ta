@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 
+from .overlap import vwma
 from .utils import get_offset, verify_series
 
 
@@ -28,6 +29,34 @@ def kurtosis(close:pd.Series, length=None, offset=None, **kwargs):
     kurtosis.category = 'statistics'
 
     return kurtosis
+
+
+def mcv(vwap:pd.Series, volume:pd.Series, length=None, offset=None, **kwargs):
+    """Moving Covariance over periods of a Pandas Series
+    
+    Use help(df.ta.mcv) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    vwap = verify_series(vwap)
+    volume = verify_series(volume)
+    length = int(length) if length and length > 0 else 30
+    offset = get_offset(offset)
+
+    # Calculate Result
+    mean = vwma(close=vwap, volume=volume, length=length)
+    # mean = sma(vwap, length=length)
+    std = stdev(close=vwap, length=length)
+    mcv = 100 * std / mean
+
+    # Offset
+    mcv = mcv.shift(offset)
+
+    # Name & Category
+    mcv.name = f"MCV_{length}"
+    mcv.category = 'statistics'
+
+    return mcv
 
 
 def quantile(close:pd.Series, length=None, q=None, offset=None, **kwargs):

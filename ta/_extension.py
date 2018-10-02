@@ -633,6 +633,23 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    def sma(self, close=None, length:int = None, offset:int = None, **kwargs):
+        # Get the correct column(s).
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        result = sma(close=close, length=length, offset=offset, **kwargs)
+
+        self._append(result, **kwargs)
+        
+        return result
+
+
     def vwap(self, high=None, low=None, close=None, volume=None, offset:int = None, **kwargs):
         # Get the correct column(s).
         df = self._df
@@ -664,6 +681,27 @@ class AnalysisIndicators(BasePandasObject):
         
         return result
 
+
+    def vwma(self, close=None, volume=None, length:int = None, offset:int = None, **kwargs):
+        # Get the correct column(s).
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+            if isinstance(volume, pd.Series):
+                volume = volume
+            else:
+                volume = df[volume] if volume in df.columns else df.volume
+
+        result = vwma(close=close, volume=close, length=length, offset=offset, **kwargs)
+
+        self._append(result, **kwargs)
+        
+        return result
 
     # def wma(self, close:str = None, length:int = None, asc:bool = True, **kwargs):
     #     """ wma """
@@ -747,6 +785,29 @@ class AnalysisIndicators(BasePandasObject):
                 close = df[close] if close in df.columns else df.close
 
         result = kurtosis(close=close, length=length, offset=offset, **kwargs)
+
+        self._append(result, **kwargs)
+        
+        return result
+
+
+    def mcv(self, close=None, volume=None, length=None, offset=None, **kwargs):
+        # Get the correct column.
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+            if isinstance(volume, pd.Series):
+                volume = volume
+            else:
+                volume = df[volume] if volume in df.columns else df.volume
+
+        vwap = self.vwap(close=close, volume=volume)
+        result = mcv(vwap=vwap, volume=volume, length=length, offset=offset, **kwargs)
 
         self._append(result, **kwargs)
         
@@ -1281,7 +1342,9 @@ class AnalysisIndicators(BasePandasObject):
     Midpoint = midpoint
     Midprice = midprice
     RangePercentage = rpn
-    # VolumeWeightedAveragePrice = vwap
+    SimpleMovingAverage = sma
+    VolumeWeightedAveragePrice = vwap
+    VolumeWeightedMovingAverage = vwma
 
     # Performance: performance.py ✅
     LogReturn = log_return
@@ -1289,7 +1352,7 @@ class AnalysisIndicators(BasePandasObject):
 
     # Statistics: statistics.py ✅
     Kurtosis = kurtosis
-    # MovingCovariance = mcv
+    MovingCovariance = mcv #🤦🏻‍♂️
     Quantile = quantile
     Skew = skew
     StandardDeviation = stdev

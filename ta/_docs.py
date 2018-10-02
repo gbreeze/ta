@@ -290,8 +290,8 @@ Returns:
     pd.Series: New feature
 """
 
-mvc_docs = """
-Moving Covariance by Rashad
+mcv_docs = """
+Moving Covariance by Rashad (Not visually near it's TradingView Chart)
 
     Source:
     //Moving Covariance by Rashad. Trading View.
@@ -807,7 +807,7 @@ AnalysisIndicators.percent_return.__doc__ = percent_return_docs
 
 # Statistics Documentation
 AnalysisIndicators.kurtosis.__doc__ = kurtosis_docs
-# AnalysisIndicators.mvc.__doc__ = mvc_docs
+AnalysisIndicators.mcv.__doc__ = mcv_docs
 AnalysisIndicators.quantile.__doc__ = quantile_docs
 AnalysisIndicators.skew.__doc__ = skew_docs
 AnalysisIndicators.stdev.__doc__ = stdev_docs

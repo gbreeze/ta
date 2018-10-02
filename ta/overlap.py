@@ -202,6 +202,30 @@ def rpn(high:pd.Series, low:pd.Series, length=None, offset=None, percentage=None
     return rp
 
 
+def sma(close:pd.Series, length=None, offset=None, **kwargs):
+    """Simple Moving Average Price (SMA)
+    
+    Use help(df.ta.sma) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 10
+    offset = get_offset(offset)
+
+    # Calculate Result
+    sma = close.rolling(length).mean()
+
+    # Offset
+    sma = sma.shift(offset)
+
+    # Name & Category
+    sma.name = f"SMA_{length}"
+    sma.category = 'overlap'
+
+    return sma
+
+
 def vwap(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, offset=None, **kwargs):
     """Volume Weighted Average Price (VWAP)
     
@@ -228,6 +252,32 @@ def vwap(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, offse
     vwap.category = 'overlap'
 
     return vwap
+
+
+def vwma(close:pd.Series, volume:pd.Series, length=None, offset=None, **kwargs):
+    """Volume Weighted Average Price (VWAP)
+    
+    Use help(df.ta.vwap) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    volume = verify_series(volume)
+    length = int(length) if length and length > 0 else 10
+    offset = get_offset(offset)
+
+    # Calculate Result
+    pv = close * volume
+    vwma = sma(close=pv, length=length) / sma(close=volume, length=length)
+
+    # Offset
+    vwma = vwma.shift(offset)
+
+    # Name & Category
+    vwma.name = f"VWMA_{length}"
+    vwma.category = 'overlap'
+
+    return vwma
 
 
 def _wma(df, length:int = None, asc:bool = True, **kwargs):

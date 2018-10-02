@@ -68,7 +68,8 @@ def bbands(close:pd.Series, length=None, stdev=None, mamode=None, offset=None, *
     offset = get_offset(offset)
 
     # Calculate Result
-    std = variance(close=close, length=length).apply(np.sqrt)
+    # std = variance(close=close, length=length).apply(np.sqrt)
+    std = stdev(close=close, length=length)
 
     if mamode is None or mamode.lower() == 'sma':
         mid = close.rolling(length, min_periods=min_periods).mean()

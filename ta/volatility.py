@@ -155,6 +155,67 @@ def donchian(close:pd.Series, length=None, offset=None, **kwargs):
     return dcdf
 
 
+def kc(high:pd.Series, low:pd.Series, close:pd.Series, length=None, scalar=None, mamode=None, offset=None, **kwargs):
+    """Keltner Channels of a Pandas Series
+    
+    Use help(df.ta.kc) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 9999
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    scalar = float(scalar) if scalar and scalar > 0 else 2
+    mamode = mamode.lower() if mamode else 'classic'
+    offset = get_offset(offset)
+
+    # Calculate Result
+    std = self.variance(close=close, length=length).apply(np.sqrt)
+
+    if mamode == 'ema':
+        hl_range = high - low
+        typical_price = self.hlc3(high=high, low=low, close=close)
+        basis = typical_price.rolling(length, min_periods=min_periods).mean()
+        band = hl_range.rolling(length, min_periods=min_periods).mean()
+    else:
+        basis = close.ewm(span=length, min_periods=min_periods).mean()
+        band = self.atr(high=high, low=low, close=close)
+
+    lower = basis - scalar * band
+    upper = basis + scalar * band
+
+    # Offset
+    lower = lower.shift(offset)
+    basis = basis.shift(offset)
+    upper = upper.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        lower.fillna(kwargs['fillna'], inplace=True)
+        basis.fillna(kwargs['fillna'], inplace=True)
+        upper.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        lower.fillna(method=kwargs['fill_method'], inplace=True)
+        basis.fillna(method=kwargs['fill_method'], inplace=True)
+        upper.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    lower.name = f"KCL_{length}"
+    basis.name = f"KCB_{length}"
+    upper.name = f"KCU_{length}"
+    basis.category = upper.category = lower.category = 'volatility'
+
+    # Prepare DataFrame to return
+    data = {lower.name: lower, basis.name: basis, upper.name: upper}
+    kcdf = pd.DataFrame(data)
+    kcdf.name = f"KC_{length}"
+    kcdf.category = 'volatility'
+
+    return kcdf
+
+
 def true_range(high:pd.Series, low:pd.Series, close:pd.Series, drift=None, offset=None, **kwargs):
     """True Range of a Pandas Series
     

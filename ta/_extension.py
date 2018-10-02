@@ -922,7 +922,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def kc(self, high=None, low=None, close=None, length=None, scalar=None, mamode:str = None, **kwargs):
+    def kc(self, high=None, low=None, close=None, length=None, scalar=None, mamode:str = None, offset:int = None, **kwargs):
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -942,56 +942,11 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 9999
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        scalar = float(scalar) if scalar and scalar >= 0 else 2
-        mamode = mamode.lower() if mamode else 'classic'
+        result = kc(high=high, low=low, close=close, length=length, scalar=scalar, mamode=mamode, offset=offset, **kwargs)
 
-        # Calculate Result
-        std = self.variance(close=close, length=length).apply(np.sqrt)
-
-        if mamode == 'ema':
-            hl_range = high - low
-            typical_price = self.hlc3(high=high, low=low, close=close)
-            basis = typical_price.rolling(length, min_periods=min_periods).mean()
-            band = hl_range.rolling(length, min_periods=min_periods).mean()
-        else:
-            basis = close.ewm(span=length, min_periods=min_periods).mean()
-            band = self.atr(high=high, low=low, close=close)
-
-        lower = basis - scalar * band
-        upper = basis + scalar * band
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            lower.fillna(kwargs['fillna'], inplace=True)
-            basis.fillna(kwargs['fillna'], inplace=True)
-            upper.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            lower.fillna(method=kwargs['fill_method'], inplace=True)
-            basis.fillna(method=kwargs['fill_method'], inplace=True)
-            upper.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        lower.name = f"KCL_{length}"
-        basis.name = f"KCB_{length}"
-        upper.name = f"KCU_{length}"
-        basis.category = upper.category = lower.category = 'volatility'
-
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[lower.name] = lower
-            df[basis.name] = basis
-            df[upper.name] = upper
-
-        # Prepare DataFrame to return
-        data = {lower.name: lower, basis.name: basis, upper.name: upper}
-        kcdf = pd.DataFrame(data)
-        kcdf.name = f"KC{length}"
-        kcdf.category = 'volatility'
-
-        return kcdf
+        self._append(result, **kwargs)
+        
+        return result
 
 
     def true_range(self, high=None, low=None, close=None, drift:int = None, offset:int = None, **kwargs):
@@ -1285,7 +1240,7 @@ class AnalysisIndicators(BasePandasObject):
     DetrendPriceOscillator = dpo
     Increasing = increasing
 
-    # Volatility: volatility.py #⏸
+    # Volatility: volatility.py ✅
     AverageTrueRange = atr
     BollingerBands = bbands
     DonchianChannels = donchian

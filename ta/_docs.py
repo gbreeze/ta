@@ -290,6 +290,35 @@ Returns:
     pd.Series: New feature
 """
 
+mvc_docs = """
+Moving Covariance by Rashad
+
+    Source:
+    //Moving Covariance by Rashad. Trading View.
+    study(title="Moving Covariance", shorttitle="MCV", overlay=false)
+    src = vwap, len = input(30, minval=1, title="Length")
+    mean = vwma(src, len)
+    stdev = stdev(src, len)
+    covariance = (stdev/mean)*100
+    plot(covariance, title = "moving covairance", style=line, linewidth = 2, color = red)
+
+Args:
+    close (None, pd.Series, optional):
+        If None, uses local df column: 'close'
+    volume (None, pd.Series, optional):
+        If None, uses local df column: 'volume'
+    length (None, int, optional):
+        An integer of how periods to compute.  Default is None and one.
+
+    **kwargs:
+        fillna (value, optional): pd.DataFrame.fillna(value)
+        fill_method (value, optional): Type of fill method
+        append (bool, optional): If True, appends result to current df.
+
+Returns:
+    pd.Series: New feature
+"""
+
 quantile_docs = \
 """
 quantile
@@ -778,6 +807,7 @@ AnalysisIndicators.percent_return.__doc__ = percent_return_docs
 
 # Statistics Documentation
 AnalysisIndicators.kurtosis.__doc__ = kurtosis_docs
+# AnalysisIndicators.mvc.__doc__ = mvc_docs
 AnalysisIndicators.quantile.__doc__ = quantile_docs
 AnalysisIndicators.skew.__doc__ = skew_docs
 AnalysisIndicators.stdev.__doc__ = stdev_docs

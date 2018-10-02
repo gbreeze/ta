@@ -172,16 +172,16 @@ def kc(high:pd.Series, low:pd.Series, close:pd.Series, length=None, scalar=None,
     offset = get_offset(offset)
 
     # Calculate Result
-    std = self.variance(close=close, length=length).apply(np.sqrt)
+    std = variance(close=close, length=length).apply(np.sqrt)
 
     if mamode == 'ema':
         hl_range = high - low
-        typical_price = self.hlc3(high=high, low=low, close=close)
+        typical_price = hlc3(high=high, low=low, close=close)
         basis = typical_price.rolling(length, min_periods=min_periods).mean()
         band = hl_range.rolling(length, min_periods=min_periods).mean()
     else:
         basis = close.ewm(span=length, min_periods=min_periods).mean()
-        band = self.atr(high=high, low=low, close=close)
+        band = atr(high=high, low=low, close=close)
 
     lower = basis - scalar * band
     upper = basis + scalar * band

@@ -228,12 +228,9 @@ def vortex(high:pd.Series, low:pd.Series, close:pd.Series, length=None, offset=N
     offset = get_offset(offset)
 
     # Calculate Result
-    # tr = high.combine(close.shift(1), max) - low.combine(close.shift(1), min)
     tr = true_range(high=high, low=low, close=close)
     tr_sma = tr.rolling(length).sum()
 
-    # vmp = np.abs(high - low.shift(1))
-    # vmm = np.abs(low - high.shift(1))
     vmp = (high - low.shift(1)).abs()
     vmm = (low - high.shift(1)).abs()
 

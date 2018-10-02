@@ -1249,6 +1249,7 @@ class AnalysisIndicators(BasePandasObject):
     Midpoint = midpoint
     Midprice = midprice
     RangePercentage = rpn
+    # VolumeWeightedAveragePrice = vwap
 
     # Performance: performance.py ✅
     LogReturn = log_return
@@ -1256,6 +1257,7 @@ class AnalysisIndicators(BasePandasObject):
 
     # Statistics: statistics.py ✅
     Kurtosis = kurtosis
+    # MovingCovariance = mcv
     Quantile = quantile
     Skew = skew
     StandardDeviation = stdev

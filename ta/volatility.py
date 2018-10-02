@@ -108,6 +108,53 @@ def bbands(close:pd.Series, length=None, stdev=None, mamode=None, offset=None, *
     return bbandsdf
 
 
+def donchian(close:pd.Series, length=None, offset=None, **kwargs):
+    """Donchian Channels of a Pandas Series
+    
+    Use help(df.ta.donchian) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 20
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = get_offset(offset)
+
+    # Calculate Result
+    lower = close.rolling(length, min_periods=min_periods).min()
+    upper = close.rolling(length, min_periods=min_periods).max()
+    mid = 0.5 * (lower + upper)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        lower.fillna(kwargs['fillna'], inplace=True)
+        mid.fillna(kwargs['fillna'], inplace=True)
+        upper.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        lower.fillna(method=kwargs['fill_method'], inplace=True)
+        mid.fillna(method=kwargs['fill_method'], inplace=True)
+        upper.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Offset
+    lower = lower.shift(offset)
+    mid = mid.shift(offset)
+    upper = upper.shift(offset)
+
+    # Name and Categorize it
+    lower.name = f"DCL_{length}"
+    mid.name = f"DCM_{length}"
+    upper.name = f"DCU_{length}"
+    mid.category = upper.category = lower.category = 'volatility'
+
+    # Prepare DataFrame to return
+    data = {lower.name: lower, mid.name: mid, upper.name: upper}
+    dcdf = pd.DataFrame(data)
+    dcdf.name = f"DC_{length}"
+    dcdf.category = 'volatility'
+
+    return dcdf
+
+
 def true_range(high:pd.Series, low:pd.Series, close:pd.Series, drift=None, offset=None, **kwargs):
     """True Range of a Pandas Series
     

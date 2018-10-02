@@ -905,7 +905,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def donchian(self, close=None, length:int = None, **kwargs):
+    def donchian(self, close=None, length:int = None, offset:int = None, **kwargs):
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -915,44 +915,11 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 20
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+        result = donchian(close=close, length=length, offset=offset, **kwargs)
 
-        # Calculate Result
-        lower = close.rolling(length, min_periods=min_periods).min()
-        upper = close.rolling(length, min_periods=min_periods).max()
-        mid = 0.5 * (lower + upper)
+        self._append(result, **kwargs)
 
-        # Handle fills
-        if 'fillna' in kwargs:
-            lower.fillna(kwargs['fillna'], inplace=True)
-            mid.fillna(kwargs['fillna'], inplace=True)
-            upper.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            lower.fillna(method=kwargs['fill_method'], inplace=True)
-            mid.fillna(method=kwargs['fill_method'], inplace=True)
-            upper.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        lower.name = f"DCL_{length}"
-        mid.name = f"DCM_{length}"
-        upper.name = f"DCU_{length}"
-        mid.category = upper.category = lower.category = 'volatility'
-
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[lower.name] = lower
-            df[mid.name] = mid
-            df[upper.name] = upper
-
-        # Prepare DataFrame to return
-        data = {lower.name: lower, mid.name: mid, upper.name: upper}
-        dcdf = pd.DataFrame(data)
-        dcdf.name = f"DC{length}"
-        dcdf.category = 'volatility'
-
-        return dcdf
+        return result
 
 
     def kc(self, high=None, low=None, close=None, length=None, scalar=None, mamode:str = None, **kwargs):

@@ -888,7 +888,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def bbands(self, close=None, length:int = None, stdev:float = None, mamode:str = None, **kwargs):
+    def bbands(self, close=None, length:int = None, stdev:float = None, mamode:str = None, offset:int = None, **kwargs):
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -897,52 +897,12 @@ class AnalysisIndicators(BasePandasObject):
                 close = close
             else:
                 close = df[close] if close in df.columns else df.close
+        
+        result = bbands(close=close, length=length, stdev=stdev, mamode=mamode, offset=offset, **kwargs)
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 20
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        stdev = int(stdev) if stdev and stdev >= 0 else 2
+        self._append(result, **kwargs)
 
-        # Calculate Result
-        std = self.variance(close=close, length=length).apply(np.sqrt)
-
-        if mamode is None or mamode.lower() == 'sma':
-            mid = close.rolling(length, min_periods=min_periods).mean()
-        elif mamode.lower() == 'ema':
-            mid = close.ewm(span=length, min_periods=min_periods).mean()
-
-        lower = mid - stdev * std
-        upper = mid + stdev * std
-
-        # Handle fills
-        if 'fillna' in kwargs:
-            lower.fillna(kwargs['fillna'], inplace=True)
-            mid.fillna(kwargs['fillna'], inplace=True)
-            upper.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            lower.fillna(method=kwargs['fill_method'], inplace=True)
-            mid.fillna(method=kwargs['fill_method'], inplace=True)
-            upper.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        lower.name = f"BBL_{length}"
-        mid.name = f"BBM_{length}"
-        upper.name = f"BBU_{length}"
-        mid.category = upper.category = lower.category = 'volatility'
-
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[lower.name] = lower
-            df[mid.name] = mid
-            df[upper.name] = upper
-
-        # Prepare DataFrame to return
-        data = {lower.name: lower, mid.name: mid, upper.name: upper}
-        bbandsdf = pd.DataFrame(data)
-        bbandsdf.name = f"BBANDS{length}"
-        bbandsdf.category = 'volatility'
-
-        return bbandsdf
+        return result
 
 
     def donchian(self, close=None, length:int = None, **kwargs):

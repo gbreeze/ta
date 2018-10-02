@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 
 from .utils import *
+from .statistics import variance
 
 
 
@@ -50,6 +51,61 @@ def atr(high:pd.Series, low:pd.Series, close:pd.Series, length=None, mamode=None
     atr.category = 'volatility'
 
     return atr
+
+
+def bbands(close:pd.Series, length=None, stdev=None, mamode=None, offset=None, **kwargs):
+    """Bollinger Bands of a Pandas Series
+    
+    Use help(df.ta.bbands) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 20
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    stdev = float(stdev) if stdev and stdev > 0 else 2
+    mamode = mamode.lower() if mamode else 'ema'
+    offset = get_offset(offset)
+
+    # Calculate Result
+    std = variance(close=close, length=length).apply(np.sqrt)
+
+    if mamode is None or mamode.lower() == 'sma':
+        mid = close.rolling(length, min_periods=min_periods).mean()
+    elif mamode.lower() == 'ema':
+        mid = close.ewm(span=length, min_periods=min_periods).mean()
+
+    lower = mid - stdev * std
+    upper = mid + stdev * std
+
+    # Offset
+    lower = lower.shift(offset)
+    mid = mid.shift(offset)
+    upper = upper.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        lower.fillna(kwargs['fillna'], inplace=True)
+        mid.fillna(kwargs['fillna'], inplace=True)
+        upper.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        lower.fillna(method=kwargs['fill_method'], inplace=True)
+        mid.fillna(method=kwargs['fill_method'], inplace=True)
+        upper.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    lower.name = f"BBL_{length}"
+    mid.name = f"BBM_{length}"
+    upper.name = f"BBU_{length}"
+    mid.category = upper.category = lower.category = 'volatility'
+
+    # Prepare DataFrame to return
+    data = {lower.name: lower, mid.name: mid, upper.name: upper}
+    bbandsdf = pd.DataFrame(data)
+    bbandsdf.name = f"BBANDS_{length}"
+    bbandsdf.category = 'volatility'
+
+    return bbandsdf
 
 
 def true_range(high:pd.Series, low:pd.Series, close:pd.Series, drift=None, offset=None, **kwargs):

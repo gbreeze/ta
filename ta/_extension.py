@@ -633,6 +633,23 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    def dema(self, close=None, length:int = None, offset:int = None, **kwargs):
+        # Get the correct column.
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        result = dema(close=close, length=length, offset=offset, **kwargs)
+
+        self._append(result, **kwargs)
+        
+        return result
+
+
     def ema(self, close=None, length:int = None, offset:int = None, **kwargs):
         # Get the correct column.
         df = self._df
@@ -643,7 +660,6 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # VV: TypeError: ema() got an unexpected keyword argument 'close' 
         result = ema(close=close, length=length, offset=offset, **kwargs)
 
         self._append(result, **kwargs)
@@ -1377,6 +1393,7 @@ class AnalysisIndicators(BasePandasObject):
     Midpoint = midpoint
     Midprice = midprice
     RangePercentage = rpn
+    DoubleExponentialMovingAverage = dema
     ExponentialMovingAverage = ema
     SimpleMovingAverage = sma
     TriangularMovingAverage = trima # require scipy

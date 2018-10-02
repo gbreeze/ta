@@ -202,6 +202,33 @@ def rpn(high:pd.Series, low:pd.Series, length=None, offset=None, percentage=None
     return rp
 
 
+def dema(close:pd.Series, length=None, offset=None, **kwargs):
+    """Double Exponential Moving Average (DEMA)
+    
+    Use help(df.ta.dema) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 10
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = get_offset(offset)
+
+    # Calculate Result
+    ema1 = ema(close=close, length=length, min_periods=min_periods)
+    ema2 = ema(close=ema1, length=length, min_periods=min_periods)
+    dema = 2 * ema1 - ema2
+
+    # Offset
+    dema = dema.shift(offset)
+
+    # Name & Category
+    dema.name = f"DEMA_{length}"
+    dema.category = 'overlap'
+
+    return dema
+
+
 def ema(close:pd.Series, length=None, offset=None, **kwargs):
     """Exponential Moving Average (EMA)
     

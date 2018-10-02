@@ -861,7 +861,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Volatility Indicators
-    def atr(self, high=None, low=None, close=None, length=None, mamode:str = None, **kwargs):
+    def atr(self, high=None, low=None, close=None, length=None, mamode:str = None, offset:int = None, **kwargs):
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -881,33 +881,11 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        # Validate arguments
-        length = int(length) if length and length > 0 else 14
-        min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-        mamode = mamode.lower() if mamode else 'ema'
+        result = atr(high=high, low=low, close=close, length=length, mamode=mamode, offset=offset, **kwargs)
 
-        # Calculate Result
-        true_range = self.true_range(high=high, low=low, close=close, length=length)
-        if mamode == 'ema':
-            atr = true_range.ewm(span=length, min_periods=min_periods).mean()
-        else:
-            atr = true_range.rolling(length, min_periods=min_periods).mean()
+        self._append(result, **kwargs)
 
-        # Handle fills
-        if 'fillna' in kwargs:
-            atr.fillna(kwargs['fillna'], inplace=True)
-        if 'fill_method' in kwargs:
-            atr.fillna(method=kwargs['fill_method'], inplace=True)
-
-        # Name and Categorize it
-        atr.name = f"ATR_{length}"
-        atr.category = 'volatility'
-
-        # If append, then add it to the df
-        if 'append' in kwargs and kwargs['append']:
-            df[atr.name] = atr
-
-        return atr
+        return result
 
 
     def bbands(self, close=None, length:int = None, stdev:float = None, mamode:str = None, **kwargs):
@@ -1089,7 +1067,7 @@ class AnalysisIndicators(BasePandasObject):
         return kcdf
 
 
-    def true_range(self, high=None, low=None, close=None, length=None, drift:int = None, offset:int = None, **kwargs):
+    def true_range(self, high=None, low=None, close=None, drift:int = None, offset:int = None, **kwargs):
         # Get the correct column(s).
         df = self._df
         if df is None: return
@@ -1109,7 +1087,7 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        result = true_range(high=high, low=low, close=close, length=length, drift=drift, offset=offset, **kwargs)
+        result = true_range(high=high, low=low, close=close, drift=drift, offset=offset, **kwargs)
 
         self._append(result, **kwargs)
         

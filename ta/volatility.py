@@ -13,7 +13,46 @@ from .utils import *
 
 
 
-def true_range(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drift=None, offset=None, **kwargs):
+def atr(high:pd.Series, low:pd.Series, close:pd.Series, length=None, mamode=None, drift=None, offset=None, **kwargs):
+    """Average True Range of a Pandas Series
+    
+    Use help(df.ta.atr) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 14
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    mamode = mamode.lower() if mamode else 'ema'
+    drift = get_drift(drift)
+    offset = get_offset(offset)
+
+    # Calculate Result
+    tr = true_range(high=high, low=low, close=close, drift=drift)
+    if mamode == 'ema':
+        atr = tr.ewm(span=length, min_periods=min_periods).mean()
+    else:
+        atr = tr.rolling(length, min_periods=min_periods).mean()
+
+    # Offset
+    atr = atr.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        atr.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        atr.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    atr.name = f"ATR_{length}"
+    atr.category = 'volatility'
+
+    return atr
+
+
+def true_range(high:pd.Series, low:pd.Series, close:pd.Series, drift=None, offset=None, **kwargs):
     """True Range of a Pandas Series
     
     Use help(df.ta.true_range) for specific documentation where 'df' represents
@@ -23,8 +62,6 @@ def true_range(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drif
     high = verify_series(high)
     low = verify_series(low)
     close = verify_series(close)
-    length = int(length) if length and length > 0 else 1
-    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     drift = get_drift(drift)
     offset = get_offset(offset)
 
@@ -33,7 +70,10 @@ def true_range(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drif
     ranges = [high - low, high - prev_close, low - prev_close]
     true_range = pd.DataFrame(ranges).T
     true_range = true_range.abs().max(axis=1)
-    
+
+    # Offset
+    true_range = true_range.shift(offset)
+
     # Handle fills
     if 'fillna' in kwargs:
         true_range.fillna(kwargs['fillna'], inplace=True)
@@ -41,7 +81,7 @@ def true_range(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drif
         true_range.fillna(method=kwargs['fill_method'], inplace=True)
 
     # Name and Categorize it
-    true_range.name = f"TRUERANGE_{length}"
+    true_range.name = f"TRUERANGE_{drift}"
     true_range.category = 'volatility'
 
     return true_range

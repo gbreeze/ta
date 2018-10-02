@@ -10,8 +10,11 @@ def dropna(df):
     return df
 
 
-def ema_modified(series:pd.Series, periods:int):
-    """Modified EMA with an SMA"""
+def ema_depreciated(series:pd.Series, periods:int):
+    """Modified EMA with an SMA
+    
+    Rolled into ema when kwargs['presma'] = True
+    """
     series = verify_series(series)
     sma = series.rolling(window=periods, min_periods=periods).mean()[:periods]
     rest = series[periods:]

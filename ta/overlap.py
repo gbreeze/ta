@@ -215,6 +215,11 @@ def ema(close:pd.Series, length=None, offset=None, **kwargs):
     offset = get_offset(offset)
 
     # Calculate Result
+    if 'presma' in kwargs and kwargs['presma']:
+        initial_sma = sma(close=close, length=length)[:length]
+        rest = close[length:]
+        close = pd.concat([initial_sma, rest])
+
     ema = close.ewm(span=length, min_periods=min_periods).mean()
 
     # Offset

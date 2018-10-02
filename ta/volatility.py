@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 from .utils import *
-from .statistics import variance
+from .statistics import variance, stdev
 
 
 
@@ -63,21 +63,20 @@ def bbands(close:pd.Series, length=None, stdev=None, mamode=None, offset=None, *
     close = verify_series(close)
     length = int(length) if length and length > 0 else 20
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-    stdev = float(stdev) if stdev and stdev > 0 else 2
+    stdev_ = float(stdev) if stdev and stdev > 0 else 2
     mamode = mamode.lower() if mamode else 'ema'
     offset = get_offset(offset)
 
     # Calculate Result
-    # std = variance(close=close, length=length).apply(np.sqrt)
-    std = stdev(close=close, length=length)
+    std = variance(close=close, length=length).apply(np.sqrt)
 
-    if mamode is None or mamode.lower() == 'sma':
+    if mamode is None or mamode == 'sma':
         mid = close.rolling(length, min_periods=min_periods).mean()
-    elif mamode.lower() == 'ema':
+    elif mamode == 'ema':
         mid = close.ewm(span=length, min_periods=min_periods).mean()
 
-    lower = mid - stdev * std
-    upper = mid + stdev * std
+    lower = mid - stdev_ * std
+    upper = mid + stdev_ * std
 
     # Offset
     lower = lower.shift(offset)

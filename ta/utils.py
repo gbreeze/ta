@@ -10,7 +10,7 @@ def dropna(df):
     return df
 
 
-def ema(series:pd.Series, periods:int):
+def ema_modified(series:pd.Series, periods:int):
     """Modified EMA with an SMA"""
     series = verify_series(series)
     sma = series.rolling(window=periods, min_periods=periods).mean()[:periods]

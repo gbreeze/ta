@@ -202,6 +202,31 @@ def rpn(high:pd.Series, low:pd.Series, length=None, offset=None, percentage=None
     return rp
 
 
+def ema(close:pd.Series, length=None, offset=None, **kwargs):
+    """Exponential Moving Average (EMA)
+    
+    Use help(df.ta.ema) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 10
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = get_offset(offset)
+
+    # Calculate Result
+    ema = close.ewm(span=length, min_periods=min_periods).mean()
+
+    # Offset
+    ema = ema.shift(offset)
+
+    # Name & Category
+    ema.name = f"EMA_{length}"
+    ema.category = 'overlap'
+
+    return ema
+
+
 def sma(close:pd.Series, length=None, offset=None, **kwargs):
     """Simple Moving Average Price (SMA)
     
@@ -280,7 +305,7 @@ def vwma(close:pd.Series, volume:pd.Series, length=None, offset=None, **kwargs):
     return vwma
 
 
-def _wma(df, length:int = None, asc:bool = True, **kwargs):
+def _wma(close:pd.Series, length:int = None, asc:bool = True, **kwargs):
     length = length if length and length > 0 else 1
     total_weight = 0.5 * length * (length + 1)
     weights_ = pd.Series(np.arange(1, length + 1))
@@ -291,4 +316,7 @@ def _wma(df, length:int = None, asc:bool = True, **kwargs):
             return (w * x).sum() / total_weight
         return _compute
 
-    return df.rolling(length, min_periods=length).apply(linear_weights(weights), raw=True)        
+    close_ = close.rolling(length, min_periods=length)
+    return close_.apply(linear_weights(weights), raw=True)        
+
+print(f"Overlap\n{dir()}")

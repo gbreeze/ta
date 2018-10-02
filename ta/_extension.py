@@ -976,6 +976,32 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    def vortex(self, high=None, low=None, close=None, drift:int = None, offset:int = None, **kwargs):
+        # Get the correct column(s).
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        result = vortex(high=high, low=low, close=close, drift=drift, offset=offset, **kwargs)
+
+        self._append(result, **kwargs)
+        
+        return result
+
 
     ## Volume Indicators
     def ad(self, high=None, low=None, close=None, volume=None, open_=None, signed:bool = True, offset:int = None, **kwargs):
@@ -1239,6 +1265,7 @@ class AnalysisIndicators(BasePandasObject):
     Decreasing = decreasing
     DetrendPriceOscillator = dpo
     Increasing = increasing
+    Vortex = vortex
 
     # Volatility: volatility.py ✅
     AverageTrueRange = atr

@@ -251,6 +251,7 @@ def true_range(high:pd.Series, low:pd.Series, close:pd.Series, drift=None, offse
     return true_range
 
 
+
 # Legacy Code
 def average_true_range(high, low, close, n=14, fillna=False):
     """Average True Range (ATR)

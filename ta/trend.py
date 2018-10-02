@@ -11,6 +11,7 @@ import pandas as pd
 
 from .utils import get_drift, get_offset, verify_series
 from .momentum import roc
+from .volatility import true_range
 
 
 def aroon(close:pd.Series, length=None, offset=None, **kwargs):
@@ -158,6 +159,11 @@ def increasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
 
 
 def kst(close:pd.Series, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, sma2=None, sma3=None, sma4=None, signal=None, drift=None, offset=None, **kwargs):
+    """'Know Sure Thing' Indicator over periods of a Pandas Series
+    
+    Use help(df.ta.kst) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
     # Validate arguments
     close = verify_series(close)
     roc1 = int(roc1) if roc1 and roc1 > 0 else 10
@@ -211,6 +217,54 @@ def kst(close:pd.Series, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, 
     kstdf.category = 'momentum'
 
     return kstdf
+
+
+def vortex(high:pd.Series, low:pd.Series, close:pd.Series, length=None, offset=None, **kwargs):
+    # Validate arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    length = length if length and length > 0 else 14
+    offset = get_offset(offset)
+
+    # Calculate Result
+    # tr = high.combine(close.shift(1), max) - low.combine(close.shift(1), min)
+    tr = true_range(high=high, low=low, close=close)
+    tr_sma = tr.rolling(length).sum()
+
+    # vmp = np.abs(high - low.shift(1))
+    # vmm = np.abs(low - high.shift(1))
+    vmp = (high - low.shift(1)).abs()
+    vmm = (low - high.shift(1)).abs()
+
+    vip = vmp.rolling(length).sum() / tr_sma
+    vim = vmm.rolling(length).sum() / tr_sma
+
+    # Offset
+    vip = vip.shift(offset)
+    vim = vim.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        vip.fillna(kwargs['fillna'], inplace=True)
+        vim.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        vip.fillna(method=kwargs['fill_method'], inplace=True)
+        vim.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    vip.name = f"VTXP_{length}"
+    vim.name = f"VTXM_{length}"
+    vip.category = vim.category = 'trend'
+
+    # Prepare DataFrame to return
+    data = {vip.name: vip, vim.name: vim}
+    vtxdf = pd.DataFrame(data)
+    vtxdf.name = f"VTX_{length}"
+    vtxdf.category = 'trend'
+
+    return vtxdf
+
 
 # Legacy Code
 def macd_depreciated(close, n_fast=12, n_slow=26, fillna=False):
@@ -701,7 +755,7 @@ def kst_depreciated(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=1
     return pd.Series(kst, name='kst')
 
 
-def kst_sig(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=9, fillna=False):
+def kst_sig_depreciated(close, r1=10, r2=15, r3=20, r4=30, n1=10, n2=10, n3=10, n4=15, nsig=9, fillna=False):
     """KST Oscillator (KST Signal)
 
     It is useful to identify major stock market cycle junctures because its

@@ -45,7 +45,6 @@ def mcv(vwap:pd.Series, volume:pd.Series, length=None, offset=None, **kwargs):
 
     # Calculate Result
     mean = vwma(close=vwap, volume=volume, length=length)
-    # mean = sma(vwap, length=length)
     std = stdev(close=vwap, length=length)
     mcv = 100 * std / mean
 

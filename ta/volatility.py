@@ -53,7 +53,7 @@ def atr(high:pd.Series, low:pd.Series, close:pd.Series, length=None, mamode=None
     return atr
 
 
-def bbands(close:pd.Series, length=None, stdev=None, mamode=None, offset=None, **kwargs):
+def bbands(close:pd.Series, length=None, std=None, mamode=None, offset=None, **kwargs):
     """Bollinger Bands of a Pandas Series
     
     Use help(df.ta.bbands) for specific documentation where 'df' represents
@@ -63,20 +63,21 @@ def bbands(close:pd.Series, length=None, stdev=None, mamode=None, offset=None, *
     close = verify_series(close)
     length = int(length) if length and length > 0 else 20
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-    stdev_ = float(stdev) if stdev and stdev > 0 else 2
+    std = float(std) if std and std > 0 else 2
     mamode = mamode.lower() if mamode else 'ema'
     offset = get_offset(offset)
 
     # Calculate Result
-    std = variance(close=close, length=length).apply(np.sqrt)
+    standard_deviation = stdev(close=close, length=length)
+    # std = variance(close=close, length=length).apply(np.sqrt)
 
     if mamode is None or mamode == 'sma':
         mid = close.rolling(length, min_periods=min_periods).mean()
     elif mamode == 'ema':
         mid = close.ewm(span=length, min_periods=min_periods).mean()
 
-    lower = mid - stdev_ * std
-    upper = mid + stdev_ * std
+    lower = mid - std * standard_deviation
+    upper = mid + std * standard_deviation
 
     # Offset
     lower = lower.shift(offset)

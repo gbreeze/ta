@@ -233,7 +233,7 @@ def ema(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def sma(close:pd.Series, length=None, offset=None, **kwargs):
-    """Simple Moving Average Price (SMA)
+    """Simple Moving Average (SMA)
     
     Use help(df.ta.sma) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -254,6 +254,31 @@ def sma(close:pd.Series, length=None, offset=None, **kwargs):
     sma.category = 'overlap'
 
     return sma
+
+
+def trima(close:pd.Series, length=None, offset=None, **kwargs):
+    """Triangular Moving Average (TRIMA), requires scipy
+    
+    Use help(df.ta.trima) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 10
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = get_offset(offset)
+
+    # Calculate Result
+    trima = close.rolling(length, min_periods=min_periods, win_type='triang').mean()
+
+    # Offset
+    trima = trima.shift(offset)
+
+    # Name & Category
+    trima.name = f"TRIMA_{length}"
+    trima.category = 'overlap'
+
+    return trima
 
 
 def vwap(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, offset=None, **kwargs):

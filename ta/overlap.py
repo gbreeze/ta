@@ -456,6 +456,42 @@ def vwma(close:pd.Series, volume:pd.Series, length=None, offset=None, **kwargs):
     return vwma
 
 
+def wma(close:pd.Series, length=None, asc=None, offset=None, **kwargs):
+    """Weighted Moving Average (SMA)
+    
+    Use help(df.ta.wma) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 10
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    asc = asc if asc else True
+    offset = get_offset(offset)
+
+    # Calculate Result
+    total_weight = 0.5 * length * (length + 1)
+    weights_ = pd.Series(np.arange(1, length + 1))
+    weights = weights_ if asc else weights_[::-1]
+
+    def linear_weights(w):
+        def _compute(x):
+            return (w * x).sum() / total_weight
+        return _compute
+
+    close_ = close.rolling(length, min_periods=length)
+    wma =close_.apply(linear_weights(weights), raw=True)
+
+    # Offset
+    wma = wma.shift(offset)
+
+    # Name & Category
+    wma.name = f"WMA_{length}"
+    wma.category = 'overlap'
+
+    return wma
+
+
 def _wma(close:pd.Series, length:int = None, asc:bool = True, **kwargs):
     length = length if length and length > 0 else 1
     total_weight = 0.5 * length * (length + 1)
@@ -468,6 +504,6 @@ def _wma(close:pd.Series, length:int = None, asc:bool = True, **kwargs):
         return _compute
 
     close_ = close.rolling(length, min_periods=length)
-    return close_.apply(linear_weights(weights), raw=True)        
+    return close_.apply(linear_weights(weights), raw=True)
 
 print(f"Overlap\n{dir()}")

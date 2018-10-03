@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 from .utils import *
-from .overlap import hlc3
+from .overlap import hlc3, ema
 # from .utils import get_drift, get_offset, signed_series, verify_series
 
 
@@ -231,8 +231,8 @@ def massi(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kw
 
     # Calculate Result
     hl_range = high - low
-    hl_ema1 = hl_range.ewm(span=fast, min_periods=min_periods).mean()
-    hl_ema2 =  hl_ema1.ewm(span=fast, min_periods=min_periods).mean()
+    hl_ema1 = ema(close=hl_range, length=fast)
+    hl_ema2 = ema(close=hl_ema1, length=fast)
 
     mass = hl_ema1 / hl_ema2
     massi = mass.rolling(slow, min_periods=slow).sum()

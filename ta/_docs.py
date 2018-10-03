@@ -34,23 +34,16 @@ Returns:
 massi_docs = \
 """
 Mass Index
-
-Not visually the same as TV Chart
-
 """
 
 mfi_docs = \
 """
 Money Flow Index
-
-Incorrect
-
 """
 
 rsi_docs = \
 """
 Relative Strength Index
-
 """
 
 

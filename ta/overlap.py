@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 
+from math import sqrt
 from .utils import get_drift, get_offset, verify_series
 # from .volatility import 
 
@@ -259,6 +260,36 @@ def ema(close:pd.Series, length=None, offset=None, **kwargs):
     return ema
 
 
+def hma(close:pd.Series, length=None, offset=None, **kwargs):
+    """Hull Moving Average (HMA)
+    
+    Use help(df.ta.hma) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 10
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = get_offset(offset)
+
+    # Calculate Result
+    half_length = int(length / 2)
+    sqrt_length = int(sqrt(length))
+
+    wmaf = wma(close=close, length=half_length)
+    wmas = wma(close=close, length=length)
+    hma = wma(close=2 * wmaf - wmas, length=sqrt_length)
+
+    # Offset
+    hma = hma.shift(offset)
+
+    # Name & Category
+    hma.name = f"HMA_{length}"
+    hma.category = 'overlap'
+
+    return hma
+
+
 def rma(close:pd.Series, length=None, offset=None, **kwargs):
     """wildeR's Moving Average (RMA)
     
@@ -490,20 +521,3 @@ def wma(close:pd.Series, length=None, asc=None, offset=None, **kwargs):
     wma.category = 'overlap'
 
     return wma
-
-
-def _wma(close:pd.Series, length:int = None, asc:bool = True, **kwargs):
-    length = length if length and length > 0 else 1
-    total_weight = 0.5 * length * (length + 1)
-    weights_ = pd.Series(np.arange(1, length + 1))
-    weights = weights_ if asc else weights_[::-1]
-
-    def linear_weights(w):
-        def _compute(x):
-            return (w * x).sum() / total_weight
-        return _compute
-
-    close_ = close.rolling(length, min_periods=length)
-    return close_.apply(linear_weights(weights), raw=True)
-
-print(f"Overlap\n{dir()}")

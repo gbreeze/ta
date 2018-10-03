@@ -667,6 +667,23 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    def rma(self, close=None, length:int = None, offset:int = None, **kwargs):
+        # Get the correct column.
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        result = rma(close=close, length=length, offset=offset, **kwargs)
+
+        self._append(result, **kwargs)
+        
+        return result
+
+
     def sma(self, close=None, length:int = None, offset:int = None, **kwargs):
         # Get the correct column.
         df = self._df

@@ -259,6 +259,34 @@ def ema(close:pd.Series, length=None, offset=None, **kwargs):
     return ema
 
 
+def rma(close:pd.Series, length=None, offset=None, **kwargs):
+    """wildeR's Moving Average (RMA)
+    
+    RMA = EMA with alpha = 1 / length
+    
+    Use help(df.ta.rma) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 10
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = get_offset(offset)
+    alpha = (1.0 / length) if length > 0 else 1
+
+    # Calculate Result
+    rma = close.ewm(alpha=alpha, min_periods=min_periods).mean()
+
+    # Offset
+    rma = rma.shift(offset)
+
+    # Name & Category
+    rma.name = f"RMA_{length}"
+    rma.category = 'overlap'
+
+    return rma
+
+
 def sma(close:pd.Series, length=None, offset=None, **kwargs):
     """Simple Moving Average (SMA)
     
@@ -268,6 +296,7 @@ def sma(close:pd.Series, length=None, offset=None, **kwargs):
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 10
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     offset = get_offset(offset)
 
     # Calculate Result

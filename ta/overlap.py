@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 
-from .utils import get_offset, verify_series
+from .utils import get_drift, get_offset, verify_series
 # from .volatility import 
 
 

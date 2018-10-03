@@ -489,6 +489,35 @@ def stoch(high:pd.Series, low:pd.Series, close:pd.Series, fast_k=None, slow_k=No
     return stochdf
 
 
+def trix(close:pd.Series, length=None, drift=None, offset=None, **kwargs):
+    """Trix (TRIX)
+
+    Use help(df.ta.trix) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 10
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    drift = get_drift(drift)
+    offset = get_offset(offset)
+
+    # Calculate Result
+    ema1 = ema(close=close, length=length, min_periods=min_periods)
+    ema2 = ema(close=ema1, length=length, min_periods=min_periods)
+    ema3 = ema(close=ema2, length=length, min_periods=min_periods)
+    trix = 100 * ema3.pct_change(drift)
+
+    # Offset
+    trix = trix.shift(offset)
+
+    # Name & Category
+    trix.name = f"TRIX_{length}"
+    trix.category = 'momentum'
+
+    return trix
+
+
 def tsi(close:pd.Series, fast=None, slow=None, drift=None, offset=None, **kwargs):
     """True Strength Index of a Pandas Series
     

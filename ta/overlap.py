@@ -283,6 +283,34 @@ def sma(close:pd.Series, length=None, offset=None, **kwargs):
     return sma
 
 
+def tema(close:pd.Series, length=None, offset=None, **kwargs):
+    """Triple Exponential Moving Average (TEMA)
+    
+    Use help(df.ta.tema) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 10
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = get_offset(offset)
+
+    # Calculate Result
+    ema1 = ema(close=close, length=length, min_periods=min_periods)
+    ema2 = ema(close=ema1, length=length, min_periods=min_periods)
+    ema3 = ema(close=ema2, length=length, min_periods=min_periods)
+    tema = 3 * (ema1 - ema2) + ema3
+
+    # Offset
+    tema = tema.shift(offset)
+
+    # Name & Category
+    tema.name = f"TEMA_{length}"
+    tema.category = 'overlap'
+
+    return tema
+
+
 def trima(close:pd.Series, length=None, offset=None, **kwargs):
     """Triangular Moving Average (TRIMA), requires scipy
     

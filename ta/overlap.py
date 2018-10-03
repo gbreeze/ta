@@ -240,6 +240,7 @@ def ema(close:pd.Series, length=None, offset=None, **kwargs):
     close = verify_series(close)
     length = int(length) if length and length > 0 else 10
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    adjust = bool(kwargs['adjust']) if 'adjust' in kwargs and kwargs['adjust'] is not None else True
     offset = get_offset(offset)
 
     # Calculate Result
@@ -248,7 +249,7 @@ def ema(close:pd.Series, length=None, offset=None, **kwargs):
         rest = close[length:]
         close = pd.concat([initial_sma, rest])
 
-    ema = close.ewm(span=length, min_periods=min_periods).mean()
+    ema = close.ewm(span=length, min_periods=min_periods, adjust=adjust).mean()
 
     # Offset
     ema = ema.shift(offset)

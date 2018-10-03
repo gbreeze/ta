@@ -667,7 +667,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def ema(self, close=None, length:int = None, offset:int = None, **kwargs):
+    def ema(self, close=None, length:int = None, offset:int = None, adjust:bool = None, **kwargs):
         # Get the correct column.
         df = self._df
         if df is None: return
@@ -677,7 +677,7 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        result = ema(close=close, length=length, offset=offset, **kwargs)
+        result = ema(close=close, length=length, offset=offset, adjust=adjust, **kwargs)
 
         self._append(result, **kwargs)
         
@@ -1021,6 +1021,33 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Trend Indicators
+    def adx(self, high=None, low=None, close=None, drift:int = None, offset:int = None, **kwargs):
+        # Get the correct column(s).
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        result = adx(high=high, low=low, close=close, drift=drift, offset=offset, **kwargs)
+
+        self._append(result, **kwargs)
+
+        return result
+
+
     def decreasing(self, close:str = None, length:int = None, asint:bool = True, offset=None, **kwargs):
         # Get the correct column.
         df = self._df
@@ -1568,6 +1595,7 @@ class AnalysisIndicators(BasePandasObject):
     ZScore = zscore
 
     # Trend: trend.py ✅
+    AverageDirectionalMovmentIndex = adx
     Decreasing = decreasing
     DetrendPriceOscillator = dpo
     Increasing = increasing

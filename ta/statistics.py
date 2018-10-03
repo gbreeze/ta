@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 
-from .overlap import vwma
+from .overlap import ema, sma, vwma
 from .utils import get_offset, verify_series
 
 
@@ -158,3 +158,30 @@ def variance(close:pd.Series, length=None, offset=None, **kwargs):
 
     return variance
 
+
+def zscore(close:pd.Series, length=None, std=None, offset=None, **kwargs):
+    """Z Score over periods of a Pandas Series
+    
+    Use help(df.ta.zscore) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 1 else 30
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    std = int(std) if std and std > 1 else 1
+    offset = get_offset(offset)
+
+    # Calculate Result
+    std *= stdev(close=close, length=length, **kwargs)
+    mean = sma(close=close, length=length, **kwargs)
+    zscore = (close - mean) / std
+
+    # Offset
+    zscore = zscore.shift(offset)
+
+    # Name & Category
+    zscore.name = f"Z_{length}"
+    zscore.category = 'statistics'
+
+    return zscore

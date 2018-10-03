@@ -1002,6 +1002,23 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    def zscore(self, close=None, length=None, std=None, offset=None, **kwargs):
+        # Get the correct column.
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        result = zscore(close=close, length=length, std=std, offset=offset, **kwargs)
+
+        self._append(result, **kwargs)
+        
+        return result
+
+
 
     ## Trend Indicators
     def decreasing(self, close:str = None, length:int = None, asint:bool = True, offset=None, **kwargs):
@@ -1510,7 +1527,7 @@ class AnalysisIndicators(BasePandasObject):
     CommodityChannelIndex = cci
     KnowSureThing = kst
     MACD = macd
-    MassIndex = massi #🤦🏻‍♂️
+    MassIndex = massi
     Momentum = mom
     PercentagePriceOscillator = ppo
     RateOfChange = roc
@@ -1548,6 +1565,7 @@ class AnalysisIndicators(BasePandasObject):
     Skew = skew
     StandardDeviation = stdev
     Variance = variance
+    ZScore = zscore
 
     # Trend: trend.py ✅
     Decreasing = decreasing

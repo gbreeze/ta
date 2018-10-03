@@ -11,7 +11,7 @@ import pandas as pd
 
 from .utils import get_drift, get_offset, signed_series, verify_series
 from .momentum import roc
-from .overlap import hl2
+from .overlap import hl2, ema
 
 
 def ad(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, signed=True, offset=None, **kwargs):
@@ -52,6 +52,43 @@ def ad(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:p
     ad.category = 'volume'
 
     return ad
+
+
+def adosc(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, fast=None, slow=None, signed=True, offset=None, **kwargs):
+    """Accumulation/Distribution Oscillator of a Pandas Series
+    
+    Use help(df.ta.adosc) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    volume = verify_series(volume)
+    fast = int(fast) if fast and fast > 0 else 12
+    slow = int(slow) if slow and slow > 0 else 26
+    if slow < fast:
+        fast, slow = slow, fast
+    offset = get_offset(offset)
+
+    # Calculate Result
+    ad_ = ad(high=high, low=low, close=close, volume=volume, open_=open_, signed=signed, **kwargs)
+    adosc = ema(close=ad_, length=fast) - ema(close=ad_, length=slow)
+
+    # Offset
+    adosc = adosc.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        adosc.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        adosc.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    adosc.name = f"ADOSC_{fast}_{slow}"
+    adosc.category = 'volume'
+
+    return adosc
 
 
 def cmf(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, length=None, offset=None, **kwargs):

@@ -1283,6 +1283,44 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    def adosc(self, high=None, low=None, close=None, volume=None, open_=None, fast:int = None, slow:int = None, signed:bool = True, offset:int = None, **kwargs):
+        # Get the correct column(s).
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+            if isinstance(volume, pd.Series):
+                volume = volume
+            else:
+                volume = df[volume] if volume in df.columns else df.volume
+
+            if open_ is not None:
+                if isinstance(open_, pd.Series):
+                    open_ = open_
+                else:
+                    open_ = df[open_] if open_ in df.columns else df.open
+
+        result = adosc(high=high, low=low, close=close, volume=volume, open_=open_, fast=fast, slow=slow, signed=signed, offset=offset, **kwargs)
+
+        self._append(result, **kwargs)
+
+        return result
+
+
     def cmf(self, high=None, low=None, close=None, volume=None, open_=None, length=None, offset:int = None, **kwargs):
         # Get the correct column(s).
         df = self._df
@@ -1527,6 +1565,7 @@ class AnalysisIndicators(BasePandasObject):
 
     # Volume: volume.py ✅
     AccumDist = ad
+    AccumDistOscillator = adosc
     ChaikinMoneyFlow = cmf
     EldersForceIndex = efi
     EaseOfMovement = eom

@@ -857,40 +857,6 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    # def wma(self, close:str = None, length:int = None, asc:bool = True, **kwargs):
-    #     """ wma """
-    #     df = self._df
-        
-    #     length = length if length and length > 0 else 1
-
-    #     # Get the correct column.
-        # if df is None: return
-        # else:
-        #     if isinstance(close, pd.Series):
-        #         close = close
-        #     else:
-        #         close = df[close] if close in df.columns else df.close
-        
-    #     wma = _wma(close, length=length, **kwargs)
-        
-    #     # Handle fills
-    #     if 'fillna' in kwargs:
-    #         wma.fillna(kwargs['fillna'], inplace=True)
-    #     elif 'fill_method' in kwargs:
-    #         wma.fillna(method=kwargs['fill_method'], inplace=True)                
-
-    #     # Name and Categorize it
-    #     wma.name = f"WMA_{length}"
-    #     wma.category = 'overlap'
-        
-    #     # If append, then add it to the df 
-    #     if 'append' in kwargs and kwargs['append']:
-    #         df[wma.name] = wma
-            
-    #     return wma
-
-
-
     ## Performance Indicators
     def log_return(self, close=None, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
         # Get the correct column.
@@ -1196,6 +1162,33 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    def natr(self, high=None, low=None, close=None, length=None, mamode:str = None, offset:int = None, **kwargs):
+        # Get the correct column(s).
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        result = natr(high=high, low=low, close=close, length=length, mamode=mamode, offset=offset, **kwargs)
+
+        self._append(result, **kwargs)
+
+        return result
+
+
     def true_range(self, high=None, low=None, close=None, drift:int = None, offset:int = None, **kwargs):
         # Get the correct column(s).
         df = self._df
@@ -1248,6 +1241,7 @@ class AnalysisIndicators(BasePandasObject):
         self._append(result, **kwargs)
         
         return result
+
 
 
     ## Volume Indicators
@@ -1498,10 +1492,12 @@ class AnalysisIndicators(BasePandasObject):
     RangePercentage = rpn
     DoubleExponentialMovingAverage = dema
     ExponentialMovingAverage = ema
+    HullMovingAverage = hma
     SimpleMovingAverage = sma
     TriangularMovingAverage = trima # require scipy
     VolumeWeightedAveragePrice = vwap
     VolumeWeightedMovingAverage = vwma
+    WeightedMovingAverage = wma
 
     # Performance: performance.py ✅
     LogReturn = log_return
@@ -1526,6 +1522,7 @@ class AnalysisIndicators(BasePandasObject):
     BollingerBands = bbands
     DonchianChannels = donchian
     KeltnerChannels = kc
+    NormalizedAverageTrueRange = natr
     TrueRange = true_range
 
     # Volume: volume.py ✅

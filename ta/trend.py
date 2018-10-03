@@ -14,6 +14,9 @@ from .momentum import roc
 from .volatility import true_range
 
 
+def adx():
+    pass
+
 def aroon(close:pd.Series, length=None, offset=None, **kwargs):
     """Aroon Oscillator of a Pandas Series
     

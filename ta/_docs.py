@@ -213,6 +213,22 @@ Returns:
     pd.Series: New feature
 """
 
+t3_docs = \
+"""
+T3 = c1 * e6 + c2 * e5 + c3 * e4 + c4 * e3
+a = 0.7, 0.618 or 0 <= a < 1
+c1 = -a^3
+c2 = 3a^2 + 3a^3 = 3a^2 * (1 + a)
+c3 = -6a^2 - 3a - 3a^3
+c4 = a^3 + 3a^2 + 3a + 1
+
+e1 = ema(ts, n)
+e2 = ema(e1, n)
+e3 = ema(e2, n)
+e4 = ema(e3, n)
+e5 = ema(e4, n)
+e6 = ema(e5, n)
+"""
 
 
 # Performance Documentation
@@ -800,6 +816,7 @@ AnalysisIndicators.median.__doc__ = median_docs
 AnalysisIndicators.midpoint.__doc__ = midpoint_docs
 AnalysisIndicators.midprice.__doc__ = midprice_docs
 AnalysisIndicators.rpn.__doc__ = rpn_docs
+AnalysisIndicators.t3.__doc__ = t3_docs
 
 # Performance Documentation
 AnalysisIndicators.log_return.__doc__ = log_return_docs

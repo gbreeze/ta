@@ -300,7 +300,7 @@ def sma(close:pd.Series, length=None, offset=None, **kwargs):
     offset = get_offset(offset)
 
     # Calculate Result
-    sma = close.rolling(length).mean()
+    sma = close.rolling(length, min_periods=min_periods).mean()
 
     # Offset
     sma = sma.shift(offset)
@@ -310,6 +310,43 @@ def sma(close:pd.Series, length=None, offset=None, **kwargs):
     sma.category = 'overlap'
 
     return sma
+
+
+def t3(close:pd.Series, length=None, a=None, offset=None, **kwargs):
+    """Simple Moving Average (SMA)
+    
+    Use help(df.ta.sma) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 10
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    a = float(a) if a and a > 0 and a < 1 else 0.7
+    offset = get_offset(offset)
+
+    # Calculate Result
+    c1 = -a * a ** 2
+    c2 = 3 * a ** 2 + 3 * a ** 3
+    c3 = -6 * a ** 2 - 3 * a - 3 * a ** 3
+    c4 = a ** 3 + 3 * a ** 2 + 3 * a + 1
+
+    e1 = ema(close=close, length=length, min_periods=min_periods)
+    e2 = ema(close=e1, length=length, min_periods=min_periods)
+    e3 = ema(close=e2, length=length, min_periods=min_periods)
+    e4 = ema(close=e3, length=length, min_periods=min_periods)
+    e5 = ema(close=e4, length=length, min_periods=min_periods)
+    e6 = ema(close=e5, length=length, min_periods=min_periods)
+    t3 = c1 * e6 + c2 * e5 + c3 * e4 + c4 * e3
+
+    # Offset
+    t3 = t3.shift(offset)
+
+    # Name & Category
+    t3.name = f"T3_{length}_{a}"
+    t3.category = 'overlap'
+
+    return t3
 
 
 def tema(close:pd.Series, length=None, offset=None, **kwargs):

@@ -2,6 +2,9 @@
 import math
 import pandas as pd
 
+from sys import float_info as sflt
+
+
 def dropna(df):
     """Drop rows with 'Nan' values"""
     df = df[df < math.exp(709)] # big number
@@ -46,3 +49,7 @@ def verify_series(series:pd.Series):
     if not isinstance(series, pd.Series):
         raise AttributeError(f"{type(series)} is not a Pandas Series")
     return series
+
+
+def zero(x):
+    return 0 if -sflt.epsilon < x and x < sflt.epsilon else x

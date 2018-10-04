@@ -14,9 +14,7 @@ from .volatility import *
 from .volume import *
 
 from pandas.core.base import PandasObject
-# from sys import float_info as sflt
 
-# TA_EPSILON = sflt.epsilon
 
 
 class BasePandasObject(PandasObject):

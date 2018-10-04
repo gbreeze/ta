@@ -9,17 +9,16 @@
 import numpy as np
 import pandas as pd
 
-from .overlap import ema
-from .utils import get_drift, get_offset, verify_series
+from .overlap import ema, rma
+from .utils import get_drift, get_offset, verify_series, zero
 from .momentum import roc
-from .volatility import true_range
+from .volatility import atr, true_range
+
 
 
 def adx(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drift=None, offset=None, **kwargs):
     """ADX of a Pandas Series
     
-    [X] Underdevelopment!
-
     Use help(df.ta.adx) for specific documentation where 'df' represents
     the DataFrame you are using.
     """
@@ -32,8 +31,7 @@ def adx(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drift=None,
     offset = get_offset(offset)
 
     # Calculate Result
-    tr = true_range(high=high, low=low, close=close)
-    trs = tr.rolling(length).sum()
+    avg_tr = atr(high=high, low=low, close=close, length=length)
 
     up = high - high.shift(drift)
     dn = low.shift(drift) - low
@@ -41,11 +39,20 @@ def adx(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drift=None,
     pos = ((up > dn) & (up > 0)) * up
     neg = ((dn > up) & (dn > 0)) * dn
 
-    dmp = 100 * pos.rolling(length).sum() / trs
-    dmn = 100 * neg.rolling(length).sum() / trs
+    pos = pos.apply(zero)
+    neg = neg.apply(zero)
+
+    dmp = (100 / avg_tr) * rma(close=pos, length=length)
+    dmn = (100 / avg_tr) * rma(close=neg, length=length)
 
     dx = 100 * (dmp - dmn).abs() / (dmp + dmn)
-    adx = ema(close=dx, length=length)
+    # dx = dx.abs()
+    adx = rma(close=dx, length=length)
+
+    # Offset
+    dmp = dmp.shift(offset)
+    dmn = dmn.shift(offset)
+    adx = adx.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:

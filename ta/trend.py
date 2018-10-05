@@ -9,7 +9,7 @@
 import numpy as np
 import pandas as pd
 
-from .overlap import ema, rma
+from .overlap import ema, midprice, rma
 from .utils import get_drift, get_offset, verify_series, zero
 from .momentum import roc
 from .volatility import atr, true_range
@@ -192,6 +192,92 @@ def dpo(close:pd.Series, length=None, centered=True, offset=None, **kwargs):
     return dpo
 
 
+def ichimoku(high:pd.Series, low:pd.Series, close:pd.Series, tenkan=None, kijun=None, senkou=None, offset=None, **kwargs):
+    """Ichimoku Kinkō Hyō (Ichimoku)
+
+    It identifies the trend and look for potential signals within that trend.
+
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ichimoku_cloud
+
+    Args:
+        high(pandas.Series): dataset 'High' column.
+        low(pandas.Series): dataset 'Low' column.
+        tenkan(int): tenkan low period.
+        kijun(int): kijun medium period.
+        senkou(int): senkou high period.
+        fillna(bool): if True, fill nan values.
+
+    Returns:
+        pandas.Series: New feature generated.
+    """
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    tenkan = int(tenkan) if tenkan and tenkan > 0 else 9
+    kijun = int(kijun) if kijun and kijun > 0 else 26
+    senkou = int(senkou) if senkou and senkou > 0 else 52
+    offset = get_offset(offset)
+
+    # Calculate Result
+    tenkan_sen = midprice(high=high, low=low, length=tenkan)
+    kijun_sen = midprice(high=high, low=low, length=kijun)
+    span_a = 0.5 * (tenkan_sen + kijun_sen)
+    span_b = midprice(high=high, low=low, length=senkou)
+
+    # Copy Span A and B values before their shift
+    _span_a = span_a[-kijun:].copy()
+    _span_b = span_b[-kijun:].copy()
+
+    span_a = span_a.shift(kijun)
+    span_b = span_b.shift(kijun)
+    chikou_span = close.shift(-kijun)
+
+    # Offset
+    tenkan_sen = tenkan_sen.shift(offset)
+    kijun_sen = kijun_sen.shift(offset)
+    span_a = span_a.shift(offset)
+    span_b = span_b.shift(offset)
+    chikou_span = chikou_span.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        span_a.fillna(kwargs['fillna'], inplace=True)
+        span_b.fillna(kwargs['fillna'], inplace=True)
+        chikou_span.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        span_a.fillna(method=kwargs['fill_method'], inplace=True)
+        span_b.fillna(method=kwargs['fill_method'], inplace=True)
+        chikou_span.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    span_a.name = f"ISA_{tenkan}"
+    span_b.name = f"ISB_{kijun}"
+    tenkan_sen.name = f"ITS_{tenkan}"
+    kijun_sen.name = f"IKS_{kijun}"
+    chikou_span.name = f"ICS_{kijun}"
+
+    chikou_span.category = kijun_sen.category = tenkan_sen.category = 'trend'
+    span_b.category = span_a.category = chikou_span
+
+    # Prepare Ichimoku DataFrame
+    data = {span_a.name: span_a, span_b.name: span_b, tenkan_sen.name: tenkan_sen, kijun_sen.name: kijun_sen, chikou_span.name: chikou_span}
+    ichimokudf = pd.DataFrame(data)
+    ichimokudf.name = f"ICHIMOKU_{tenkan}_{kijun}_{senkou}"
+    ichimokudf.category = 'trend'
+
+    # Prepare Span DataFrame
+    last_date = close.index[-1]
+    df_freq = close.index.value_counts().mode()[0]
+    tdelta = pd.Timedelta(df_freq, unit='d')
+    new_dt = pd.date_range(start=last_date + tdelta, periods=kijun, freq='B')
+    spandf = pd.DataFrame(index=new_dt, columns=[span_a.name, span_b.name])
+    _span_a.index = _span_b.index = new_dt
+    spandf[span_a.name] = _span_a
+    spandf[span_b.name] = _span_b
+
+    return ichimokudf, spandf
+
+
 def increasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
     """Increasing over periods of a Pandas Series
     
@@ -247,10 +333,6 @@ def kst(close:pd.Series, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, 
     offset = get_offset(offset)
 
     # Calculate Result
-    # rocma1 = (close.diff(roc1) / close.shift(roc1)).rolling(sma1).mean()
-    # rocma2 = (close.diff(roc2) / close.shift(roc2)).rolling(sma2).mean()
-    # rocma3 = (close.diff(roc3) / close.shift(roc3)).rolling(sma3).mean()
-    # rocma4 = (close.diff(roc4) / close.shift(roc4)).rolling(sma4).mean()
     rocma1 = roc(close, roc1).rolling(sma1).mean()
     rocma2 = roc(close, roc2).rolling(sma2).mean()
     rocma3 = roc(close, roc3).rolling(sma3).mean()
@@ -877,6 +959,7 @@ def ichimoku_a_depreciated(high, low, n1=9, n2=26, fillna=False):
 
     spana = 0.5 * (conv + base)
     spana = spana.shift(n2)
+
     if fillna:
         spana = spana.replace([np.inf, -np.inf], np.nan).fillna(method='backfill')
     return pd.Series(spana, name='ichimoku_a_'+str(n2))

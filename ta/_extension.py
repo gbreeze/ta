@@ -67,7 +67,6 @@ class AnalysisIndicators(BasePandasObject):
     Additional kwargs:
     * append: Default: False.  If True, appends the indicator result to the df.
     """
-
     def __call__(self, kind=None, alias=None, timed=False, **kwargs):
         try:
             kind = kind.lower() if isinstance(kind, str) else None
@@ -1077,6 +1076,33 @@ class AnalysisIndicators(BasePandasObject):
 
         self._append(result, **kwargs)
         
+        return result
+
+
+    def ichimoku(self, high:str = None, low:str = None, close:str = None, tenkan=None, kijun=None, senkou=None, offset:int = None, **kwargs):
+        # Get the correct column(s).
+        df = self._df
+        if df is None: return
+        else:
+            if isinstance(high, pd.Series):
+                high = high
+            else:
+                high = df[high] if high in df.columns else df.high
+
+            if isinstance(low, pd.Series):
+                low = low
+            else:
+                low = df[low] if low in df.columns else df.low
+            
+            if isinstance(close, pd.Series):
+                close = close
+            else:
+                close = df[close] if close in df.columns else df.close
+
+        result = ichimoku(high=high, low=low, close=close, tenkan=tenkan, kijun=kijun, senkou=senkou, offset=offset, **kwargs)
+
+        self._append(result, **kwargs)
+
         return result
 
 

@@ -15,7 +15,7 @@ from .overlap import hl2, ema
 
 
 def ad(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, signed=True, offset=None, **kwargs):
-    """Accumulation/Distribution of a Pandas Series
+    """Indicator: Accumulation/Distribution
     
     Use help(df.ta.ad) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -55,7 +55,7 @@ def ad(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:p
 
 
 def adosc(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, fast=None, slow=None, signed=True, offset=None, **kwargs):
-    """Accumulation/Distribution Oscillator of a Pandas Series
+    """Indicator: Accumulation/Distribution Oscillator
     
     Use help(df.ta.adosc) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -92,7 +92,7 @@ def adosc(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open
 
 
 def cmf(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, length=None, offset=None, **kwargs):
-    """Chaikin Money Flow (CMF)
+    """Indicator: Chaikin Money Flow (CMF)
     
     Use help(df.ta.cmf) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -115,7 +115,7 @@ def cmf(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:
 
     hl_range = high - low
     ad *= volume / hl_range
-    cmf = ad.rolling(length).sum() / volume.rolling(length).sum()
+    cmf = ad.rolling(length, min_periods=min_periods).sum() / volume.rolling(length, min_periods=min_periods).sum()
 
     # Offset
     cmf = cmf.shift(offset)
@@ -134,7 +134,7 @@ def cmf(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:
 
 
 def efi(close:pd.Series, volume:pd.Series, length=None, offset=None, mamode=None, drift=None, **kwargs):
-    """Elder's Force Index (EFI)
+    """Indicator: Elder's Force Index (EFI)
     
     Use help(df.ta.efi) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -172,9 +172,9 @@ def efi(close:pd.Series, volume:pd.Series, length=None, offset=None, mamode=None
 
 
 def eom(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length=None, divisor=None, offset=None, drift=None, **kwargs):
-    """Elder's Force Index (EFI)
+    """Indicator: Ease of Movement(EOM)
     
-    Use help(df.ta.efi) for specific documentation where 'df' represents
+    Use help(df.ta.eom) for specific documentation where 'df' represents
     the DataFrame you are using.
     """
     # Validate arguments
@@ -212,7 +212,7 @@ def eom(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length
 
 
 def nvi(close:pd.Series, volume:pd.Series, length=None, initial=None, signed=True, offset=None, **kwargs):
-    """Negative Volume Index (NVI)
+    """Indicator: Negative Volume Index (NVI)
     
     Use help(df.ta.nvi) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -250,7 +250,7 @@ def nvi(close:pd.Series, volume:pd.Series, length=None, initial=None, signed=Tru
 
 
 def obv(close:pd.Series, volume:pd.Series, offset=None, **kwargs):
-    """On Balance Volume (OBV)
+    """Indicator: On Balance Volume (OBV)
     
     Use help(df.ta.obv) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -280,7 +280,7 @@ def obv(close:pd.Series, volume:pd.Series, offset=None, **kwargs):
     return obv
 
 def pvol(close:pd.Series, volume:pd.Series, signed=True, offset=None, **kwargs):
-    """Price-Volume (PVOL)
+    """Indicator: Price-Volume (PVOL)
     
     Use help(df.ta.pvol) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -313,7 +313,7 @@ def pvol(close:pd.Series, volume:pd.Series, signed=True, offset=None, **kwargs):
 
 
 def pvt(close:pd.Series, volume:pd.Series, offset=None, **kwargs):
-    """Price-Volume Trend (PVT)
+    """Indicator: Price-Volume Trend (PVT)
     
     Use help(df.ta.pvt) for specific documentation where 'df' represents
     the DataFrame you are using.

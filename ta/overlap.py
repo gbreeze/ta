@@ -8,7 +8,7 @@ from .utils import get_drift, get_offset, verify_series
 
 
 def hl2(high:pd.Series, low:pd.Series, offset=None, **kwargs):
-    """HL2 of a Pandas Series
+    """Indicator: HL2
     
     Use help(df.ta.hl2) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -32,7 +32,7 @@ def hl2(high:pd.Series, low:pd.Series, offset=None, **kwargs):
 
 
 def hlc3(high:pd.Series, low:pd.Series, close:pd.Series, offset=None, **kwargs):
-    """HLC3 of a Pandas Series
+    """Indicator: HLC3
     
     Use help(df.ta.hlc3) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -57,7 +57,7 @@ def hlc3(high:pd.Series, low:pd.Series, close:pd.Series, offset=None, **kwargs):
 
 
 def ohlc4(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, offset=None, **kwargs):
-    """OHLC4 of a Pandas Series
+    """Indicator: OHLC4
     
     Use help(df.ta.ohlc4) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -83,7 +83,7 @@ def ohlc4(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, offse
 
 
 def median(close:pd.Series, length=None, offset=None, **kwargs):
-    """Median of a Pandas Series
+    """Indicator: Median
     
     Use help(df.ta.median) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -108,7 +108,7 @@ def median(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def midpoint(close:pd.Series, length=None, offset=None, **kwargs):
-    """Midpoint of a Pandas Series
+    """Indicator: Midpoint
     
     Use help(df.ta.midpoint) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -141,7 +141,7 @@ def midpoint(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def midprice(high:pd.Series, low:pd.Series, length=None, offset=None, **kwargs):
-    """Midprice of a Pandas Series
+    """Indicator: Midprice
     
     Use help(df.ta.midprice) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -175,7 +175,7 @@ def midprice(high:pd.Series, low:pd.Series, length=None, offset=None, **kwargs):
 
 
 def rpn(high:pd.Series, low:pd.Series, length=None, offset=None, percentage=None, **kwargs):
-    """Percent of Range of a Pandas Series
+    """Indicator: Range Percentage
     
     Use help(df.ta.rpn) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -204,7 +204,7 @@ def rpn(high:pd.Series, low:pd.Series, length=None, offset=None, percentage=None
 
 
 def dema(close:pd.Series, length=None, offset=None, **kwargs):
-    """Double Exponential Moving Average (DEMA)
+    """Indicator: Double Exponential Moving Average (DEMA)
     
     Use help(df.ta.dema) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -231,7 +231,7 @@ def dema(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def ema(close:pd.Series, length=None, offset=None, **kwargs):
-    """Exponential Moving Average (EMA)
+    """Indicator: Exponential Moving Average (EMA)
     
     Use help(df.ta.ema) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -262,7 +262,7 @@ def ema(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def hma(close:pd.Series, length=None, offset=None, **kwargs):
-    """Hull Moving Average (HMA)
+    """Indicator: Hull Moving Average (HMA)
     
     Use help(df.ta.hma) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -292,7 +292,7 @@ def hma(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def rma(close:pd.Series, length=None, offset=None, **kwargs):
-    """wildeR's Moving Average (RMA)
+    """Indicator: wildeR's Moving Average (RMA)
     
     RMA = EMA with alpha = 1 / length
     
@@ -320,7 +320,7 @@ def rma(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def sma(close:pd.Series, length=None, offset=None, **kwargs):
-    """Simple Moving Average (SMA)
+    """Indicator: Simple Moving Average (SMA)
     
     Use help(df.ta.sma) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -345,9 +345,9 @@ def sma(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def t3(close:pd.Series, length=None, a=None, offset=None, **kwargs):
-    """Simple Moving Average (SMA)
+    """Indicator: T3
     
-    Use help(df.ta.sma) for specific documentation where 'df' represents
+    Use help(df.ta.t3) for specific documentation where 'df' represents
     the DataFrame you are using.
     """
     # Validate Arguments
@@ -382,7 +382,7 @@ def t3(close:pd.Series, length=None, a=None, offset=None, **kwargs):
 
 
 def tema(close:pd.Series, length=None, offset=None, **kwargs):
-    """Triple Exponential Moving Average (TEMA)
+    """Indicator: Triple Exponential Moving Average (TEMA)
     
     Use help(df.ta.tema) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -410,7 +410,7 @@ def tema(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def trima(close:pd.Series, length=None, offset=None, **kwargs):
-    """Triangular Moving Average (TRIMA), requires scipy
+    """Indicator: Triangular Moving Average (TRIMA), requires scipy
     
     Use help(df.ta.trima) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -435,7 +435,7 @@ def trima(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def vwap(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, offset=None, **kwargs):
-    """Volume Weighted Average Price (VWAP)
+    """Indicator: Volume Weighted Average Price (VWAP)
     
     Use help(df.ta.vwap) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -463,9 +463,9 @@ def vwap(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, offse
 
 
 def vwma(close:pd.Series, volume:pd.Series, length=None, offset=None, **kwargs):
-    """Volume Weighted Average Price (VWAP)
+    """Indicator: Volume Weighted Moving Average (VWMA)
     
-    Use help(df.ta.vwap) for specific documentation where 'df' represents
+    Use help(df.ta.vwma) for specific documentation where 'df' represents
     the DataFrame you are using.
     """
     # Validate Arguments
@@ -489,7 +489,7 @@ def vwma(close:pd.Series, volume:pd.Series, length=None, offset=None, **kwargs):
 
 
 def wma(close:pd.Series, length=None, asc=None, offset=None, **kwargs):
-    """Weighted Moving Average (SMA)
+    """Indicator: Weighted Moving Average (WMA)
     
     Use help(df.ta.wma) for specific documentation where 'df' represents
     the DataFrame you are using.

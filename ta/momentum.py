@@ -15,7 +15,7 @@ from .overlap import hlc3, ema
 
 
 def ao(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwargs):
-    """Awesome Oscillator of a Pandas Series
+    """Indicator: Awesome Oscillator
     
     Use help(df.ta.ao) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -50,7 +50,7 @@ def ao(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwarg
 
 
 def apo(close:pd.Series, fast=None, slow=None, offset=None, **kwargs):
-    """Absolute Price Oscillator of a Pandas Series
+    """Indicator: Absolute Price Oscillator
     
     Use help(df.ta.apo) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -82,8 +82,8 @@ def apo(close:pd.Series, fast=None, slow=None, offset=None, **kwargs):
     return apo
 
 
-def bop(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, percentage=False, offset=None, **kwargs):
-    """Balance of Power of a Pandas Series
+def bop(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, offset=None, **kwargs):
+    """Indicator: Balance of Power
     
     Use help(df.ta.bop) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -93,13 +93,12 @@ def bop(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, percent
     high = verify_series(high)
     low = verify_series(low)
     close = verify_series(close)
-    percent = 100 if percentage else 1
     offset = get_offset(offset)
 
     # Calculate Result
     close_open_range = close - open_
     high_log_range = high - low
-    bop = percent * close_open_range / high_log_range
+    bop = close_open_range / high_log_range
 
     # Offset
     bop = bop.shift(offset)
@@ -118,7 +117,7 @@ def bop(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, percent
 
 
 def cci(high:pd.Series, low:pd.Series, close:pd.Series, length=None, c=None, offset=None, **kwargs):
-    """Commodity Channel Index of a Pandas Series
+    """Indicator: Commodity Channel Index
     
     Use help(df.ta.cci) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -160,7 +159,7 @@ def cci(high:pd.Series, low:pd.Series, close:pd.Series, length=None, c=None, off
 
 
 def macd(close:pd.Series, fast=None, slow=None, signal=None, offset=None, **kwargs):
-    """Moving Average, Convergence/Divergence (MACD) of a Pandas Series
+    """Indicator: Moving Average, Convergence/Divergence (MACD)
     
     Use help(df.ta.macd) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -214,7 +213,7 @@ def macd(close:pd.Series, fast=None, slow=None, signal=None, offset=None, **kwar
 
 
 def massi(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwargs):
-    """Mass Index of a Pandas Series
+    """Indicator: Mass Index
     
     Use help(df.ta.massi) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -255,7 +254,7 @@ def massi(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kw
 
 
 def mfi(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length=None, drift=None, offset=None, **kwargs):
-    """Money Flow Index of a Pandas Series
+    """Indicator: Money Flow Index (MFI)
     
     Use help(df.ta.mfi) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -301,7 +300,7 @@ def mfi(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length
 
 
 def mom(close:pd.Series, length=None, offset=None, **kwargs):
-    """Momentum of a Pandas Series
+    """Indicator: Momentum (MOM)
     
     Use help(df.ta.mom) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -330,8 +329,8 @@ def mom(close:pd.Series, length=None, offset=None, **kwargs):
     return mom
 
 
-def ppo(close:pd.Series, fast=None, slow=None, percentage=True, offset=None, **kwargs):
-    """Percentage Price Oscillator of a Pandas Series
+def ppo(close:pd.Series, fast=None, slow=None, offset=None, **kwargs):
+    """Indicator: Percentage Price Oscillator (PPO)
     
     Use help(df.ta.ppo) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -343,13 +342,12 @@ def ppo(close:pd.Series, fast=None, slow=None, percentage=True, offset=None, **k
     if slow < fast:
         fast, slow = slow, fast
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
-    percent = 100 if percentage else 1
     offset = get_offset(offset)
 
     # Calculate Result
     fastma = close.rolling(fast, min_periods=min_periods).mean()
     slowma = close.rolling(slow, min_periods=min_periods).mean()
-    ppo = percent * (fastma - slowma) / slowma
+    ppo = 100 * (fastma - slowma) / slowma
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -365,7 +363,7 @@ def ppo(close:pd.Series, fast=None, slow=None, percentage=True, offset=None, **k
 
 
 def roc(close:pd.Series, length=None, offset=None, **kwargs):
-    """Rate of Change (ROC) of a Pandas Series
+    """Indicator: Rate of Change (ROC)
     
     Use help(df.ta.roc) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -396,6 +394,11 @@ def roc(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def rsi(close:pd.Series, length=None, drift=None, offset=None, **kwargs):
+    """Indicator: Relative Strength Index (RSI)
+    
+    Use help(df.ta.rsi) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
     # Validate arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 14
@@ -431,7 +434,7 @@ def rsi(close:pd.Series, length=None, drift=None, offset=None, **kwargs):
 
 
 def stoch(high:pd.Series, low:pd.Series, close:pd.Series, fast_k=None, slow_k=None, slow_d=None, offset=None, **kwargs):
-    """Stochastics of a Pandas Series
+    """Indicator: Stochastics
     
     Use help(df.ta.stoch) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -484,13 +487,13 @@ def stoch(high:pd.Series, low:pd.Series, close:pd.Series, fast_k=None, slow_k=No
     data = {fastk.name: fastk, fastd.name: fastd, slowk.name: slowk, slowd.name: slowd}
     stochdf = pd.DataFrame(data)
     stochdf.name = f"STOCH_{fast_k}_{slow_k}_{slow_d}"
-    stochdf.category = 'volatility'
+    stochdf.category = 'momentum'
 
     return stochdf
 
 
 def trix(close:pd.Series, length=None, drift=None, offset=None, **kwargs):
-    """Trix (TRIX)
+    """Indicator: Trix (TRIX)
 
     Use help(df.ta.trix) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -519,7 +522,7 @@ def trix(close:pd.Series, length=None, drift=None, offset=None, **kwargs):
 
 
 def tsi(close:pd.Series, fast=None, slow=None, drift=None, offset=None, **kwargs):
-    """True Strength Index of a Pandas Series
+    """Indicator: True Strength Index (TSI)
     
     Use help(df.ta.tsi) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -560,8 +563,8 @@ def tsi(close:pd.Series, fast=None, slow=None, drift=None, offset=None, **kwargs
     return tsi
 
 
-def uo(high:pd.Series, low:pd.Series, close:pd.Series, fast=None, medium=None, slow=None, fast_w=None, medium_w=None, slow_w=None, percentage=True, drift=None, offset=None, **kwargs):
-    """Ultimate Oscillator of a Pandas Series
+def uo(high:pd.Series, low:pd.Series, close:pd.Series, fast=None, medium=None, slow=None, fast_w=None, medium_w=None, slow_w=None, drift=None, offset=None, **kwargs):
+    """Indicator: Ultimate Oscillator (UO)
     
     Use help(df.ta.uo) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -570,7 +573,6 @@ def uo(high:pd.Series, low:pd.Series, close:pd.Series, fast=None, medium=None, s
     high = verify_series(high)
     low = verify_series(low)
     close = verify_series(close)
-    percent = 100 if percentage else 1
     drift = get_drift(drift)
     offset = get_offset(offset)
 
@@ -596,7 +598,7 @@ def uo(high:pd.Series, low:pd.Series, close:pd.Series, fast=None, medium=None, s
 
     total_weight =  fast_w + medium_w + slow_w
     weights = (fast_w * fast_avg) + (medium_w * medium_avg) + (slow_w * slow_avg)
-    uo = percent * weights / total_weight
+    uo = 100 * weights / total_weight
 
     # Offset
     uo = uo.shift(offset)
@@ -614,8 +616,8 @@ def uo(high:pd.Series, low:pd.Series, close:pd.Series, fast=None, medium=None, s
     return uo
 
 
-def willr(high=None, low=None, close=None, length=None, percentage=True, offset=None, **kwargs):
-    """William's Percent R of a Pandas Series
+def willr(high=None, low=None, close=None, length=None, offset=None, **kwargs):
+    """Indicator: William's Percent R (WILLR)
     
     Use help(df.ta.willr) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -626,14 +628,13 @@ def willr(high=None, low=None, close=None, length=None, percentage=True, offset=
     close = verify_series(close)
     length = int(length) if length and length > 0 else 14
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-    percent = 100 if percentage else 1
     offset = get_offset(offset)
 
     # Calculate Result
     lowest_low = low.rolling(length, min_periods=min_periods).min()
     highest_high = high.rolling(length, min_periods=min_periods).max()
 
-    willr = percent * ((close - lowest_low) / (highest_high - lowest_low) - 1)
+    willr = 100 * ((close - lowest_low) / (highest_high - lowest_low) - 1)
 
     # Offset
     willr = willr.shift(offset)

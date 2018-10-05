@@ -909,7 +909,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     def mcv(self, close=None, volume=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
+        # Get the correct column(s).
         df = self._df
         if df is None: return
         else:
@@ -1099,11 +1099,11 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-        result = ichimoku(high=high, low=low, close=close, tenkan=tenkan, kijun=kijun, senkou=senkou, offset=offset, **kwargs)
+        result, span = ichimoku(high=high, low=low, close=close, tenkan=tenkan, kijun=kijun, senkou=senkou, offset=offset, **kwargs)
 
         self._append(result, **kwargs)
 
-        return result
+        return result, span
 
 
     def increasing(self, close:str = None, length:int = None, asint:bool = True, offset=None, **kwargs):

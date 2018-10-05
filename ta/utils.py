@@ -52,4 +52,5 @@ def verify_series(series:pd.Series):
 
 
 def zero(x):
+    """If the value is close to zero, then return zero.  Otherwise return the value."""
     return 0 if -sflt.epsilon < x and x < sflt.epsilon else x

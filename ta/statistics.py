@@ -7,7 +7,7 @@ from .utils import get_offset, verify_series
 
 
 def kurtosis(close:pd.Series, length=None, offset=None, **kwargs):
-    """Kurtosis over periods of a Pandas Series
+    """Indicator: Kurtosis
     
     Use help(df.ta.kurtosis) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -32,7 +32,7 @@ def kurtosis(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def mcv(vwap:pd.Series, volume:pd.Series, length=None, offset=None, **kwargs):
-    """Moving Covariance over periods of a Pandas Series
+    """Indicator: Moving Covariance
     
     Use help(df.ta.mcv) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -59,7 +59,7 @@ def mcv(vwap:pd.Series, volume:pd.Series, length=None, offset=None, **kwargs):
 
 
 def quantile(close:pd.Series, length=None, q=None, offset=None, **kwargs):
-    """Quantile over periods of a Pandas Series
+    """Indicator: Quantile
     
     Use help(df.ta.quantile) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -85,7 +85,7 @@ def quantile(close:pd.Series, length=None, q=None, offset=None, **kwargs):
 
 
 def skew(close:pd.Series, length=None, offset=None, **kwargs):
-    """Skew over periods of a Pandas Series
+    """Indicator: Skew
     
     Use help(df.ta.skew) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -110,7 +110,7 @@ def skew(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def stdev(close:pd.Series, length=None, offset=None, **kwargs):
-    """Standard Deviation over periods of a Pandas Series
+    """Indicator: Standard Deviation
     
     Use help(df.ta.stdev) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -118,11 +118,11 @@ def stdev(close:pd.Series, length=None, offset=None, **kwargs):
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 30
-    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    # min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     offset = get_offset(offset)
 
     # Calculate Result
-    stdev = variance(close, length=length).apply(np.sqrt)
+    stdev = variance(close=close, length=length).apply(np.sqrt)
 
     # Offset
     stdev = stdev.shift(offset)
@@ -135,9 +135,9 @@ def stdev(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def variance(close:pd.Series, length=None, offset=None, **kwargs):
-    """Variance over periods of a Pandas Series
+    """Indicator: Variance
     
-    Use help(df.ta.stdev) for specific documentation where 'df' represents
+    Use help(df.ta.variance) for specific documentation where 'df' represents
     the DataFrame you are using.
     """
     # Validate Arguments
@@ -160,7 +160,7 @@ def variance(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def zscore(close:pd.Series, length=None, std=None, offset=None, **kwargs):
-    """Z Score over periods of a Pandas Series
+    """Indicator: Z Score
     
     Use help(df.ta.zscore) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -168,8 +168,7 @@ def zscore(close:pd.Series, length=None, std=None, offset=None, **kwargs):
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 1 else 30
-    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-    std = int(std) if std and std > 1 else 1
+    std = float(std) if std and std > 1 else 1
     offset = get_offset(offset)
 
     # Calculate Result

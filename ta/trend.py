@@ -17,7 +17,7 @@ from .volatility import atr, true_range
 
 
 def adx(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drift=None, offset=None, **kwargs):
-    """ADX of a Pandas Series
+    """Indicator: ADX
     
     Use help(df.ta.adx) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -31,7 +31,7 @@ def adx(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drift=None,
     offset = get_offset(offset)
 
     # Calculate Result
-    avg_tr = atr(high=high, low=low, close=close, length=length)
+    _atr = atr(high=high, low=low, close=close, length=length)
 
     up = high - high.shift(drift)
     dn = low.shift(drift) - low
@@ -42,11 +42,10 @@ def adx(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drift=None,
     pos = pos.apply(zero)
     neg = neg.apply(zero)
 
-    dmp = (100 / avg_tr) * rma(close=pos, length=length)
-    dmn = (100 / avg_tr) * rma(close=neg, length=length)
+    dmp = (100 / _atr) * rma(close=pos, length=length)
+    dmn = (100 / _atr) * rma(close=neg, length=length)
 
     dx = 100 * (dmp - dmn).abs() / (dmp + dmn)
-    # dx = dx.abs()
     adx = rma(close=dx, length=length)
 
     # Offset
@@ -81,7 +80,7 @@ def adx(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drift=None,
 
 
 def aroon(close:pd.Series, length=None, offset=None, **kwargs):
-    """Aroon Oscillator of a Pandas Series
+    """Indicator: Aroon Oscillator
     
     Use help(df.ta.aroon) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -89,6 +88,7 @@ def aroon(close:pd.Series, length=None, offset=None, **kwargs):
     # Validate Arguments
     close = verify_series(close)
     length = length if length and length > 0 else 14
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     offset = get_offset(offset)
 
     # Calculate Result
@@ -98,7 +98,7 @@ def aroon(close:pd.Series, length=None, offset=None, **kwargs):
     def minidx(x):
         return 100 * (int(np.argmin(x)) + 1) / length
 
-    _close = close.rolling(length)
+    _close = close.rolling(length, min_periods=min_periods)
     aroon_up = _close.apply(maxidx, raw=True)
     aroon_down = _close.apply(minidx, raw=True)
 
@@ -126,7 +126,7 @@ def aroon(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def decreasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
-    """Decreasing over periods of a Pandas Series
+    """Indicator: Decreasing
     
     Use help(df.ta.decreasing) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -158,7 +158,7 @@ def decreasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
 
 
 def dpo(close:pd.Series, length=None, centered=True, offset=None, **kwargs):
-    """Detrend Price Oscillator of a Pandas Series
+    """Indicator: Detrend Price Oscillator (DPO)
     
     Use help(df.ta.dpo) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -171,8 +171,8 @@ def dpo(close:pd.Series, length=None, centered=True, offset=None, **kwargs):
 
     # Calculate Result
     drift = int(0.5 * length) + 1  # int((0.5 * length) + 1)
-    # dpo = close.shift(drift) - close.rolling(length, min_periods=min_periods).mean()
-    dpo = close.shift(drift) - close.rolling(length).mean()
+    dpo = close.shift(drift) - close.rolling(length, min_periods=min_periods).mean()
+    # dpo = close.shift(drift) - close.rolling(length).mean()
     if centered:
         dpo = dpo.shift(-drift)
 
@@ -193,22 +193,10 @@ def dpo(close:pd.Series, length=None, centered=True, offset=None, **kwargs):
 
 
 def ichimoku(high:pd.Series, low:pd.Series, close:pd.Series, tenkan=None, kijun=None, senkou=None, offset=None, **kwargs):
-    """Ichimoku Kinkō Hyō (Ichimoku)
+    """Indicator: Ichimoku Kinkō Hyō (Ichimoku)
 
-    It identifies the trend and look for potential signals within that trend.
-
-    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ichimoku_cloud
-
-    Args:
-        high(pandas.Series): dataset 'High' column.
-        low(pandas.Series): dataset 'Low' column.
-        tenkan(int): tenkan low period.
-        kijun(int): kijun medium period.
-        senkou(int): senkou high period.
-        fillna(bool): if True, fill nan values.
-
-    Returns:
-        pandas.Series: New feature generated.
+    Use help(df.ta.ichimoku) for specific documentation where 'df' represents
+    the DataFrame you are using.
     """
     high = verify_series(high)
     low = verify_series(low)
@@ -279,7 +267,7 @@ def ichimoku(high:pd.Series, low:pd.Series, close:pd.Series, tenkan=None, kijun=
 
 
 def increasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
-    """Increasing over periods of a Pandas Series
+    """Indicator: Increasing
     
     Use help(df.ta.increasing) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -311,7 +299,7 @@ def increasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
 
 
 def kst(close:pd.Series, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, sma2=None, sma3=None, sma4=None, signal=None, drift=None, offset=None, **kwargs):
-    """'Know Sure Thing' Indicator over periods of a Pandas Series
+    """Indicator: 'Know Sure Thing'
     
     Use help(df.ta.kst) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -368,22 +356,28 @@ def kst(close:pd.Series, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, 
 
 
 def vortex(high:pd.Series, low:pd.Series, close:pd.Series, length=None, offset=None, **kwargs):
+    """Indicator: Vortex
+
+    Use help(df.ta.vortex) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
     # Validate arguments
     high = verify_series(high)
     low = verify_series(low)
     close = verify_series(close)
     length = length if length and length > 0 else 14
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     offset = get_offset(offset)
 
     # Calculate Result
     tr = true_range(high=high, low=low, close=close)
-    tr_sma = tr.rolling(length).sum()
+    tr_sma = tr.rolling(length, min_periods=min_periods).sum()
 
     vmp = (high - low.shift(1)).abs()
     vmm = (low - high.shift(1)).abs()
 
-    vip = vmp.rolling(length).sum() / tr_sma
-    vim = vmm.rolling(length).sum() / tr_sma
+    vip = vmp.rolling(length, min_periods=min_periods).sum() / tr_sma
+    vim = vmm.rolling(length, min_periods=min_periods).sum() / tr_sma
 
     # Offset
     vip = vip.shift(offset)
@@ -409,6 +403,7 @@ def vortex(high:pd.Series, low:pd.Series, close:pd.Series, length=None, offset=N
     vtxdf.category = 'trend'
 
     return vtxdf
+
 
 
 # Legacy Code

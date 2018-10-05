@@ -15,7 +15,7 @@ from .statistics import variance, stdev
 
 
 def atr(high:pd.Series, low:pd.Series, close:pd.Series, length=None, mamode=None, drift=None, offset=None, **kwargs):
-    """Average True Range of a Pandas Series
+    """Indicator: Average True Range (ATR)
     
     Use help(df.ta.atr) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -54,7 +54,7 @@ def atr(high:pd.Series, low:pd.Series, close:pd.Series, length=None, mamode=None
 
 
 def bbands(close:pd.Series, length=None, std=None, mamode=None, offset=None, **kwargs):
-    """Bollinger Bands of a Pandas Series
+    """Indicator: Bollinger Bands (BBANDS)
     
     Use help(df.ta.bbands) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -110,7 +110,7 @@ def bbands(close:pd.Series, length=None, std=None, mamode=None, offset=None, **k
 
 
 def donchian(close:pd.Series, length=None, offset=None, **kwargs):
-    """Donchian Channels of a Pandas Series
+    """Indicator: Donchian Channels (DC)
     
     Use help(df.ta.donchian) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -157,7 +157,7 @@ def donchian(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def kc(high:pd.Series, low:pd.Series, close:pd.Series, length=None, scalar=None, mamode=None, offset=None, **kwargs):
-    """Keltner Channels of a Pandas Series
+    """Indicator: Keltner Channels (KC)
     
     Use help(df.ta.kc) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -218,7 +218,7 @@ def kc(high:pd.Series, low:pd.Series, close:pd.Series, length=None, scalar=None,
 
 
 def natr(high:pd.Series, low:pd.Series, close:pd.Series, length=None, mamode=None, drift=None, offset=None, **kwargs):
-    """Normalized Average True Range of a Pandas Series
+    """Indicator: Normalized Average True Range (NATR)
     
     Use help(df.ta.natr) for specific documentation where 'df' represents
     the DataFrame you are using.
@@ -228,7 +228,6 @@ def natr(high:pd.Series, low:pd.Series, close:pd.Series, length=None, mamode=Non
     low = verify_series(low)
     close = verify_series(close)
     length = int(length) if length and length > 0 else 14
-    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     mamode = mamode.lower() if mamode else 'ema'
     drift = get_drift(drift)
     offset = get_offset(offset)
@@ -253,7 +252,7 @@ def natr(high:pd.Series, low:pd.Series, close:pd.Series, length=None, mamode=Non
 
 
 def true_range(high:pd.Series, low:pd.Series, close:pd.Series, drift=None, offset=None, **kwargs):
-    """True Range of a Pandas Series
+    """Indicator: True Range
     
     Use help(df.ta.true_range) for specific documentation where 'df' represents
     the DataFrame you are using.

@@ -314,11 +314,7 @@ def ppo(close:pd.Series, fast=None, slow=None, signal=None, offset=None, **kwarg
 
 
 def roc(close:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Rate of Change (ROC)
-    
-    Use help(df.ta.roc) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Rate of Change (ROC)"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 1

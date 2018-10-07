@@ -20,6 +20,7 @@ AO is generally used to affirm trends or to anticipate possible reversals.
 Calculation:
     Default Inputs:
         fast: 5, slow: 34
+    SMA = Simple Moving Average
     median = (high + low) / 2
     AO = SMA(median, fast) - SMA(median, slow)
 
@@ -53,6 +54,7 @@ momentum.  It is simply the difference of two Exponential Moving Averages
 Calculation:
     Default Inputs:
         fast: 12, slow: 26
+    EMA = Exponential Moving Average
     APO = EMA(close, fast) - EMA(close, slow)
 
 Args:
@@ -107,9 +109,11 @@ Sources:
     https://www.tradingview.com/wiki/Commodity_Channel_Index_(CCI)
 
 Calculation:
+    SMA = Simple Moving Average
+    MAD = Mean Absolute Deviation
     tp = typical_price = hlc3 = (high + low + close) / 3
     mean_tp = SMA(tp, length)
-    mad_tp = MAD(tp, length), MAD = Mean Absolute Deviation
+    mad_tp = MAD(tp, length)
     CCI = (tp - mean_tp) / (c * mad_tp)
 
 Args:
@@ -140,6 +144,7 @@ the difference of MACD and Signal.
 Calculation:
     Default Inputs:
         fast: 12, slow: 26, signal: 9
+    EMA = Exponential Moving Average
     MACD = EMA(close, fast) - EMA(close, slow)
     Signal = EMA(MACD, signal)
     Histogram = MACD - Signal
@@ -233,6 +238,8 @@ The Percentage Price Oscillator is similar to MACD in measuring momentum.
 Calculation:
     Default Inputs:
         fast: 12, slow: 26
+    SMA = Simple Moving Average
+    EMA = Exponential Moving Average
     fast_sma = SMA(close, fast)
     slow_sma = SMA(close, slow)
     PPO = 100 * (fast_sma - slow_sma) / slow_sma
@@ -255,6 +262,33 @@ Kwargs:
 
 Returns:
     pd.DataFrame: ppo, histogram, signal columns
+"""
+
+
+roc_docs = \
+"""Rate of Change (ROC)
+
+Rate of Change is an indicator is also referred to as Momentum (yeah, confusingly).
+It is a pure momentum oscillator that measures the percent change in price with the
+previous price 'n' (or length) periods ago.
+
+Calculation:
+    Default Inputs:
+        length: 1
+    MOM = Momentum
+    ROC = 100 * MOM(close, length) / close.shift(length)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
 """
 
 
@@ -1108,8 +1142,13 @@ macd.__doc__ = macd_docs
 mfi.__doc__ = mfi_docs
 mom.__doc__ = mom_docs
 ppo.__doc__ = ppo_docs
-# roc.__doc__ = roc_docs
+roc.__doc__ = roc_docs
 # rsi.__doc__ = rsi_docs
+# stoch.__doc__ = stoch_docs
+# trix.__doc__ = trix_docs
+# tsi.__doc__ = tsi_docs
+# uo.__doc__ = uo_docs
+# willr.__doc__ = willr_docs
 
 
 # Overlap Documentation

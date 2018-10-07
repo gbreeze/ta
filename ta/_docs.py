@@ -157,7 +157,6 @@ Args:
 Kwargs:
     fillna (value, optional): pd.DataFrame.fillna(value)
     fill_method (value, optional): Type of fill method
-    append (bool, optional): If True, appends result to current extended df.
 
 Returns:
     pd.DataFrame: macd, histogram, signal columns
@@ -180,8 +179,8 @@ Calculation:
     pmf = pos_money_flow = SUM(rmf, length) if tp.diff(drift) > 0 else 0
     nmf = neg_money_flow = SUM(rmf, length) if tp.diff(drift) < 0 else 0
 
-    mfr = money_flow_ratio = pmf / nmf
-    mfi = money_flow_index = 100 * pmf / (pmf + nmf)
+    MFR = money_flow_ratio = pmf / nmf
+    MFI = money_flow_index = 100 * pmf / (pmf + nmf)
 
 Args:
     high (pd.Series): Series of 'high's
@@ -223,6 +222,39 @@ Kwargs:
 
 Returns:
     pd.Series: New feature generated.
+"""
+
+
+ppo_docs = \
+"""Percentage Price Oscillator (PPO)
+
+The Percentage Price Oscillator is similar to MACD in measuring momentum.
+
+Calculation:
+    Default Inputs:
+        fast: 12, slow: 26
+    fast_sma = SMA(close, fast)
+    slow_sma = SMA(close, slow)
+    PPO = 100 * (fast_sma - slow_sma) / slow_sma
+    Signal = EMA(PPO, signal)
+    Histogram = PPO - Signal
+
+Sources:
+    https://www.tradingview.com/wiki/MACD_(Moving_Average_Convergence/Divergence)
+
+Args:
+    close(pandas.Series): Series of 'close's
+    fast(int): The short period.  Default: 12
+    slow(int): The long period.   Default: 26
+    signal(int): The signal period.   Default: 9
+    offset(int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.DataFrame: ppo, histogram, signal columns
 """
 
 
@@ -1074,51 +1106,54 @@ ao.__doc__ = ao_docs
 apo.__doc__ = apo_docs
 macd.__doc__ = macd_docs
 mfi.__doc__ = mfi_docs
-rsi.__doc__ = rsi_docs
+mom.__doc__ = mom_docs
+ppo.__doc__ = ppo_docs
+# roc.__doc__ = roc_docs
+# rsi.__doc__ = rsi_docs
 
 
 # Overlap Documentation
-hl2.__doc__ = hl2_docs
-hlc3.__doc__ = hlc3_docs
-ohlc4.__doc__ = ohlc4_docs
-median.__doc__ = median_docs
-midpoint.__doc__ = midpoint_docs
-midprice.__doc__ = midprice_docs
-rpn.__doc__ = rpn_docs
-t3.__doc__ = t3_docs
+# hl2.__doc__ = hl2_docs
+# hlc3.__doc__ = hlc3_docs
+# ohlc4.__doc__ = ohlc4_docs
+# median.__doc__ = median_docs
+# midpoint.__doc__ = midpoint_docs
+# midprice.__doc__ = midprice_docs
+# rpn.__doc__ = rpn_docs
+# t3.__doc__ = t3_docs
 
 # Performance Documentation
-log_return.__doc__ = log_return_docs
-percent_return.__doc__ = percent_return_docs
+# log_return.__doc__ = log_return_docs
+# percent_return.__doc__ = percent_return_docs
 
 # Statistics Documentation
-kurtosis.__doc__ = kurtosis_docs
-mcv.__doc__ = mcv_docs
-quantile.__doc__ = quantile_docs
-skew.__doc__ = skew_docs
-stdev.__doc__ = stdev_docs
-variance.__doc__ = variance_docs
+# kurtosis.__doc__ = kurtosis_docs
+# mcv.__doc__ = mcv_docs
+# quantile.__doc__ = quantile_docs
+# skew.__doc__ = skew_docs
+# stdev.__doc__ = stdev_docs
+# variance.__doc__ = variance_docs
 
 # Trend Documentation
-adx.__doc__ = adx_docs
-decreasing.__doc__ = decreasing_docs
-dpo.__doc__ = dpo_docs
-increasing.__doc__ = increasing_docs
+# adx.__doc__ = adx_docs
+# decreasing.__doc__ = decreasing_docs
+# dpo.__doc__ = dpo_docs
+# increasing.__doc__ = increasing_docs
 
 # Volatility Documentation
-atr.__doc__ = atr_docs
-bbands.__doc__ = bbands_docs
-donchian.__doc__ = donchian_docs
-kc.__doc__ = kc_docs
+# atr.__doc__ = atr_docs
+# bbands.__doc__ = bbands_docs
+# donchian.__doc__ = donchian_docs
+# kc.__doc__ = kc_docs
 massi.__doc__ = massi_docs
-true_range.__doc__ = true_range_docs
+# true_range.__doc__ = true_range_docs
 
 # Volume Documentation
-ad.__doc__ = ad_docs
-cmf.__doc__ = cmf_docs
-efi.__doc__ = efi_docs
-eom.__doc__ = eom_docs
-nvi.__doc__ = nvi_docs
-obv.__doc__ = obv_docs
-pvol.__doc__ = pvol_docs
-pvt.__doc__ = pvt_docs
+# ad.__doc__ = ad_docs
+# cmf.__doc__ = cmf_docs
+# efi.__doc__ = efi_docs
+# eom.__doc__ = eom_docs
+# nvi.__doc__ = nvi_docs
+# obv.__doc__ = obv_docs
+# pvol.__doc__ = pvol_docs
+# pvt.__doc__ = pvt_docs

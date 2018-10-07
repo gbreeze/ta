@@ -263,16 +263,13 @@ def mom(close:pd.Series, length=None, offset=None, **kwargs):
     return mom
 
 
-def ppo(close:pd.Series, fast=None, slow=None, offset=None, **kwargs):
-    """Indicator: Percentage Price Oscillator (PPO)
-    
-    Use help(df.ta.ppo) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+def ppo(close:pd.Series, fast=None, slow=None, signal=None, offset=None, **kwargs):
+    """Indicator: Percentage Price Oscillator (PPO)"""
     # Validate Arguments
     close = verify_series(close)
     fast = int(fast) if fast and fast > 0 else 12
     slow = int(slow) if slow and slow > 0 else 26
+    signal = int(signal) if signal and signal > 0 else 9
     if slow < fast:
         fast, slow = slow, fast
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
@@ -281,19 +278,39 @@ def ppo(close:pd.Series, fast=None, slow=None, offset=None, **kwargs):
     # Calculate Result
     fastma = close.rolling(fast, min_periods=min_periods).mean()
     slowma = close.rolling(slow, min_periods=min_periods).mean()
+
     ppo = 100 * (fastma - slowma) / slowma
+    signalma = ppo.ewm(span=signal, min_periods=min_periods).mean()
+    histogram = ppo - signalma
+
+    # Offset
+    ppo = ppo.shift(offset)
+    signalma = signalma.shift(offset)
+    histogram = histogram.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
         ppo.fillna(kwargs['fillna'], inplace=True)
+        histogram.fillna(kwargs['fillna'], inplace=True)
+        signalma.fillna(kwargs['fillna'], inplace=True)
     if 'fill_method' in kwargs:
         ppo.fillna(method=kwargs['fill_method'], inplace=True)
+        histogram.fillna(method=kwargs['fill_method'], inplace=True)
+        signalma.fillna(method=kwargs['fill_method'], inplace=True)
 
     # Name and Categorize it
-    ppo.name = f"PPO_{fast}_{slow}"
-    ppo.category = 'momentum'
+    ppo.name = f"PPO_{fast}_{slow}_{signal}"
+    histogram.name = f"PPOH_{fast}_{slow}_{signal}"
+    signalma.name = f"PPOS_{fast}_{slow}_{signal}"
+    ppo.category = histogram.category = signalma.category = 'momentum'
 
-    return ppo
+    # Prepare DataFrame to return
+    data = {ppo.name: ppo, histogram.name: histogram, signalma.name: signalma}
+    ppodf = pd.DataFrame(data)
+    ppodf.name = f"PPO_{fast}_{slow}_{signal}"
+    ppodf.category = 'momentum'
+
+    return ppodf
 
 
 def roc(close:pd.Series, length=None, offset=None, **kwargs):

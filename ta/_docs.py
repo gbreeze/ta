@@ -200,6 +200,32 @@ Returns:
     pd.Series: New feature generated.
 """
 
+
+mom_docs = \
+"""Momentum (MOM)
+
+Momentum is an indicator used to measure a security's speed (or strength) of
+movement.  Or simply the change in price. 
+
+Calculation:
+    Default Inputs:
+        length: 1
+    MOM = close.diff(length)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
 rsi_docs = \
 """
 Relative Strength Index

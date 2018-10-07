@@ -238,11 +238,7 @@ def mfi(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length
 
 
 def mom(close:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Momentum (MOM)
-    
-    Use help(df.ta.mom) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Momentum (MOM)"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 1

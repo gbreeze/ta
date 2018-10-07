@@ -1,44 +1,203 @@
 # -*- coding: utf-8 -*-
-from ._extension import *
+# from ._extension import *
+from .momentum import *
+from .overlap import *
+from .performance import *
+from .statistics import *
+from .trend import *
+from .volatility import *
+from .volume import *
+
+
 
 # Momentum Documentation
-apo_docs = \
-""" apo
+ao_docs = \
+"""Awesome Oscillator (AO)
 
-Not visually the same as TV Chart
-"""
+The Awesome Oscillator is an indicator used to measure a security's momentum. 
+AO is generally used to affirm trends or to anticipate possible reversals.
 
-macd_docs = \
-"""
-Moving Average Convergence Divergence
+Calculation:
+    Default Inputs:
+        fast: 5, slow: 34
+    median = (high + low) / 2
+    AO = SMA(median, fast) - SMA(median, slow)
 
-Returns a DataFrame with high, mid, and low values.  The high channel is max()
-and the low channel is the min() over a rolling period length of the source.
-The mid is the average of the high and low channels.
+Sources:
+    https://www.tradingview.com/wiki/Awesome_Oscillator_(AO)
+    https://www.ifcm.co.uk/ntx-indicators/awesome-oscillator
 
 Args:
-    close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-    length(int): How many
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    fast (int): The short period.  Default: 5
+    slow (int): The long period.   Default: 34
+    offset (int): How many periods to offset the result.  Default: 0
 
-    append(bool): kwarg, optional.  If True, appends result to current df
-
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.Series: New feature generated.
 """
 
-massi_docs = \
+
+apo_docs = \
+"""Absolute Price Oscillator (APO)
+
+The Absolute Price Oscillator is an indicator used to measure a security's
+momentum.  It is simply the difference of two Exponential Moving Averages
+(EMA) of two different periods.  Note: APO and MACD lines are equivalent.
+
+Calculation:
+    Default Inputs:
+        fast: 12, slow: 26
+    APO = EMA(close, fast) - EMA(close, slow)
+
+Args:
+    close (pd.Series): Series of 'close's
+    fast (int): The short period.  Default: 12
+    slow (int): The long period.   Default: 26
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
 """
-Mass Index
+
+
+bop_docs = \
+"""Balance of Power (BOP)
+
+Balance of Power measure the market strength of buyers against sellers.
+
+Calculation:
+    BOP = (close - open) / (high - low)
+
+Sources:
+    http://www.worden.com/TeleChartHelp/Content/Indicators/Balance_of_Power.htm
+
+Args:
+    open (pd.Series): Series of 'open's
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
 """
+
+
+cci_docs = \
+"""Commodity Channel Index (CCI)
+
+Commodity Channel Index is a momentum oscillator used to primarily identify
+overbought and oversold levels relative to a mean.
+
+Sources:
+    https://www.tradingview.com/wiki/Commodity_Channel_Index_(CCI)
+
+Calculation:
+    tp = typical_price = hlc3 = (high + low + close) / 3
+    mean_tp = SMA(tp, length)
+    mad_tp = MAD(tp, length), MAD = Mean Absolute Deviation
+    CCI = (tp - mean_tp) / (c * mad_tp)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 20
+    c (float):  Scaling Constant.  Default: 0.015
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+macd_docs = \
+"""Moving Average Convergence Divergence (MACD)
+
+The MACD is a popular indicator to that is used to identify a security's trend.
+While APO and MACD are the same calculation, MACD also returns two more series
+called Signal and Histogram.  The Signal is an EMA of MACD and the Histogram is
+the difference of MACD and Signal.
+
+Calculation:
+    Default Inputs:
+        fast: 12, slow: 26, signal: 9
+    MACD = EMA(close, fast) - EMA(close, slow)
+    Signal = EMA(MACD, signal)
+    Histogram = MACD - Signal
+
+Sources:
+    https://www.tradingview.com/wiki/MACD_(Moving_Average_Convergence/Divergence)
+
+Args:
+    close(pandas.Series): Series of 'close's
+    fast(int): The short period.  Default: 12
+    slow(int): The long period.   Default: 26
+    signal(int): The signal period.   Default: 9
+    offset(int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+    append (bool, optional): If True, appends result to current extended df.
+
+Returns:
+    pd.DataFrame: macd, histogram, signal columns
+"""
+
 
 mfi_docs = \
-"""
-Money Flow Index
+"""Money Flow Index (MFI)
+
+Money Flow Index is an oscillator indicator that is used to measure buying and
+selling pressure by utilizing both price and volume.
+
+Sources:
+    https://www.tradingview.com/wiki/Money_Flow_(MFI)
+
+Calculation:
+    tp = typical_price = hlc3 = (high + low + close) / 3
+    rmf = raw_money_flow = tp * volume
+
+    pmf = pos_money_flow = SUM(rmf, length) if tp.diff(drift) > 0 else 0
+    nmf = neg_money_flow = SUM(rmf, length) if tp.diff(drift) < 0 else 0
+
+    mfr = money_flow_ratio = pmf / nmf
+    mfi = money_flow_index = 100 * pmf / (pmf + nmf)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    volume (pd.Series): Series of 'volume'
+    length (int): The sum period.  Default: 14
+    drift (int): The difference period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
 """
 
 rsi_docs = \
@@ -64,7 +223,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
 
 Returns:
     pd.Series: New feature
@@ -87,7 +245,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -112,7 +270,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -137,7 +295,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -156,7 +314,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -176,7 +334,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -200,7 +358,7 @@ Args:
         withLow (bool, optional): If true, adds low value to result
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -244,7 +402,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -269,7 +427,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -293,7 +451,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -322,7 +480,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -343,7 +501,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -364,7 +522,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -385,7 +543,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -410,7 +568,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -490,7 +648,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -514,7 +672,7 @@ Args:
 **kwargs:
     fillna (value, optional): pd.DataFrame.fillna(value)
     fill_method (value, optional): Type of fill method
-    append (bool, optional): If True, appends result to current df.
+    
 
 Returns:
     pd.Series: New feature
@@ -536,7 +694,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -562,7 +720,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -585,7 +743,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -608,7 +766,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -631,11 +789,46 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
 """
+
+
+massi_docs = \
+"""Mass Index (MASSI)
+
+The Mass Index is a non-directional volatility indicator that utilitizes the
+High-Low Range to identify trend reversals based on range expansions.
+
+Sources:
+    https://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:mass_index
+
+Calculation:
+    Default Inputs:
+        fast: 9, slow: 25
+    hl = high - low
+    hl_ema1 = EMA(hl, fast)
+    hl_ema2 = EMA(hl_ema1, fast)
+    hl_ratio = hl_ema1 / hl_ema2
+    massi = SUM(hl_ratio, slow)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    fast (int): The short period.  Default: 9
+    slow (int): The long period.   Default: 25
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
 
 true_range_docs = \
 """
@@ -654,7 +847,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -682,7 +875,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -705,7 +898,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -728,7 +921,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -751,7 +944,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -774,7 +967,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -797,7 +990,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -820,7 +1013,7 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
+        
 
 Returns:
     pd.Series: New feature
@@ -843,7 +1036,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        append (bool, optional): If True, appends result to current df.
 
 Returns:
     pd.Series: New feature
@@ -852,53 +1044,55 @@ Returns:
 
 
 # Momentum Documentation
-AnalysisIndicators.apo.__doc__ = apo_docs
-AnalysisIndicators.macd.__doc__ = macd_docs
-AnalysisIndicators.massi.__doc__ = massi_docs
-AnalysisIndicators.mfi.__doc__ = mfi_docs
-AnalysisIndicators.rsi.__doc__ = rsi_docs
+ao.__doc__ = ao_docs
+apo.__doc__ = apo_docs
+macd.__doc__ = macd_docs
+mfi.__doc__ = mfi_docs
+rsi.__doc__ = rsi_docs
+
 
 # Overlap Documentation
-AnalysisIndicators.hl2.__doc__ = hl2_docs
-AnalysisIndicators.hlc3.__doc__ = hlc3_docs
-AnalysisIndicators.ohlc4.__doc__ = ohlc4_docs
-AnalysisIndicators.median.__doc__ = median_docs
-AnalysisIndicators.midpoint.__doc__ = midpoint_docs
-AnalysisIndicators.midprice.__doc__ = midprice_docs
-AnalysisIndicators.rpn.__doc__ = rpn_docs
-AnalysisIndicators.t3.__doc__ = t3_docs
+hl2.__doc__ = hl2_docs
+hlc3.__doc__ = hlc3_docs
+ohlc4.__doc__ = ohlc4_docs
+median.__doc__ = median_docs
+midpoint.__doc__ = midpoint_docs
+midprice.__doc__ = midprice_docs
+rpn.__doc__ = rpn_docs
+t3.__doc__ = t3_docs
 
 # Performance Documentation
-AnalysisIndicators.log_return.__doc__ = log_return_docs
-AnalysisIndicators.percent_return.__doc__ = percent_return_docs
+log_return.__doc__ = log_return_docs
+percent_return.__doc__ = percent_return_docs
 
 # Statistics Documentation
-AnalysisIndicators.kurtosis.__doc__ = kurtosis_docs
-AnalysisIndicators.mcv.__doc__ = mcv_docs
-AnalysisIndicators.quantile.__doc__ = quantile_docs
-AnalysisIndicators.skew.__doc__ = skew_docs
-AnalysisIndicators.stdev.__doc__ = stdev_docs
-AnalysisIndicators.variance.__doc__ = variance_docs
+kurtosis.__doc__ = kurtosis_docs
+mcv.__doc__ = mcv_docs
+quantile.__doc__ = quantile_docs
+skew.__doc__ = skew_docs
+stdev.__doc__ = stdev_docs
+variance.__doc__ = variance_docs
 
 # Trend Documentation
-AnalysisIndicators.adx.__doc__ = adx_docs
-AnalysisIndicators.decreasing.__doc__ = decreasing_docs
-AnalysisIndicators.dpo.__doc__ = dpo_docs
-AnalysisIndicators.increasing.__doc__ = increasing_docs
+adx.__doc__ = adx_docs
+decreasing.__doc__ = decreasing_docs
+dpo.__doc__ = dpo_docs
+increasing.__doc__ = increasing_docs
 
 # Volatility Documentation
-AnalysisIndicators.atr.__doc__ = atr_docs
-AnalysisIndicators.bbands.__doc__ = bbands_docs
-AnalysisIndicators.donchian.__doc__ = donchian_docs
-AnalysisIndicators.kc.__doc__ = kc_docs
-AnalysisIndicators.true_range.__doc__ = true_range_docs
+atr.__doc__ = atr_docs
+bbands.__doc__ = bbands_docs
+donchian.__doc__ = donchian_docs
+kc.__doc__ = kc_docs
+massi.__doc__ = massi_docs
+true_range.__doc__ = true_range_docs
 
 # Volume Documentation
-AnalysisIndicators.ad.__doc__ = ad_docs
-AnalysisIndicators.cmf.__doc__ = cmf_docs
-AnalysisIndicators.efi.__doc__ = efi_docs
-AnalysisIndicators.eom.__doc__ = eom_docs
-AnalysisIndicators.nvi.__doc__ = nvi_docs
-AnalysisIndicators.obv.__doc__ = obv_docs
-AnalysisIndicators.pvol.__doc__ = pvol_docs
-AnalysisIndicators.pvt.__doc__ = pvt_docs
+ad.__doc__ = ad_docs
+cmf.__doc__ = cmf_docs
+efi.__doc__ = efi_docs
+eom.__doc__ = eom_docs
+nvi.__doc__ = nvi_docs
+obv.__doc__ = obv_docs
+pvol.__doc__ = pvol_docs
+pvt.__doc__ = pvt_docs

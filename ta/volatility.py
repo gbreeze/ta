@@ -10,16 +10,12 @@ import numpy as np
 import pandas as pd
 
 from .utils import *
+from .overlap import ema
 from .statistics import variance, stdev
 
 
-
 def atr(high:pd.Series, low:pd.Series, close:pd.Series, length=None, mamode=None, drift=None, offset=None, **kwargs):
-    """Indicator: Average True Range (ATR)
-    
-    Use help(df.ta.atr) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Average True Range (ATR)"""
     # Validate arguments
     high = verify_series(high)
     low = verify_series(low)
@@ -54,11 +50,7 @@ def atr(high:pd.Series, low:pd.Series, close:pd.Series, length=None, mamode=None
 
 
 def bbands(close:pd.Series, length=None, std=None, mamode=None, offset=None, **kwargs):
-    """Indicator: Bollinger Bands (BBANDS)
-    
-    Use help(df.ta.bbands) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Bollinger Bands (BBANDS)"""
     # Validate arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 20
@@ -110,11 +102,7 @@ def bbands(close:pd.Series, length=None, std=None, mamode=None, offset=None, **k
 
 
 def donchian(close:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Donchian Channels (DC)
-    
-    Use help(df.ta.donchian) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Donchian Channels (DC)"""
     # Validate arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 20
@@ -157,11 +145,7 @@ def donchian(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def kc(high:pd.Series, low:pd.Series, close:pd.Series, length=None, scalar=None, mamode=None, offset=None, **kwargs):
-    """Indicator: Keltner Channels (KC)
-    
-    Use help(df.ta.kc) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Keltner Channels (KC)"""
     # Validate arguments
     high = verify_series(high)
     low = verify_series(low)
@@ -217,12 +201,44 @@ def kc(high:pd.Series, low:pd.Series, close:pd.Series, length=None, scalar=None,
     return kcdf
 
 
+def massi(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwargs):
+    """Indicator: Mass Index (MASSI)"""
+    # Validate arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    fast = int(fast) if fast and fast > 0 else 9
+    slow = int(slow) if slow and slow > 0 else 25
+    if slow < fast:
+        fast, slow = slow, fast
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
+    offset = get_offset(offset)
+
+    # Calculate Result
+    hl_range = high - low
+    hl_ema1 = ema(close=hl_range, length=fast)
+    hl_ema2 = ema(close=hl_ema1, length=fast)
+
+    hl_ratio = hl_ema1 / hl_ema2
+    massi = hl_ratio.rolling(slow, min_periods=slow).sum()
+
+    # Offset
+    massi = massi.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        massi.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        massi.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    massi.name = f"MASSI_{fast}_{slow}"
+    massi.category = 'volatility'
+
+    return massi
+
+
 def natr(high:pd.Series, low:pd.Series, close:pd.Series, length=None, mamode=None, drift=None, offset=None, **kwargs):
-    """Indicator: Normalized Average True Range (NATR)
-    
-    Use help(df.ta.natr) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Normalized Average True Range (NATR)"""
     # Validate arguments
     high = verify_series(high)
     low = verify_series(low)
@@ -252,11 +268,7 @@ def natr(high:pd.Series, low:pd.Series, close:pd.Series, length=None, mamode=Non
 
 
 def true_range(high:pd.Series, low:pd.Series, close:pd.Series, drift=None, offset=None, **kwargs):
-    """Indicator: True Range
-    
-    Use help(df.ta.true_range) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: True Range"""
     # Validate arguments
     high = verify_series(high)
     low = verify_series(low)

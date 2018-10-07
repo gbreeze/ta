@@ -15,11 +15,7 @@ from .overlap import hlc3, ema
 
 
 def ao(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwargs):
-    """Indicator: Awesome Oscillator
-    
-    Use help(df.ta.ao) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Awesome Oscillator (AO)"""
     # Validate Arguments
     high = verify_series(high)
     low = verify_series(low)
@@ -27,11 +23,14 @@ def ao(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwarg
     slow = int(slow) if slow and slow > 0 else 34
     if slow < fast:
         fast, slow = slow, fast
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
     offset = get_offset(offset)
 
     # Calculate Result
     median_price = 0.5 * (high + low)
-    ao = median_price.rolling(fast).mean() - median_price.rolling(slow).mean()
+    fast_sma = median_price.rolling(fast, min_periods=min_periods).mean()
+    slow_sma = median_price.rolling(slow, min_periods=min_periods).mean()
+    ao = fast_sma - slow_sma
 
     # Offset
     ao = ao.shift(offset)
@@ -50,11 +49,7 @@ def ao(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwarg
 
 
 def apo(close:pd.Series, fast=None, slow=None, offset=None, **kwargs):
-    """Indicator: Absolute Price Oscillator
-    
-    Use help(df.ta.apo) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Absolute Price Oscillator (APO)"""
     # Validate Arguments
     close = verify_series(close)
     fast = int(fast) if fast and fast > 0 else 12
@@ -65,8 +60,8 @@ def apo(close:pd.Series, fast=None, slow=None, offset=None, **kwargs):
     offset = get_offset(offset)
 
     # Calculate Result
-    fastma = close.rolling(fast, min_periods=min_periods).mean()
-    slowma = close.rolling(slow, min_periods=min_periods).mean()
+    fastma = close.ewm(span=fast, min_periods=min_periods).mean()
+    slowma = close.ewm(span=slow, min_periods=min_periods).mean()
     apo = fastma - slowma
 
     # Handle fills
@@ -83,11 +78,7 @@ def apo(close:pd.Series, fast=None, slow=None, offset=None, **kwargs):
 
 
 def bop(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, offset=None, **kwargs):
-    """Indicator: Balance of Power
-    
-    Use help(df.ta.bop) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Balance of Power (BOP)"""
     # Validate Arguments
     open_ = verify_series(open_)
     high = verify_series(high)
@@ -117,11 +108,7 @@ def bop(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, offset=
 
 
 def cci(high:pd.Series, low:pd.Series, close:pd.Series, length=None, c=None, offset=None, **kwargs):
-    """Indicator: Commodity Channel Index
-    
-    Use help(df.ta.cci) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Commodity Channel Index (CCI)"""
     # Validate Arguments
     high = verify_series(high)
     low = verify_series(low)
@@ -159,11 +146,7 @@ def cci(high:pd.Series, low:pd.Series, close:pd.Series, length=None, c=None, off
 
 
 def macd(close:pd.Series, fast=None, slow=None, signal=None, offset=None, **kwargs):
-    """Indicator: Moving Average, Convergence/Divergence (MACD)
-    
-    Use help(df.ta.macd) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Moving Average, Convergence/Divergence (MACD)"""
     # Validate arguments
     close = verify_series(close)
     fast = int(fast) if fast and fast > 0 else 12
@@ -212,53 +195,8 @@ def macd(close:pd.Series, fast=None, slow=None, signal=None, offset=None, **kwar
     return macddf
 
 
-def massi(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwargs):
-    """Indicator: Mass Index
-    
-    Use help(df.ta.massi) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
-    # Validate arguments
-    high = verify_series(high)
-    low = verify_series(low)
-    fast = int(fast) if fast and fast > 0 else 9
-    slow = int(slow) if slow and slow > 0 else 25
-    if slow < fast:
-        fast, slow = slow, fast
-    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else fast
-    offset = get_offset(offset)
-
-    # Calculate Result
-    hl_range = high - low
-    hl_ema1 = ema(close=hl_range, length=fast)
-    hl_ema2 = ema(close=hl_ema1, length=fast)
-
-    mass = hl_ema1 / hl_ema2
-    massi = mass.rolling(slow, min_periods=slow).sum()
-
-    # Offset
-    massi = massi.shift(offset)
-
-    # Handle fills
-    if 'fillna' in kwargs:
-        massi.fillna(kwargs['fillna'], inplace=True)
-    if 'fill_method' in kwargs:
-        massi.fillna(method=kwargs['fill_method'], inplace=True)
-
-    # Name and Categorize it
-    # bop.name = f"BOP_{length}"
-    massi.name = f"MASSI_{fast}_{slow}"
-    massi.category = 'momentum'
-
-    return massi
-
-
 def mfi(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length=None, drift=None, offset=None, **kwargs):
-    """Indicator: Money Flow Index (MFI)
-    
-    Use help(df.ta.mfi) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Money Flow Index (MFI)"""
     # Validate arguments
     high = verify_series(high)
     low = verify_series(low)

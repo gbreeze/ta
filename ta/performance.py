@@ -6,11 +6,7 @@ from .utils import get_offset, verify_series
 
 
 def log_return(close:pd.Series, length=None, cumulative:bool = False, offset:int = None, **kwargs):
-    """Indicator: Log Return
-    
-    Use help(df.ta.log_return) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Log Return"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 1
@@ -33,11 +29,7 @@ def log_return(close:pd.Series, length=None, cumulative:bool = False, offset:int
 
 
 def percent_return(close:pd.Series, length=None, cumulative:bool = False, offset:int = None, **kwargs):
-    """Indicator: Percent Return
-    
-    Use help(df.ta.percent_return) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Percent Return"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 1
@@ -57,3 +49,68 @@ def percent_return(close:pd.Series, length=None, cumulative:bool = False, offset
     pct_return.category = 'performance'
 
     return pct_return
+
+
+
+log_return_docs = \
+"""Log Return
+
+Calculates the logarithmic return of a Series.
+See also: help(df.ta.log_return) for additional **kwargs a valid 'df'.
+
+Sources:
+    https://stackoverflow.com/questions/31287552/logarithmic-returns-in-pandas-dataframe
+
+Calculation:
+    Default Inputs:
+        length=1, cummulative=False
+    LOGRET = log( close.diff(periods=length) )
+    CUMLOGRET = LOGRET.cumsum() if cummulative
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 20
+    cummulative (bool): If True, returns the cummulative returns.  Default: False
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+percent_return_docs = \
+"""Percent Return
+
+Calculates the percent return of a Series.
+See also: help(df.ta.percent_return) for additional **kwargs a valid 'df'.
+
+Sources:
+    https://stackoverflow.com/questions/31287552/logarithmic-returns-in-pandas-dataframe
+
+Calculation:
+    Default Inputs:
+        length=1, cummulative=False
+    PCTRET = close.pct_change(length)
+    CUMPCTRET = PCTRET.cumsum() if cummulative
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 20
+    cummulative (bool): If True, returns the cummulative returns.  Default: False
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+log_return.__doc__ = log_return_docs
+percent_return.__doc__ = percent_return_docs

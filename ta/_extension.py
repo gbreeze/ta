@@ -567,24 +567,6 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def median(self, close=None, length=None, offset:int = None, **kwargs):
-        # Get the correct column.
-        df = self._df
-        if df is None: return
-        else:
-            if isinstance(close, pd.Series):
-                close = close
-            else:
-                close = df[close] if close in df.columns else df.close
-
-        result = median(close=close, length=length, offset=offset, **kwargs)
-
-        self._append(result, **kwargs)
-        
-        return result
- 
-
-
     def midpoint(self, close=None, length=None, offset=None, **kwargs):
         # Get the correct column.
         df = self._df
@@ -907,8 +889,8 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def mcv(self, close=None, volume=None, length=None, offset=None, **kwargs):
-        # Get the correct column(s).
+    def median(self, close=None, length=None, offset:int = None, **kwargs):
+        # Get the correct column.
         df = self._df
         if df is None: return
         else:
@@ -917,13 +899,7 @@ class AnalysisIndicators(BasePandasObject):
             else:
                 close = df[close] if close in df.columns else df.close
 
-            if isinstance(volume, pd.Series):
-                volume = volume
-            else:
-                volume = df[volume] if volume in df.columns else df.volume
-
-        vwap = self.vwap(close=close, volume=volume)
-        result = mcv(vwap=vwap, volume=volume, length=length, offset=offset, **kwargs)
+        result = median(close=close, length=length, offset=offset, **kwargs)
 
         self._append(result, **kwargs)
         
@@ -1646,4 +1622,4 @@ class AnalysisIndicators(BasePandasObject):
 
 ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))
 if True:
-    print(f"[i] Loaded {len(ta_indicators)} TA Indicators:\n{', '.join(ta_indicators)}")
+    print(f"[i] TA Indicators: {len(ta_indicators)}\n{', '.join(ta_indicators)}")

@@ -693,58 +693,6 @@ e6 = ema(e5, n)
 """
 
 
-# Performance Documentation
-log_return_docs = \
-"""
-Log Return with cumulative and offset
-
-Returns the Log Return of a Series.
-
-Args:
-    close (None, pd.Series, optional):
-        If None, uses local df column: 'high'
-    length (None, int, optional):
-        An integer of how periods to compute.  Default is None and one.
-    cumulative (bool):
-        Default: False.  If True, returns the cummulative returns
-    offset (None, int, optional):
-        An integer on how to shift the Series.  Default is None and zero.
-
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-        
-
-Returns:
-    pd.Series: New feature
-"""
-
-percent_return_docs = \
-"""
-Percent Return with Length, Cumulation, Percentage and Offset Attributes
-
-Returns the Percent Change of a Series.
-
-Args:
-    close (None, pd.Series, optional):
-        If None, uses local df column: 'high'
-    length (None, int, optional):
-        An integer of how periods to compute.  Default is None and one.
-    cumulative (bool):
-        Default: False.  If True, returns the cummulative returns
-    offset (None, int, optional):
-        An integer on how to shift the Series.  Default is None and zero.
-
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-        
-
-Returns:
-    pd.Series: New feature
-"""
-
-
 
 # Statistics Documentation
 kurtosis_docs = \
@@ -1004,7 +952,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -1379,13 +1326,9 @@ median.__doc__ = median_docs
 # rpn.__doc__ = rpn_docs
 # t3.__doc__ = t3_docs
 
-# Performance Documentation
-# log_return.__doc__ = log_return_docs
-# percent_return.__doc__ = percent_return_docs
-
 # Statistics Documentation
 # kurtosis.__doc__ = kurtosis_docs
-# mcv.__doc__ = mcv_docs
+median.__doc__ = median_docs
 # quantile.__doc__ = quantile_docs
 # skew.__doc__ = skew_docs
 # stdev.__doc__ = stdev_docs

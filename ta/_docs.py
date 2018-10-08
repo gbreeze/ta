@@ -1187,16 +1187,16 @@ Returns:
 
 
 variance_docs = \
-"""Kurtosis
+"""Variance
 
-Rolling Kurtosis
+Rolling Variance
 
 Sources:
 
 Calculation:
     Default Inputs:
         length=30
-    KURTOSIS = close.rolling(length).kurt()
+    VARIANCE = close.rolling(length).var()
 
 Args:
     close (pd.Series): Series of 'close's
@@ -1728,12 +1728,13 @@ wma.__doc__ = wma_docs
 
 
 # Statistics Documentation
-# kurtosis.__doc__ = kurtosis_docs
+kurtosis.__doc__ = kurtosis_docs
 median.__doc__ = median_docs
-# quantile.__doc__ = quantile_docs
-# skew.__doc__ = skew_docs
-# stdev.__doc__ = stdev_docs
-# variance.__doc__ = variance_docs
+quantile.__doc__ = quantile_docs
+skew.__doc__ = skew_docs
+stdev.__doc__ = stdev_docs
+variance.__doc__ = variance_docs
+zscore.__doc__ = zscore_docs
 
 # Trend Documentation
 # adx.__doc__ = adx_docs

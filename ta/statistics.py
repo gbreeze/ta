@@ -71,11 +71,7 @@ def quantile(close:pd.Series, length=None, q=None, offset=None, **kwargs):
 
 
 def skew(close:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Skew
-    
-    Use help(df.ta.skew) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Skew"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 30
@@ -96,11 +92,7 @@ def skew(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def stdev(close:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Standard Deviation
-    
-    Use help(df.ta.stdev) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Standard Deviation"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 30
@@ -121,11 +113,7 @@ def stdev(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def variance(close:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Variance
-    
-    Use help(df.ta.variance) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Variance"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 1 else 30
@@ -146,11 +134,7 @@ def variance(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def zscore(close:pd.Series, length=None, std=None, offset=None, **kwargs):
-    """Indicator: Z Score
-    
-    Use help(df.ta.zscore) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Z Score"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 1 else 30

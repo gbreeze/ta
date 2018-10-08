@@ -536,72 +536,81 @@ Returns:
 
 # Overlap Documentation
 hl2_docs = \
-"""
-Returns the average of two series.
+"""Average of High-Low (HL2)
+
+Equally weighted Average of two series', namely High and Low.
+
+Sources:
+    https://www.tradingview.com/study-script-reference/#var_hl2
+
+Calculation:
+    HL2 = 0.5 * (high + low)
 
 Args:
-    high: None or a Series or DataFrame, optional
-        If None, uses local df column: 'high'
-    low: None or a Series or DataFrame, optional
-        If None, uses local df column: 'low'
-    append: bool, kwarg, optional
-        If True, appends result to current df
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    offset (int): How many periods to offset the result.  Default: 0
 
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.Series: New feature generated.
 """
+
 
 hlc3_docs = \
-"""
-Returns the average of three series.
+"""Average of High-Low-Close (HLC3)
+
+Equally weighted Average of three series', namely High, Low, Close.
+
+Sources:
+    https://www.tradingview.com/study-script-reference/#var_hlc3
+
+Calculation:
+    HLC3 = (high + low + close) / 3.0
 
 Args:
-    high: None or a Series or DataFrame, optional
-        If None, uses local df column: 'high'
-    low: None or a Series or DataFrame, optional
-        If None, uses local df column: 'low'
-    close: None or a Series or DataFrame, optional
-        If None, uses local df column: 'close'
-    append: bool, kwarg, optional
-        If True, appends result to current df
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    offset (int): How many periods to offset the result.  Default: 0
 
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-        
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.Series: New feature generated.
 """
 
 ohlc4_docs = \
-"""
-Calculates and returns the average of four series.
+"""Average of Open-High-Low-Close (OHLC4)
+
+Equally weighted Average of four series', namely Open, High, Low, Close.
+
+Sources:
+    https://www.tradingview.com/study-script-reference/#var_ohlc4
+
+Calculation:
+    OHLC4 = 0.25 * (open + high + low + close)
 
 Args:
-    open_: None or a Series or DataFrame, optional
-        If None, uses local df column: 'open'
-    high: None or a Series or DataFrame, optional
-        If None, uses local df column: 'high'
-    low: None or a Series or DataFrame, optional
-        If None, uses local df column: 'low'
-    close: None or a Series or DataFrame, optional
-        If None, uses local df column: 'close'
-    append: bool, kwarg, optional
-        If True, appends result to current df
+    open (pd.Series): Series of 'open's
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    offset (int): How many periods to offset the result.  Default: 0
 
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-        
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.Series: New feature generated.
 """
+
 
 median_docs = \
 """

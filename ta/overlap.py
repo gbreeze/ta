@@ -8,11 +8,7 @@ from .utils import get_drift, get_offset, verify_series
 
 
 def hl2(high:pd.Series, low:pd.Series, offset=None, **kwargs):
-    """Indicator: HL2
-    
-    Use help(df.ta.hl2) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: HL2 """
     # Validate Arguments
     high = verify_series(high)
     low = verify_series(low)
@@ -32,11 +28,7 @@ def hl2(high:pd.Series, low:pd.Series, offset=None, **kwargs):
 
 
 def hlc3(high:pd.Series, low:pd.Series, close:pd.Series, offset=None, **kwargs):
-    """Indicator: HLC3
-    
-    Use help(df.ta.hlc3) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: HLC3"""
     # Validate Arguments
     high = verify_series(high)
     low = verify_series(low)
@@ -57,11 +49,7 @@ def hlc3(high:pd.Series, low:pd.Series, close:pd.Series, offset=None, **kwargs):
 
 
 def ohlc4(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, offset=None, **kwargs):
-    """Indicator: OHLC4
-    
-    Use help(df.ta.ohlc4) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: OHLC4"""
     # Validate Arguments
     open_ = verify_series(open_)
     high = verify_series(high)

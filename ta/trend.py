@@ -118,11 +118,7 @@ def aroon(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def decreasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
-    """Indicator: Decreasing
-    
-    Use help(df.ta.decreasing) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Decreasing"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 1

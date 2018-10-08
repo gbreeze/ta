@@ -647,24 +647,32 @@ Returns:
 
 
 decreasing_docs = \
-"""
-Decreasing Trend
+"""Decreasing
 
-Returns if a Series is Decreasing over a certain length.
+Returns True or False if the series is decreasing.  By default, it returns
+True and False as 1 and 0 respectively with kwarg 'asint'.
+
+Sources:
+
+Calculation:
+    decreasing = close.diff(length) < 0
+    if asint:
+        decreasing = decreasing.astype(int)
 
 Args:
-    close(None,pd.Series,pd.DataFrame): optional. If None, uses local df column: 'close'
-    length(int): How many periods long.
-    asint(bool): True.  Returns zeros and ones.
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 1
+    asint (bool): Returns as binary.  Default: True
+    offset (int): How many periods to offset the result.  Default: 0
 
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-        
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.Series: New feature generated.
 """
+
 
 dpo_docs = \
 """
@@ -1060,7 +1068,7 @@ willr.__doc__ = willr_docs
 # Trend Documentation
 adx.__doc__ = adx_docs
 aroon.__doc__ = aroon_docs
-# decreasing.__doc__ = decreasing_docs
+decreasing.__doc__ = decreasing_docs
 # dpo.__doc__ = dpo_docs
 # ichimoku.__doc__ = ichimoku_docs
 # increasing.__doc__ = increasing_docs

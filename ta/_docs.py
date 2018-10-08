@@ -1107,89 +1107,134 @@ Returns:
 
 
 quantile_docs = \
-"""
-quantile
+"""Quantile
 
-Returns the quantile of a Series.
+Rolling Quantile
+
+Sources:
+
+Calculation:
+    Default Inputs:
+        length=30, q=0.5
+    QUANTILE = close.rolling(length).quantile(q)
 
 Args:
-    close (None, pd.Series, optional):
-        If None, uses local df column: 'high'
-    length (None, int, optional):
-        An integer of how periods to compute.  Default is None and one.
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 30
+    q (float): It's period.  Default: 0.5
+    offset (int): How many periods to offset the result.  Default: 0
 
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.Series: New feature generated.
 """
+
 
 skew_docs = \
-"""
-Skew
+"""Kurtosis
 
-Returns the Skew of a Series.
+Rolling Kurtosis
+
+Sources:
+
+Calculation:
+    Default Inputs:
+        length=30
+    KURTOSIS = close.rolling(length).kurt()
 
 Args:
-    close (None, pd.Series, optional):
-        If None, uses local df column: 'high'
-    length (None, int, optional):
-        An integer of how periods to compute.  Default is None and one.
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 30
+    offset (int): How many periods to offset the result.  Default: 0
 
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.Series: New feature generated.
 """
+
 
 stdev_docs = \
-"""
-Standard Deviation
+"""Kurtosis
 
-Returns the Standard Deviations of a Series.
+Rolling Kurtosis
+
+Sources:
+
+Calculation:
+    Default Inputs:
+        length=30
+    KURTOSIS = close.rolling(length).kurt()
 
 Args:
-    close (None, pd.Series, optional):
-        If None, uses local df column: 'high'
-    length (None, int, optional):
-        An integer of how periods to compute.  Default is None and one.
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 30
+    offset (int): How many periods to offset the result.  Default: 0
 
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.Series: New feature generated.
 """
+
 
 variance_docs = \
-"""
-Variance
+"""Kurtosis
 
-Returns the Variances of a Series.
+Rolling Kurtosis
+
+Sources:
+
+Calculation:
+    Default Inputs:
+        length=30
+    KURTOSIS = close.rolling(length).kurt()
 
 Args:
-    close (None, pd.Series, optional):
-        If None, uses local df column: 'high'
-    length (None, int, optional):
-        An integer of how periods to compute.  Default is None and one.
-    cumulative (bool):
-        Default: False.  If True, returns the cummulative returns
-    offset (None, int, optional):
-        An integer on how to shift the Series.  Default is None and zero.
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 30
+    offset (int): How many periods to offset the result.  Default: 0
 
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.Series: New feature generated.
 """
 
+
+zscore_docs = \
+"""Kurtosis
+
+Rolling Kurtosis
+
+Sources:
+
+Calculation:
+    Default Inputs:
+        length=30
+    KURTOSIS = close.rolling(length).kurt()
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 30
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
 
 
 # Trend Documentation

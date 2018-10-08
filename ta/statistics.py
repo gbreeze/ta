@@ -49,11 +49,7 @@ def median(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def quantile(close:pd.Series, length=None, q=None, offset=None, **kwargs):
-    """Indicator: Quantile
-    
-    Use help(df.ta.quantile) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Quantile"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 30

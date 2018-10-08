@@ -210,13 +210,7 @@ def hma(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def rma(close:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: wildeR's Moving Average (RMA)
-    
-    RMA = EMA with alpha = 1 / length
-    
-    Use help(df.ta.rma) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: wildeR's Moving Average (RMA)"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 10

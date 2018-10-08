@@ -1160,16 +1160,17 @@ Returns:
 
 
 stdev_docs = \
-"""Kurtosis
+"""Standard Deviation
 
-Rolling Kurtosis
+Rolling Standard Deviation
 
 Sources:
 
 Calculation:
     Default Inputs:
         length=30
-    KURTOSIS = close.rolling(length).kurt()
+    VAR = Variance
+    STDEV = variance(close, length).apply(np.sqrt)
 
 Args:
     close (pd.Series): Series of 'close's

@@ -379,7 +379,39 @@ Returns:
     pd.DataFrame: fastk, fastd, slowk, slowd columns
 """
 
-# trix_docs = \
+trix_docs = \
+"""Trix (TRIX)
+
+TRIX is a momentum oscillator to identify divergences.
+
+Sources:
+    https://www.tradingview.com/wiki/TRIX
+
+Calculation:
+    Default Inputs:
+        length=18, drift=1
+    EMA = Exponential Moving Average
+    ROC = Rate of Change
+    ema1 = EMA(close, length)
+    ema2 = EMA(ema1, length)
+    ema3 = EMA(ema2, length)
+    TRIX = 100 * ROC(ema3, drift)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 18
+    drift (int): The difference period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
 # tsi_docs = \
 # uo_docs = \
 # willr_docs = \

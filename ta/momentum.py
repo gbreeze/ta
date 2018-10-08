@@ -432,14 +432,10 @@ def stoch(high:pd.Series, low:pd.Series, close:pd.Series, fast_k=None, slow_k=No
 
 
 def trix(close:pd.Series, length=None, drift=None, offset=None, **kwargs):
-    """Indicator: Trix (TRIX)
-
-    Use help(df.ta.trix) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Trix (TRIX)"""
     # Validate Arguments
     close = verify_series(close)
-    length = int(length) if length and length > 0 else 10
+    length = int(length) if length and length > 0 else 18
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     drift = get_drift(drift)
     offset = get_offset(offset)

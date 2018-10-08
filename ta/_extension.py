@@ -606,28 +606,6 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def rpn(self, high=None, low=None, length=None, offset=None, percentage=None, **kwargs):
-        # Get the correct column(s).
-        df = self._df
-        if df is None: return
-        else:
-            if isinstance(high, pd.Series):
-                high = high
-            else:
-                high = df[high] if high in df.columns else df.high
-
-            if isinstance(low, pd.Series):
-                low = low
-            else:
-                low = df[low] if low in df.columns else df.low
-
-        result = rpn(high=high, low=low, length=length, offset=offset, percentage=percentage, **kwargs)
-
-        self._append(result, **kwargs)
-        
-        return result
-
-
     def dema(self, close=None, length:int = None, offset:int = None, **kwargs):
         # Get the correct column.
         df = self._df

@@ -622,7 +622,7 @@ Sources:
 
 Calculation:
     Default Inputs:
-        length=20
+        length=1
     lowest_close  = close.rolling(length).min()
     highest_close = close.rolling(length).max()
 
@@ -643,48 +643,36 @@ Returns:
 
 
 midprice_docs = \
-"""
-Returns the Midprice of a Series of a certain length.
+"""Midprice (MIDPRICE)
+
+William's Percent R is a momentum oscillator similar to the RSI that
+attempts to identify overbought and oversold conditions.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/midprice-midpri/
+
+Calculation:
+    Default Inputs:
+        length=1
+    lowest_low   = low.rolling(length).min()
+    highest_high = high.rolling(length).max()
+
+    MIDPRICE = 0.5 * (highest_high + lowest_low)
 
 Args:
-    close (None, str, pd.Series, optional):
-        pd.Series: A seperate Series not in the current DataFrame.
-        str: Looksup column in DataFrame under 'str' name.
-        None: Default.  Uses current DataFrame column 'close'.
-    length (int): Lookback length. Defaults to 1.
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    length (int): It's period.  Default: 14
+    offset (int): How many periods to offset the result.  Default: 0
 
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-        
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.Series: New feature generated.
 """
 
-rpn_docs = \
-"""
-Range Percentage
-
-Returns the Series of values that are a percentage of the absolute difference of two Series.
-
-Args:
-    high: None or a Series or DataFrame, optional
-        If None, uses local df column: 'high'
-    low: None or a Series or DataFrame, optional
-        If None, uses local df column: 'low'
-    append: bool, kwarg, optional
-        If True, appends result to current df
-
-    **kwargs:
-        withLow (bool, optional): If true, adds low value to result
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-        
-
-Returns:
-    pd.Series: New feature
-"""
 
 t3_docs = \
 """

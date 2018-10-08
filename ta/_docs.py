@@ -1213,20 +1213,25 @@ Returns:
 
 
 zscore_docs = \
-"""Kurtosis
+"""ZScore
 
-Rolling Kurtosis
+Rolling Z Score
 
 Sources:
 
 Calculation:
     Default Inputs:
-        length=30
-    KURTOSIS = close.rolling(length).kurt()
+        length=30, std=1
+    SMA = Simple Moving Average
+    STDEV = Standard Deviation
+    std = std * STDEV(close, length)
+    mean = SMA(close, length)
+    ZSCORE = (close - mean) / std
 
 Args:
     close (pd.Series): Series of 'close's
     length (int): It's period.  Default: 30
+    std (float): It's period.  Default: 1
     offset (int): How many periods to offset the result.  Default: 0
 
 Kwargs:

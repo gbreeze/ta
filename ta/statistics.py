@@ -7,11 +7,7 @@ from .utils import get_offset, verify_series
 
 
 def kurtosis(close:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Kurtosis
-    
-    Use help(df.ta.kurtosis) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Kurtosis"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 30

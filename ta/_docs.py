@@ -1054,23 +1054,28 @@ Returns:
 
 # Statistics Documentation
 kurtosis_docs = \
-"""
-Kurtosis
+"""Kurtosis
 
-Returns the Kurtosis of a Series.
+Rolling Kurtosis
+
+Sources:
+
+Calculation:
+    Default Inputs:
+        length=30
+    KURTOSIS = close.rolling(length).kurt()
 
 Args:
-    close (None, pd.Series, optional):
-        If None, uses local df column: 'high'
-    length (None, int, optional):
-        An integer of how periods to compute.  Default is None and one.
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 30
+    offset (int): How many periods to offset the result.  Default: 0
 
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.Series: New feature generated.
 """
 
 
@@ -1080,7 +1085,7 @@ median_docs = \
 Rolling Median of over 'n' periods.  Sibling of a Simple Moving Average.
 
 Sources:
-    http://www.onlinetradingconcepts.com/TechnicalAnalysis/Momentum.html
+    https://www.incrediblecharts.com/indicators/median_price.php
 
 Calculation:
     Default Inputs:

@@ -515,7 +515,7 @@ Calculation:
     lowest_low   = low.rolling(length).min()
     highest_high = high.rolling(length).max()
 
-    WILLR = 100 ((close - lowest_low) / (highest_high - lowest_low) - 1)
+    WILLR = 100 * ((close - lowest_low) / (highest_high - lowest_low) - 1)
 
 Args:
     high (pd.Series): Series of 'high's
@@ -612,24 +612,35 @@ Returns:
 """
 
 
-midpoint_docs = """
-Returns the Midpoint of a Series of a certain length.
+midpoint_docs = \
+"""Midpoint (MIDPOINT)
+
+The Midpoint is the average of the highest and lowest closes over a period.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/midpoint-midpnt/
+
+Calculation:
+    Default Inputs:
+        length=20
+    lowest_close  = close.rolling(length).min()
+    highest_close = close.rolling(length).max()
+
+    MIDPOINT = 0.5 * (highest_close + lowest_close)
 
 Args:
-    close (None, str, pd.Series, optional):
-        pd.Series: A seperate Series not in the current DataFrame.
-        str: Looksup column in DataFrame under 'str' name.
-        None: Default.  Uses current DataFrame column 'close'.
-    length (int): Lookback length. Defaults to 1.
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 14
+    offset (int): How many periods to offset the result.  Default: 0
 
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-        
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.Series: New feature generated.
 """
+
 
 midprice_docs = \
 """
@@ -1321,7 +1332,7 @@ hl2.__doc__ = hl2_docs
 hlc3.__doc__ = hlc3_docs
 ohlc4.__doc__ = ohlc4_docs
 median.__doc__ = median_docs
-# midpoint.__doc__ = midpoint_docs
+midpoint.__doc__ = midpoint_docs
 # midprice.__doc__ = midprice_docs
 # rpn.__doc__ = rpn_docs
 # t3.__doc__ = t3_docs

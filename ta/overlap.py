@@ -71,11 +71,7 @@ def ohlc4(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, offse
 
 
 def midpoint(close:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Midpoint
-    
-    Use help(df.ta.midpoint) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Midpoint"""
     # Validate arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 1

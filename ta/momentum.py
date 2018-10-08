@@ -457,11 +457,7 @@ def trix(close:pd.Series, length=None, drift=None, offset=None, **kwargs):
 
 
 def tsi(close:pd.Series, fast=None, slow=None, drift=None, offset=None, **kwargs):
-    """Indicator: True Strength Index (TSI)
-    
-    Use help(df.ta.tsi) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: True Strength Index (TSI)"""
     # Validate Arguments
     close = verify_series(close)
     fast = int(fast) if fast and fast > 0 else 13

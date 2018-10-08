@@ -153,11 +153,7 @@ def dema(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def ema(close:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Exponential Moving Average (EMA)
-    
-    Use help(df.ta.ema) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Exponential Moving Average (EMA)"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 10

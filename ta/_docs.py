@@ -673,6 +673,7 @@ Returns:
     pd.Series: New feature generated.
 """
 
+
 dema_docs = \
 """Double Exponential Moving Average (DEMA)
 
@@ -697,6 +698,46 @@ Args:
     offset (int): How many periods to offset the result.  Default: 0
 
 Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+ema_docs = \
+"""Exponential Moving Average (DEMA)
+
+The Exponential Moving Average is more responsive moving average compared to the
+Simple Moving Average (SMA).  The weights are determined by alpha which is
+proportional to it's length.  There are several different methods of calculating
+EMA.  One method uses just the standard definition of EMA and another uses the
+SMA to generate the initial value for the rest of the calculation.
+
+Sources:
+    https://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:moving_averages
+    https://www.investopedia.com/ask/answers/122314/what-exponential-moving-average-ema-formula-and-how-ema-calculated.asp
+
+Calculation:
+    Default Inputs:
+        length=1
+    SMA = Simple Moving Average
+    If 'presma':
+        initial = SMA(close, length)
+        rest = close[length:]
+        close = initial + rest
+    
+    EMA = close.ewm(span=length, adjust=adjust).mean()
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 14
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    adjust (bool): Default: True
+    presma (bool, optional): If True, uses SMA for initial value.
     fillna (value, optional): pd.DataFrame.fillna(value)
     fill_method (value, optional): Type of fill method
 
@@ -1354,7 +1395,7 @@ median.__doc__ = median_docs
 midpoint.__doc__ = midpoint_docs
 midprice.__doc__ = midprice_docs
 dema.__doc__ = dema_docs
-# ema.__doc__ = ema_docs
+ema.__doc__ = ema_docs
 # t3.__doc__ = t3_docs
 
 # Statistics Documentation

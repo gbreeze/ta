@@ -662,7 +662,7 @@ Calculation:
 Args:
     high (pd.Series): Series of 'high's
     low (pd.Series): Series of 'low's
-    length (int): It's period.  Default: 14
+    length (int): It's period.  Default: 1
     offset (int): How many periods to offset the result.  Default: 0
 
 Kwargs:
@@ -685,7 +685,7 @@ Sources:
 
 Calculation:
     Default Inputs:
-        length=1
+        length=10
     EMA = Exponential Moving Average
     ema1 = EMA(close, length)
     ema2 = EMA(ema1, length)
@@ -694,7 +694,7 @@ Calculation:
 
 Args:
     close (pd.Series): Series of 'close's
-    length (int): It's period.  Default: 14
+    length (int): It's period.  Default: 10
     offset (int): How many periods to offset the result.  Default: 0
 
 Kwargs:
@@ -721,7 +721,7 @@ Sources:
 
 Calculation:
     Default Inputs:
-        length=1
+        length=10
     SMA = Simple Moving Average
     If 'presma':
         initial = SMA(close, length)
@@ -732,7 +732,7 @@ Calculation:
 
 Args:
     close (pd.Series): Series of 'close's
-    length (int): It's period.  Default: 14
+    length (int): It's period.  Default: 10
     offset (int): How many periods to offset the result.  Default: 0
 
 Kwargs:
@@ -744,6 +744,40 @@ Kwargs:
 Returns:
     pd.Series: New feature generated.
 """
+
+
+hma_docs = \
+"""Hull Moving Average (HMA)
+
+The Hull Exponential Moving Average attempts to .
+
+Sources:
+    https://alanhull.com/hull-moving-average
+
+Calculation:
+    Default Inputs:
+        length=10
+    WMA = Weighted Moving Average
+    half_length = int(0.5 * length)
+    sqrt_length = int(math.sqrt(length))
+
+    wmaf = WMA(close, half_length)
+    wmas = WMA(close, length)
+    HMA = WMA(2 * wmaf - wmas, sqrt_length)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 10
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
 
 
 t3_docs = \
@@ -1396,6 +1430,7 @@ midpoint.__doc__ = midpoint_docs
 midprice.__doc__ = midprice_docs
 dema.__doc__ = dema_docs
 ema.__doc__ = ema_docs
+hma.__doc__ = hma_docs
 # t3.__doc__ = t3_docs
 
 # Statistics Documentation

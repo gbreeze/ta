@@ -253,11 +253,7 @@ def sma(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def t3(close:pd.Series, length=None, a=None, offset=None, **kwargs):
-    """Indicator: T3
-    
-    Use help(df.ta.t3) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: T3"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 10
@@ -271,12 +267,12 @@ def t3(close:pd.Series, length=None, a=None, offset=None, **kwargs):
     c3 = -6 * a ** 2 - 3 * a - 3 * a ** 3
     c4 = a ** 3 + 3 * a ** 2 + 3 * a + 1
 
-    e1 = ema(close=close, length=length, min_periods=min_periods)
-    e2 = ema(close=e1, length=length, min_periods=min_periods)
-    e3 = ema(close=e2, length=length, min_periods=min_periods)
-    e4 = ema(close=e3, length=length, min_periods=min_periods)
-    e5 = ema(close=e4, length=length, min_periods=min_periods)
-    e6 = ema(close=e5, length=length, min_periods=min_periods)
+    e1 = ema(close=close, length=length, min_periods=min_periods, **kwargs)
+    e2 = ema(close=e1, length=length, min_periods=min_periods, **kwargs)
+    e3 = ema(close=e2, length=length, min_periods=min_periods, **kwargs)
+    e4 = ema(close=e3, length=length, min_periods=min_periods, **kwargs)
+    e5 = ema(close=e4, length=length, min_periods=min_periods, **kwargs)
+    e6 = ema(close=e5, length=length, min_periods=min_periods, **kwargs)
     t3 = c1 * e6 + c2 * e5 + c3 * e4 + c4 * e3
 
     # Offset

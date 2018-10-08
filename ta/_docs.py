@@ -14,7 +14,7 @@ from .volume import *
 ao_docs = \
 """Awesome Oscillator (AO)
 
-The Awesome Oscillator is an indicator used to measure a security's momentum. 
+The Awesome Oscillator is an indicator used to measure a security's momentum.
 AO is generally used to affirm trends or to anticipate possible reversals.
 
 Sources:
@@ -216,7 +216,7 @@ mom_docs = \
 """Momentum (MOM)
 
 Momentum is an indicator used to measure a security's speed (or strength) of
-movement.  Or simply the change in price. 
+movement.  Or simply the change in price.
 
 Sources:
     http://www.onlinetradingconcepts.com/TechnicalAnalysis/Momentum.html
@@ -585,6 +585,7 @@ Returns:
     pd.Series: New feature generated.
 """
 
+
 ohlc4_docs = \
 """Average of Open-High-Low-Close (OHLC4)
 
@@ -727,7 +728,7 @@ Calculation:
         initial = SMA(close, length)
         rest = close[length:]
         close = initial + rest
-    
+
     EMA = close.ewm(span=length, adjust=adjust).mean()
 
 Args:
@@ -795,7 +796,7 @@ Calculation:
     EMA = Exponential Moving Average
     alpha = 1 / length
     RMA = EMA(close, alpha=alpha)
- 
+
 Args:
     close (pd.Series): Series of 'close's
     length (int): It's period.  Default: 10
@@ -821,7 +822,7 @@ Sources:
 
 Calculation:
     Default Inputs:
-        length=10    
+        length=10
     SMA = SUM(close, length) / length
 
 Args:
@@ -841,22 +842,45 @@ Returns:
 
 
 t3_docs = \
-"""
-T3 = c1 * e6 + c2 * e5 + c3 * e4 + c4 * e3
-a = 0.7, 0.618 or 0 <= a < 1
-c1 = -a^3
-c2 = 3a^2 + 3a^3 = 3a^2 * (1 + a)
-c3 = -6a^2 - 3a - 3a^3
-c4 = a^3 + 3a^2 + 3a + 1
+"""Tim Tillson's T3 Moving Average (T3)
 
-e1 = ema(ts, n)
-e2 = ema(e1, n)
-e3 = ema(e2, n)
-e4 = ema(e3, n)
-e5 = ema(e4, n)
-e6 = ema(e5, n)
-"""
+Tim Tillson's T3 Moving Average is considered a smoother and more responsive
+moving average relative to other moving averages.
 
+Sources:
+    http://www.binarytribune.com/forex-trading-indicators/t3-moving-average-indicator/
+
+Calculation:
+    Default Inputs:
+        length=10, a=0.7
+    c1 = -a^3
+    c2 = 3a^2 + 3a^3 = 3a^2 * (1 + a)
+    c3 = -6a^2 - 3a - 3a^3
+    c4 = a^3 + 3a^2 + 3a + 1
+
+    ema1 = EMA(close, length)
+    ema2 = EMA(ema1, length)
+    ema3 = EMA(ema2, length)
+    ema4 = EMA(ema3, length)
+    ema5 = EMA(ema4, length)
+    ema6 = EMA(ema5, length)
+    T3 = c1 * ema6 + c2 * ema5 + c3 * ema4 + c4 * ema3
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 10
+    a (float): 0 < a < 1.  Default: 0.7
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    adjust (bool): Default: True
+    presma (bool, optional): If True, uses SMA for initial value.
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
 
 
 # Statistics Documentation
@@ -875,7 +899,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -924,7 +947,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -945,7 +967,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -966,7 +987,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -991,7 +1011,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -1004,7 +1023,7 @@ adx_docs = \
 """
 DMI ADX TREND 2.0 by @TraderR0BERT, NETWORTHIE.COM
     //Created by @TraderR0BERT, NETWORTHIE.COM, last updated 01/26/2016
-    //DMI Indicator 
+    //DMI Indicator
     //Resolution input option for higher/lower time frames
 
     study(title="DMI ADX TREND 2.0", shorttitle="ADX TREND 2.0")
@@ -1023,8 +1042,8 @@ DMI ADX TREND 2.0 by @TraderR0BERT, NETWORTHIE.COM
         plus = fixnan(100 * rma(up > down and up > 0 ? up : 0, len) / truerange)
         minus = fixnan(100 * rma(down > up and down > 0 ? down : 0, len) / truerange)
         [plus, minus]
-        
-    adx(dilen, adxlen) => 
+
+    adx(dilen, adxlen) =>
         [plus, minus] = dirmov(dilen)
         sum = plus + minus
         adx = 100 * rma(abs(plus - minus) / (sum == 0 ? 1 : sum), adxlen)
@@ -1035,7 +1054,7 @@ DMI ADX TREND 2.0 by @TraderR0BERT, NETWORTHIE.COM
     osob=input(40,title="Exhaustion Level for ADX, default = 40")
 
 
-    col = sig >= sig[1] ? green : sig <= sig[1] ? red : gray 
+    col = sig >= sig[1] ? green : sig <= sig[1] ? red : gray
 
     //Plot Definitions Current Timeframe
     p1 = plot(sig, color=col, linewidth = 3, title="ADX")
@@ -1095,7 +1114,6 @@ Args:
 **kwargs:
     fillna (value, optional): pd.DataFrame.fillna(value)
     fill_method (value, optional): Type of fill method
-    
 
 Returns:
     pd.Series: New feature
@@ -1142,7 +1160,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -1165,7 +1182,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -1188,7 +1204,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -1211,7 +1226,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -1269,7 +1283,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -1297,7 +1310,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -1320,7 +1332,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -1343,7 +1354,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -1366,7 +1376,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -1389,7 +1398,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -1412,7 +1420,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -1435,7 +1442,6 @@ Args:
     **kwargs:
         fillna (value, optional): pd.DataFrame.fillna(value)
         fill_method (value, optional): Type of fill method
-        
 
 Returns:
     pd.Series: New feature
@@ -1494,6 +1500,7 @@ hma.__doc__ = hma_docs
 rma.__doc__ = rma_docs
 sma.__doc__ = sma_docs
 t3.__doc__ = t3_docs
+tema.__doc__ = tema_docs
 
 # Statistics Documentation
 # kurtosis.__doc__ = kurtosis_docs

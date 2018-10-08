@@ -341,11 +341,7 @@ def roc(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def rsi(close:pd.Series, length=None, drift=None, offset=None, **kwargs):
-    """Indicator: Relative Strength Index (RSI)
-    
-    Use help(df.ta.rsi) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Relative Strength Index (RSI)"""
     # Validate arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 14
@@ -381,11 +377,7 @@ def rsi(close:pd.Series, length=None, drift=None, offset=None, **kwargs):
 
 
 def stoch(high:pd.Series, low:pd.Series, close:pd.Series, fast_k=None, slow_k=None, slow_d=None, offset=None, **kwargs):
-    """Indicator: Stochastics
-    
-    Use help(df.ta.stoch) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Stochastic"""
     # Validate arguments
     high = verify_series(high)
     low = verify_series(low)

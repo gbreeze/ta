@@ -19,7 +19,7 @@ AO is generally used to affirm trends or to anticipate possible reversals.
 
 Calculation:
     Default Inputs:
-        fast: 5, slow: 34
+        fast=5, slow=34
     SMA = Simple Moving Average
     median = (high + low) / 2
     AO = SMA(median, fast) - SMA(median, slow)
@@ -51,9 +51,12 @@ The Absolute Price Oscillator is an indicator used to measure a security's
 momentum.  It is simply the difference of two Exponential Moving Averages
 (EMA) of two different periods.  Note: APO and MACD lines are equivalent.
 
+Sources:
+
+
 Calculation:
     Default Inputs:
-        fast: 12, slow: 26
+        fast=12, slow=26
     EMA = Exponential Moving Average
     APO = EMA(close, fast) - EMA(close, slow)
 
@@ -109,6 +112,8 @@ Sources:
     https://www.tradingview.com/wiki/Commodity_Channel_Index_(CCI)
 
 Calculation:
+    Default Inputs:
+        length=20, c=0.015
     SMA = Simple Moving Average
     MAD = Mean Absolute Deviation
     tp = typical_price = hlc3 = (high + low + close) / 3
@@ -143,7 +148,7 @@ the difference of MACD and Signal.
 
 Calculation:
     Default Inputs:
-        fast: 12, slow: 26, signal: 9
+        fast=12, slow=26, signal=9
     EMA = Exponential Moving Average
     MACD = EMA(close, fast) - EMA(close, slow)
     Signal = EMA(MACD, signal)
@@ -178,6 +183,8 @@ Sources:
     https://www.tradingview.com/wiki/Money_Flow_(MFI)
 
 Calculation:
+    Default Inputs:
+        length=14, drift=1
     tp = typical_price = hlc3 = (high + low + close) / 3
     rmf = raw_money_flow = tp * volume
 
@@ -211,9 +218,12 @@ mom_docs = \
 Momentum is an indicator used to measure a security's speed (or strength) of
 movement.  Or simply the change in price. 
 
+Sources:
+
+
 Calculation:
     Default Inputs:
-        length: 1
+        length=1
     MOM = close.diff(length)
 
 Args:
@@ -237,7 +247,7 @@ The Percentage Price Oscillator is similar to MACD in measuring momentum.
 
 Calculation:
     Default Inputs:
-        fast: 12, slow: 26
+        fast=12, slow=26
     SMA = Simple Moving Average
     EMA = Exponential Moving Average
     fast_sma = SMA(close, fast)
@@ -272,9 +282,12 @@ Rate of Change is an indicator is also referred to as Momentum (yeah, confusingl
 It is a pure momentum oscillator that measures the percent change in price with the
 previous price 'n' (or length) periods ago.
 
+Sources:
+
+
 Calculation:
     Default Inputs:
-        length: 1
+        length=1
     MOM = Momentum
     ROC = 100 * MOM(close, length) / close.shift(length)
 
@@ -293,9 +306,44 @@ Returns:
 
 
 rsi_docs = \
+"""Relative Strength Index (RSI)
+
+The Relative Strength Index is popular momentum oscillator used to measure the
+velocity as well as the magnitude of directional price movements.
+
+Sources:
+    https://www.tradingview.com/wiki/Relative_Strength_Index_(RSI)
+
+Calculation:
+    Default Inputs:
+        length=14, drift=1
+    ABS = Absolute Value
+    EMA = Exponential Moving Average
+    positive = close if close.diff(drift) > 0 else 0
+    negative = close if close.diff(drift) < 0 else 0
+    pos_avg = EMA(positive, length)
+    neg_avg = ABS(EMA(negative, length))
+    RSI = 100 * pos_avg / (pos_avg + neg_avg)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 1
+    drift (int): The difference period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
 """
-Relative Strength Index
-"""
+
+# stoch_docs
+# trix_docs
+# tsi_docs
+# uo_docs
+# willr_docs
 
 
 
@@ -1143,7 +1191,7 @@ mfi.__doc__ = mfi_docs
 mom.__doc__ = mom_docs
 ppo.__doc__ = ppo_docs
 roc.__doc__ = roc_docs
-# rsi.__doc__ = rsi_docs
+rsi.__doc__ = rsi_docs
 # stoch.__doc__ = stoch_docs
 # trix.__doc__ = trix_docs
 # tsi.__doc__ = tsi_docs

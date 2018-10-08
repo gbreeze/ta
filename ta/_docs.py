@@ -612,31 +612,6 @@ Returns:
 """
 
 
-median_docs = \
-"""
-Median Price
-
-Returns the Median of a Series.
-
-Args:
-    close (None, pd.Series, optional):
-        If None, uses local df column: 'high'
-    length (None, int, optional):
-        An integer of how periods to compute.  Default is None and one.
-    cumulative (bool):
-        Default: False.  If True, returns the cummulative returns
-    offset (None, int, optional):
-        An integer on how to shift the Series.  Default is None and zero.
-
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-        
-
-Returns:
-    pd.Series: New feature
-"""
-
 midpoint_docs = """
 Returns the Midpoint of a Series of a certain length.
 
@@ -793,34 +768,33 @@ Returns:
     pd.Series: New feature
 """
 
-mcv_docs = """
-Moving Covariance by Rashad (Not visually near it's TradingView Chart)
 
-    Source:
-    //Moving Covariance by Rashad. Trading View.
-    study(title="Moving Covariance", shorttitle="MCV", overlay=false)
-    src = vwap, len = input(30, minval=1, title="Length")
-    mean = vwma(src, len)
-    stdev = stdev(src, len)
-    covariance = (stdev/mean)*100
-    plot(covariance, title = "moving covairance", style=line, linewidth = 2, color = red)
+median_docs = \
+"""Median
+
+Rolling Median of over 'n' periods.  Sibling of a Simple Moving Average.
+
+Sources:
+    http://www.onlinetradingconcepts.com/TechnicalAnalysis/Momentum.html
+
+Calculation:
+    Default Inputs:
+        length=1
+    MEDIAN = close.rolling(length).median()
 
 Args:
-    close (None, pd.Series, optional):
-        If None, uses local df column: 'close'
-    volume (None, pd.Series, optional):
-        If None, uses local df column: 'volume'
-    length (None, int, optional):
-        An integer of how periods to compute.  Default is None and one.
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 30
+    offset (int): How many periods to offset the result.  Default: 0
 
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-        
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.Series: New feature generated.
 """
+
 
 quantile_docs = \
 """
@@ -1396,10 +1370,10 @@ willr.__doc__ = willr_docs
 
 
 # Overlap Documentation
-# hl2.__doc__ = hl2_docs
-# hlc3.__doc__ = hlc3_docs
-# ohlc4.__doc__ = ohlc4_docs
-# median.__doc__ = median_docs
+hl2.__doc__ = hl2_docs
+hlc3.__doc__ = hlc3_docs
+ohlc4.__doc__ = ohlc4_docs
+median.__doc__ = median_docs
 # midpoint.__doc__ = midpoint_docs
 # midprice.__doc__ = midprice_docs
 # rpn.__doc__ = rpn_docs

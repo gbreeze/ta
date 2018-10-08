@@ -31,31 +31,25 @@ def kurtosis(close:pd.Series, length=None, offset=None, **kwargs):
     return kurtosis
 
 
-def mcv(vwap:pd.Series, volume:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Moving Covariance
-    
-    Use help(df.ta.mcv) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+def median(close:pd.Series, length=None, offset=None, **kwargs):
+    """Indicator: Median"""
     # Validate Arguments
-    vwap = verify_series(vwap)
-    volume = verify_series(volume)
+    close = verify_series(close)
     length = int(length) if length and length > 0 else 30
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     offset = get_offset(offset)
 
     # Calculate Result
-    mean = vwma(close=vwap, volume=volume, length=length)
-    std = stdev(close=vwap, length=length)
-    mcv = 100 * std / mean
+    median = close.rolling(length, min_periods=min_periods).median()
 
     # Offset
-    mcv = mcv.shift(offset)
+    median = median.shift(offset)
 
     # Name & Category
-    mcv.name = f"MCV_{length}"
-    mcv.category = 'statistics'
+    median.name = f"MEDIAN_{length}"
+    median.category = 'statistics'
 
-    return mcv
+    return median
 
 
 def quantile(close:pd.Series, length=None, q=None, offset=None, **kwargs):

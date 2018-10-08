@@ -355,11 +355,7 @@ def vwap(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, offse
 
 
 def vwma(close:pd.Series, volume:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Volume Weighted Moving Average (VWMA)
-    
-    Use help(df.ta.vwma) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Volume Weighted Moving Average (VWMA)"""
     # Validate Arguments
     close = verify_series(close)
     volume = verify_series(volume)

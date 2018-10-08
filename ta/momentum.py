@@ -495,11 +495,7 @@ def tsi(close:pd.Series, fast=None, slow=None, drift=None, offset=None, **kwargs
 
 
 def uo(high:pd.Series, low:pd.Series, close:pd.Series, fast=None, medium=None, slow=None, fast_w=None, medium_w=None, slow_w=None, drift=None, offset=None, **kwargs):
-    """Indicator: Ultimate Oscillator (UO)
-    
-    Use help(df.ta.uo) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Ultimate Oscillator (UO)"""
     # Validate arguments
     high = verify_series(high)
     low = verify_series(low)
@@ -548,11 +544,7 @@ def uo(high:pd.Series, low:pd.Series, close:pd.Series, fast=None, medium=None, s
 
 
 def willr(high=None, low=None, close=None, length=None, offset=None, **kwargs):
-    """Indicator: William's Percent R (WILLR)
-    
-    Use help(df.ta.willr) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: William's Percent R (WILLR)"""
     # Validate arguments
     high = verify_series(high)
     low = verify_series(low)

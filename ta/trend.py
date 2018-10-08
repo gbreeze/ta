@@ -177,11 +177,7 @@ def dpo(close:pd.Series, length=None, centered=True, offset=None, **kwargs):
 
 
 def ichimoku(high:pd.Series, low:pd.Series, close:pd.Series, tenkan=None, kijun=None, senkou=None, offset=None, **kwargs):
-    """Indicator: Ichimoku Kinkō Hyō (Ichimoku)
-
-    Use help(df.ta.ichimoku) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Ichimoku Kinkō Hyō (Ichimoku)"""
     high = verify_series(high)
     low = verify_series(low)
     close = verify_series(close)

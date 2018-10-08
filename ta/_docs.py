@@ -708,6 +708,49 @@ Returns:
 """
 
 
+ichimoku_docs = \
+"""Ichimoku Kinkō Hyō (ichimoku)
+
+Developed Pre WWII as a forecasting model for financial markets.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/ichimoku-ich/
+
+Calculation:
+    Default Inputs:
+        tenkan=9, kijun=26, senkou=52
+    MIDPRICE = Midprice
+    TENKAN_SEN = MIDPRICE(high, low, close, length=tenkan)
+    KIJUN_SEN = MIDPRICE(high, low, close, length=kijun)
+    CHIKOU_SPAN = close.shift(-kijun)
+
+    SPAN_A = 0.5 * (TENKAN_SEN + KIJUN_SEN)
+    SPAN_A = SPAN_A.shift(kijun)
+
+    SPAN_B = MIDPRICE(high, low, close, length=senkou)
+    SPAN_B = SPAN_B.shift(kijun)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    tenkan (int): Tenkan period.  Default: 9
+    kijun (int): Kijun period.  Default: 26
+    senkou (int): Senkou period.  Default: 52
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.DataFrame: Two DataFrames.
+        For the visible period: spanA, spanB, tenkan_sen, kijun_sen,
+            and chikou_span columns
+        For the forward looking period: spanA and spanB columns
+"""
+
+
 increasing_docs = \
 """Increasing
 
@@ -1087,7 +1130,7 @@ adx.__doc__ = adx_docs
 aroon.__doc__ = aroon_docs
 decreasing.__doc__ = decreasing_docs
 dpo.__doc__ = dpo_docs
-# ichimoku.__doc__ = ichimoku_docs
+ichimoku.__doc__ = ichimoku_docs
 increasing.__doc__ = increasing_docs
 # kst.__doc__ = kst_docs
 # vortex.__doc__ = vortex_docs

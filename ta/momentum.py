@@ -377,7 +377,7 @@ def rsi(close:pd.Series, length=None, drift=None, offset=None, **kwargs):
 
 
 def stoch(high:pd.Series, low:pd.Series, close:pd.Series, fast_k=None, slow_k=None, slow_d=None, offset=None, **kwargs):
-    """Indicator: Stochastic"""
+    """Indicator: Stochastic Oscillator (STOCH)"""
     # Validate arguments
     high = verify_series(high)
     low = verify_series(low)

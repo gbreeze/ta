@@ -17,16 +17,16 @@ ao_docs = \
 The Awesome Oscillator is an indicator used to measure a security's momentum. 
 AO is generally used to affirm trends or to anticipate possible reversals.
 
+Sources:
+    https://www.tradingview.com/wiki/Awesome_Oscillator_(AO)
+    https://www.ifcm.co.uk/ntx-indicators/awesome-oscillator
+
 Calculation:
     Default Inputs:
         fast=5, slow=34
     SMA = Simple Moving Average
     median = (high + low) / 2
     AO = SMA(median, fast) - SMA(median, slow)
-
-Sources:
-    https://www.tradingview.com/wiki/Awesome_Oscillator_(AO)
-    https://www.ifcm.co.uk/ntx-indicators/awesome-oscillator
 
 Args:
     high (pd.Series): Series of 'high's
@@ -52,7 +52,7 @@ momentum.  It is simply the difference of two Exponential Moving Averages
 (EMA) of two different periods.  Note: APO and MACD lines are equivalent.
 
 Sources:
-
+    https://www.investopedia.com/terms/p/ppo.asp
 
 Calculation:
     Default Inputs:
@@ -80,11 +80,11 @@ bop_docs = \
 
 Balance of Power measure the market strength of buyers against sellers.
 
-Calculation:
-    BOP = (close - open) / (high - low)
-
 Sources:
     http://www.worden.com/TeleChartHelp/Content/Indicators/Balance_of_Power.htm
+
+Calculation:
+    BOP = (close - open) / (high - low)
 
 Args:
     open (pd.Series): Series of 'open's
@@ -146,6 +146,9 @@ While APO and MACD are the same calculation, MACD also returns two more series
 called Signal and Histogram.  The Signal is an EMA of MACD and the Histogram is
 the difference of MACD and Signal.
 
+Sources:
+    https://www.tradingview.com/wiki/MACD_(Moving_Average_Convergence/Divergence)
+
 Calculation:
     Default Inputs:
         fast=12, slow=26, signal=9
@@ -153,9 +156,6 @@ Calculation:
     MACD = EMA(close, fast) - EMA(close, slow)
     Signal = EMA(MACD, signal)
     Histogram = MACD - Signal
-
-Sources:
-    https://www.tradingview.com/wiki/MACD_(Moving_Average_Convergence/Divergence)
 
 Args:
     close(pandas.Series): Series of 'close's
@@ -169,7 +169,7 @@ Kwargs:
     fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.DataFrame: macd, histogram, signal columns
+    pd.DataFrame: macd, histogram, signal columns.
 """
 
 
@@ -219,7 +219,7 @@ Momentum is an indicator used to measure a security's speed (or strength) of
 movement.  Or simply the change in price. 
 
 Sources:
-
+    http://www.onlinetradingconcepts.com/TechnicalAnalysis/Momentum.html
 
 Calculation:
     Default Inputs:
@@ -245,6 +245,9 @@ ppo_docs = \
 
 The Percentage Price Oscillator is similar to MACD in measuring momentum.
 
+Sources:
+    https://www.tradingview.com/wiki/MACD_(Moving_Average_Convergence/Divergence)
+
 Calculation:
     Default Inputs:
         fast=12, slow=26
@@ -255,9 +258,6 @@ Calculation:
     PPO = 100 * (fast_sma - slow_sma) / slow_sma
     Signal = EMA(PPO, signal)
     Histogram = PPO - Signal
-
-Sources:
-    https://www.tradingview.com/wiki/MACD_(Moving_Average_Convergence/Divergence)
 
 Args:
     close(pandas.Series): Series of 'close's
@@ -283,7 +283,7 @@ It is a pure momentum oscillator that measures the percent change in price with 
 previous price 'n' (or length) periods ago.
 
 Sources:
-
+    https://www.tradingview.com/wiki/Rate_of_Change_(ROC)
 
 Calculation:
     Default Inputs:
@@ -339,11 +339,50 @@ Returns:
     pd.Series: New feature generated.
 """
 
-# stoch_docs
-# trix_docs
-# tsi_docs
-# uo_docs
-# willr_docs
+
+stoch_docs = \
+"""Stochastic (STOCH)
+
+Stochastic Oscillator is a range bound momentum indicator.  It displays the location
+of the close relative to the high-low range over a period.
+
+Sources:
+    https://www.tradingview.com/wiki/Stochastic_(STOCH)
+
+Calculation:
+    Default Inputs:
+        fast_k=14, slow_k=5, slow_d=3
+    SMA = Simple Moving Average
+    lowest_low   = low for last fast_k periods
+    highest_high = high for last fast_k periods
+
+    FASTK = 100 * (close - lowest_low) / (highest_high - lowest_low)
+    FASTD = SMA(FASTK, slow_d)
+
+    SLOWK = SMA(FASTK, slow_k)
+    SLOWD = SMA(SLOWK, slow_d)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    fast_k (int): The Fast %K period.  Default: 14
+    slow_k (int): The Slow %K period.  Default: 5
+    slow_d (int): The Slow %D period.  Default: 3
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.DataFrame: fastk, fastd, slowk, slowd columns
+"""
+
+# trix_docs = \
+# tsi_docs = \
+# uo_docs = \
+# willr_docs = \
 
 
 
@@ -1192,7 +1231,7 @@ mom.__doc__ = mom_docs
 ppo.__doc__ = ppo_docs
 roc.__doc__ = roc_docs
 rsi.__doc__ = rsi_docs
-# stoch.__doc__ = stoch_docs
+stoch.__doc__ = stoch_docs
 # trix.__doc__ = trix_docs
 # tsi.__doc__ = tsi_docs
 # uo.__doc__ = uo_docs

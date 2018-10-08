@@ -16,7 +16,7 @@ from .overlap import hl2, ema
 
 def ad(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, signed=True, offset=None, **kwargs):
     """Indicator: Accumulation/Distribution
-    
+
     Use help(df.ta.ad) for specific documentation where 'df' represents
     the DataFrame you are using.
     """

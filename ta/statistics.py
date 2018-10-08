@@ -154,3 +154,205 @@ def zscore(close:pd.Series, length=None, std=None, offset=None, **kwargs):
     zscore.category = 'statistics'
 
     return zscore
+
+
+
+# Statistics Documentation
+kurtosis_docs = \
+"""Kurtosis
+
+Rolling Kurtosis
+
+Sources:
+
+Calculation:
+    Default Inputs:
+        length=30
+    KURTOSIS = close.rolling(length).kurt()
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 30
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+median_docs = \
+"""Median
+
+Rolling Median of over 'n' periods.  Sibling of a Simple Moving Average.
+
+Sources:
+    https://www.incrediblecharts.com/indicators/median_price.php
+
+Calculation:
+    Default Inputs:
+        length=1
+    MEDIAN = close.rolling(length).median()
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 30
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+quantile_docs = \
+"""Quantile
+
+Rolling Quantile
+
+Sources:
+
+Calculation:
+    Default Inputs:
+        length=30, q=0.5
+    QUANTILE = close.rolling(length).quantile(q)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 30
+    q (float): It's period.  Default: 0.5
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+skew_docs = \
+"""Skew
+
+Rolling Skew
+
+Sources:
+
+Calculation:
+    Default Inputs:
+        length=30
+    SKEW = close.rolling(length).skew()
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 30
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+stdev_docs = \
+"""Standard Deviation
+
+Rolling Standard Deviation
+
+Sources:
+
+Calculation:
+    Default Inputs:
+        length=30
+    VAR = Variance
+    STDEV = variance(close, length).apply(np.sqrt)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 30
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+variance_docs = \
+"""Variance
+
+Rolling Variance
+
+Sources:
+
+Calculation:
+    Default Inputs:
+        length=30
+    VARIANCE = close.rolling(length).var()
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 30
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+zscore_docs = \
+"""ZScore
+
+Rolling Z Score
+
+Sources:
+
+Calculation:
+    Default Inputs:
+        length=30, std=1
+    SMA = Simple Moving Average
+    STDEV = Standard Deviation
+    std = std * STDEV(close, length)
+    mean = SMA(close, length)
+    ZSCORE = (close - mean) / std
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 30
+    std (float): It's period.  Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+# Statistics Documentation
+kurtosis.__doc__ = kurtosis_docs
+median.__doc__ = median_docs
+quantile.__doc__ = quantile_docs
+skew.__doc__ = skew_docs
+stdev.__doc__ = stdev_docs
+variance.__doc__ = variance_docs
+zscore.__doc__ = zscore_docs

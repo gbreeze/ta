@@ -406,3 +406,542 @@ def wma(close:pd.Series, length=None, asc=None, offset=None, **kwargs):
     wma.category = 'overlap'
 
     return wma
+
+
+
+# Overlap Documentation
+hl2_docs = \
+"""Average of High-Low (HL2)
+
+Equally weighted Average of two series', namely High and Low.
+
+Sources:
+    https://www.tradingview.com/study-script-reference/#var_hl2
+
+Calculation:
+    HL2 = 0.5 * (high + low)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+hlc3_docs = \
+"""Average of High-Low-Close (HLC3)
+
+Equally weighted Average of three series', namely High, Low, Close.
+
+Sources:
+    https://www.tradingview.com/study-script-reference/#var_hlc3
+
+Calculation:
+    HLC3 = (high + low + close) / 3.0
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+ohlc4_docs = \
+"""Average of Open-High-Low-Close (OHLC4)
+
+Equally weighted Average of four series', namely Open, High, Low, Close.
+
+Sources:
+    https://www.tradingview.com/study-script-reference/#var_ohlc4
+
+Calculation:
+    OHLC4 = 0.25 * (open + high + low + close)
+
+Args:
+    open (pd.Series): Series of 'open's
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+midpoint_docs = \
+"""Midpoint (MIDPOINT)
+
+The Midpoint is the average of the highest and lowest closes over a period.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/midpoint-midpnt/
+
+Calculation:
+    Default Inputs:
+        length=1
+    lowest_close  = close.rolling(length).min()
+    highest_close = close.rolling(length).max()
+
+    MIDPOINT = 0.5 * (highest_close + lowest_close)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 14
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+midprice_docs = \
+"""Midprice (MIDPRICE)
+
+William's Percent R is a momentum oscillator similar to the RSI that
+attempts to identify overbought and oversold conditions.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/midprice-midpri/
+
+Calculation:
+    Default Inputs:
+        length=1
+    lowest_low   = low.rolling(length).min()
+    highest_high = high.rolling(length).max()
+
+    MIDPRICE = 0.5 * (highest_high + lowest_low)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    length (int): It's period.  Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+dema_docs = \
+"""Double Exponential Moving Average (DEMA)
+
+The Double Exponential Moving Average attempts to a smoother average with less
+lag than the normal Exponential Moving Average (EMA).
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/double-exponential-moving-average-dema/
+
+Calculation:
+    Default Inputs:
+        length=10
+    EMA = Exponential Moving Average
+    ema1 = EMA(close, length)
+    ema2 = EMA(ema1, length)
+
+    DEMA = 2 * ema1 - ema2
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 10
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+ema_docs = \
+"""Exponential Moving Average (DEMA)
+
+The Exponential Moving Average is more responsive moving average compared to the
+Simple Moving Average (SMA).  The weights are determined by alpha which is
+proportional to it's length.  There are several different methods of calculating
+EMA.  One method uses just the standard definition of EMA and another uses the
+SMA to generate the initial value for the rest of the calculation.
+
+Sources:
+    https://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:moving_averages
+    https://www.investopedia.com/ask/answers/122314/what-exponential-moving-average-ema-formula-and-how-ema-calculated.asp
+
+Calculation:
+    Default Inputs:
+        length=10
+    SMA = Simple Moving Average
+    If 'presma':
+        initial = SMA(close, length)
+        rest = close[length:]
+        close = initial + rest
+
+    EMA = close.ewm(span=length, adjust=adjust).mean()
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 10
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    adjust (bool): Default: True
+    presma (bool, optional): If True, uses SMA for initial value.
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+hma_docs = \
+"""Hull Moving Average (HMA)
+
+The Hull Exponential Moving Average attempts to reduce or remove lag in moving
+averages.
+
+Sources:
+    https://alanhull.com/hull-moving-average
+
+Calculation:
+    Default Inputs:
+        length=10
+    WMA = Weighted Moving Average
+    half_length = int(0.5 * length)
+    sqrt_length = int(math.sqrt(length))
+
+    wmaf = WMA(close, half_length)
+    wmas = WMA(close, length)
+    HMA = WMA(2 * wmaf - wmas, sqrt_length)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 10
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+rma_docs = \
+"""wildeR's Moving Average (RMA)
+
+The WildeR's Moving Average is simply an Exponential Moving Average (EMA)
+with a modified alpha = 1 / length.
+
+Sources:
+    https://alanhull.com/hull-moving-average
+
+Calculation:
+    Default Inputs:
+        length=10
+    EMA = Exponential Moving Average
+    alpha = 1 / length
+    RMA = EMA(close, alpha=alpha)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 10
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+sma_docs = \
+"""Simple Moving Average (SMA)
+
+The Simple Moving Average is the classic moving average that is the equally
+weighted average over n periods.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/simple-moving-average-sma/
+
+Calculation:
+    Default Inputs:
+        length=10
+    SMA = SUM(close, length) / length
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 10
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    adjust (bool): Default: True
+    presma (bool, optional): If True, uses SMA for initial value.
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+t3_docs = \
+"""Tim Tillson's T3 Moving Average (T3)
+
+Tim Tillson's T3 Moving Average is considered a smoother and more responsive
+moving average relative to other moving averages.
+
+Sources:
+    http://www.binarytribune.com/forex-trading-indicators/t3-moving-average-indicator/
+
+Calculation:
+    Default Inputs:
+        length=10, a=0.7
+    c1 = -a^3
+    c2 = 3a^2 + 3a^3 = 3a^2 * (1 + a)
+    c3 = -6a^2 - 3a - 3a^3
+    c4 = a^3 + 3a^2 + 3a + 1
+
+    ema1 = EMA(close, length)
+    ema2 = EMA(ema1, length)
+    ema3 = EMA(ema2, length)
+    ema4 = EMA(ema3, length)
+    ema5 = EMA(ema4, length)
+    ema6 = EMA(ema5, length)
+    T3 = c1 * ema6 + c2 * ema5 + c3 * ema4 + c4 * ema3
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 10
+    a (float): 0 < a < 1.  Default: 0.7
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    adjust (bool): Default: True
+    presma (bool, optional): If True, uses SMA for initial value.
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+tema_docs = \
+"""Triple Exponential Moving Average (TEMA)
+
+A less laggy Exponential Moving Average.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/triple-exponential-moving-average-tema/
+
+Calculation:
+    Default Inputs:
+        length=10
+    EMA = Exponential Moving Average
+    ema1 = EMA(close, length)
+    ema2 = EMA(ema1, length)
+    ema3 = EMA(ema2, length)
+    TEMA = 3 * (ema1 - ema2) + ema3
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 10
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    adjust (bool): Default: True
+    presma (bool, optional): If True, uses SMA for initial value.
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+trima_docs = \
+"""Triangular Moving Average (TRIMA)
+REQUIRES: scipy
+
+A weighted moving average where the shape of the weights are triangular and the
+greatest weight is in the middle of the period.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/triangular-moving-average-trima/
+
+Calculation:
+    Default Inputs:
+        length=10
+    SMA = Simple Moving Average
+    if scipy:
+        TRIMA = close.rolling(length, win_type='triang').mean()
+    else:
+        half_length = math.round(0.5 * (length + 1))
+        SMA1 = SUM(close, half_length) / half_length
+        TRIMA = SMA(SMA1, half_length) / half_length
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 10
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    adjust (bool): Default: True
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+vwap_docs = \
+"""Volume Weighted Average Price (VWAP)
+
+The Volume Weighted Average Price that measures the average typical price
+by volume.  It is typically used with intraday charts to identify general
+direction.
+
+Sources:
+    https://www.tradingview.com/wiki/Volume_Weighted_Average_Price_(VWAP)
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/volume-weighted-average-price-vwap/
+
+Calculation:
+    tp = typical_price = hlc3(high, low, close)
+    tpv = tp * volume
+    VWAP = tpv.cumsum() / volume.cumsum()
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    volume (pd.Series): Series of 'volume's
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+vwma_docs = \
+"""Volume Weighted Moving Average (VWMA)
+
+Volume Weighted Moving Average.
+
+Sources:
+    https://www.motivewave.com/studies/volume_weighted_moving_average.htm
+
+Calculation:
+    Default Inputs:
+        length=10
+    SMA = Simple Moving Average
+    pv = close * volume
+    VWMA = SMA(pv, length) / SMA(volume, length)
+
+Args:
+    close (pd.Series): Series of 'close's
+    volume (pd.Series): Series of 'volume's
+    length (int): It's period.  Default: 10
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+wma_docs = \
+"""Weighted Moving Average (WMA)
+
+The Weighted Moving Average where the weights are linearly increasing and
+the most recent data has the heaviest weight.
+
+Sources:
+    https://en.wikipedia.org/wiki/Moving_average#Weighted_moving_average
+
+Calculation:
+    Default Inputs:
+        length=10, asc=True
+    total_weight = 0.5 * length * (length + 1)
+    weights_ = [1, 2, ..., length + 1]  # Ascending
+    weights = weights if asc else weights[::-1]
+
+    def linear_weights(w):
+        def _compute(x):
+            return (w * x).sum() / total_weight
+        return _compute
+
+    WMA = close.rolling(length)_.apply(linear_weights(weights), raw=True)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 10
+    asc (bool): Recent values weigh more.  Default: True
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+
+# Overlap Documentation
+hl2.__doc__ = hl2_docs
+hlc3.__doc__ = hlc3_docs
+ohlc4.__doc__ = ohlc4_docs
+midpoint.__doc__ = midpoint_docs
+midprice.__doc__ = midprice_docs
+dema.__doc__ = dema_docs
+ema.__doc__ = ema_docs
+hma.__doc__ = hma_docs
+rma.__doc__ = rma_docs
+sma.__doc__ = sma_docs
+t3.__doc__ = t3_docs
+tema.__doc__ = tema_docs
+trima.__doc__ = trima_docs
+vwap.__doc__ = vwap_docs
+vwma.__doc__ = vwma_docs
+wma.__doc__ = wma_docs

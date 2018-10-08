@@ -17,11 +17,7 @@ from .volatility import atr, true_range
 
 
 def adx(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drift=None, offset=None, **kwargs):
-    """Indicator: ADX
-    
-    Use help(df.ta.adx) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: ADX"""
     # Validate Arguments
     high = verify_series(high)
     low = verify_series(low)

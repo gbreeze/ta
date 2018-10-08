@@ -1134,16 +1134,16 @@ Returns:
 
 
 skew_docs = \
-"""Kurtosis
+"""Skew
 
-Rolling Kurtosis
+Rolling Skew
 
 Sources:
 
 Calculation:
     Default Inputs:
         length=30
-    KURTOSIS = close.rolling(length).kurt()
+    SKEW = close.rolling(length).skew()
 
 Args:
     close (pd.Series): Series of 'close's

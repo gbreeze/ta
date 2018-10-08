@@ -331,11 +331,7 @@ def trima(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def vwap(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, offset=None, **kwargs):
-    """Indicator: Volume Weighted Average Price (VWAP)
-    
-    Use help(df.ta.vwap) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Volume Weighted Average Price (VWAP)"""
     # Validate Arguments
     high = verify_series(high)
     low = verify_series(low)

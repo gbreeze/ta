@@ -1670,6 +1670,11 @@ rma.__doc__ = rma_docs
 sma.__doc__ = sma_docs
 t3.__doc__ = t3_docs
 tema.__doc__ = tema_docs
+trima.__doc__ = trima_docs
+vwap.__doc__ = vwap_docs
+vwma.__doc__ = vwma_docs
+wma.__doc__ = wma_docs
+
 
 # Statistics Documentation
 # kurtosis.__doc__ = kurtosis_docs

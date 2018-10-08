@@ -146,11 +146,7 @@ def decreasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
 
 
 def dpo(close:pd.Series, length=None, centered=True, offset=None, **kwargs):
-    """Indicator: Detrend Price Oscillator (DPO)
-    
-    Use help(df.ta.dpo) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Detrend Price Oscillator (DPO)"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 1
@@ -255,11 +251,7 @@ def ichimoku(high:pd.Series, low:pd.Series, close:pd.Series, tenkan=None, kijun=
 
 
 def increasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
-    """Indicator: Increasing
-    
-    Use help(df.ta.increasing) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Increasing"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 1

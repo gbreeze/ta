@@ -675,27 +675,38 @@ Returns:
 
 
 dpo_docs = \
-"""
-Detrend Price Oscillator (DPO)
+"""Detrend Price Oscillator (DPO)
 
 Is an indicator designed to remove trend from price and make it easier to
 identify cycles.
 
-http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:detrended_price_osci
+Sources:
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:detrended_price_osci
+
+Calculation:
+    Default Inputs:
+        length=1, centered=True
+    SMA = Simple Moving Average
+    drift = int(0.5 * length) + 1
+    
+    DPO = close.shift(drift) - SMA(close, length)
+    if centered:
+        DPO = DPO.shift(-drift)
 
 Args:
-    close(None,pd.Series,pd.DataFrame): Optional
-        If None, uses local df column: 'close'
-    length(int): How many periods to use.
-    asint(bool): Default: True.  Returns zeros and ones.
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 1
+    centered (bool): Shift the dpo back by int(0.5 * length) + 1.  Default: True
+    offset (int): How many periods to offset the result.  Default: 0
 
-**kwargs:
+Kwargs:
     fillna (value, optional): pd.DataFrame.fillna(value)
     fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.Series: New feature generated.
 """
+
 
 increasing_docs = \
 """Increasing
@@ -1075,7 +1086,7 @@ willr.__doc__ = willr_docs
 adx.__doc__ = adx_docs
 aroon.__doc__ = aroon_docs
 decreasing.__doc__ = decreasing_docs
-# dpo.__doc__ = dpo_docs
+dpo.__doc__ = dpo_docs
 # ichimoku.__doc__ = ichimoku_docs
 increasing.__doc__ = increasing_docs
 # kst.__doc__ = kst_docs

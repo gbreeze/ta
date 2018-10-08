@@ -810,6 +810,36 @@ Returns:
 """
 
 
+sma_docs = \
+"""Simple Moving Average (SMA)
+
+The Simple Moving Average is the classic moving average that is the equally
+weighted average over n periods.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/simple-moving-average-sma/
+
+Calculation:
+    Default Inputs:
+        length=10    
+    SMA = SUM(close, length) / length
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 10
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    adjust (bool): Default: True
+    presma (bool, optional): If True, uses SMA for initial value.
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
 t3_docs = \
 """
 T3 = c1 * e6 + c2 * e5 + c3 * e4 + c4 * e3
@@ -1461,7 +1491,9 @@ midprice.__doc__ = midprice_docs
 dema.__doc__ = dema_docs
 ema.__doc__ = ema_docs
 hma.__doc__ = hma_docs
-# t3.__doc__ = t3_docs
+rma.__doc__ = rma_docs
+sma.__doc__ = sma_docs
+t3.__doc__ = t3_docs
 
 # Statistics Documentation
 # kurtosis.__doc__ = kurtosis_docs

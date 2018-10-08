@@ -232,11 +232,7 @@ def rma(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def sma(close:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Simple Moving Average (SMA)
-    
-    Use help(df.ta.sma) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Simple Moving Average (SMA)"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 10

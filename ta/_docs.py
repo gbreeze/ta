@@ -883,6 +883,75 @@ Returns:
 """
 
 
+tema_docs = \
+"""Triple Exponential Moving Average (TEMA)
+
+A less laggy Exponential Moving Average.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/triple-exponential-moving-average-tema/
+
+Calculation:
+    Default Inputs:
+        length=10
+    EMA = Exponential Moving Average
+    ema1 = EMA(close, length)
+    ema2 = EMA(ema1, length)
+    ema3 = EMA(ema2, length)
+    TEMA = 3 * (ema1 - ema2) + ema3
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 10
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    adjust (bool): Default: True
+    presma (bool, optional): If True, uses SMA for initial value.
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+trima_docs = \
+"""Triangular Moving Average (TRIMA)
+REQUIRES: scipy
+
+A weighted moving average where the shape of the weights are triangular and the
+greatest weight is in the middle of the period.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/triangular-moving-average-trima/
+
+Calculation:
+    Default Inputs:
+        length=10
+    SMA = Simple Moving Average
+    if scipy:
+        TRIMA = close.rolling(length, win_type='triang').mean()
+    else:
+        half_length = math.round(0.5 * (length + 1))
+        SMA1 = SUM(close, half_length) / half_length
+        TRIMA = SMA(SMA1, half_length) / half_length
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 10
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    adjust (bool): Default: True
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
 # Statistics Documentation
 kurtosis_docs = \
 """

@@ -286,11 +286,7 @@ def t3(close:pd.Series, length=None, a=None, offset=None, **kwargs):
 
 
 def tema(close:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Triple Exponential Moving Average (TEMA)
-    
-    Use help(df.ta.tema) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Triple Exponential Moving Average (TEMA)"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 10
@@ -314,11 +310,7 @@ def tema(close:pd.Series, length=None, offset=None, **kwargs):
 
 
 def trima(close:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Triangular Moving Average (TRIMA), requires scipy
-    
-    Use help(df.ta.trima) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Triangular Moving Average (TRIMA)  *requires scipy"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 10

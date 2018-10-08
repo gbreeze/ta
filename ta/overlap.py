@@ -130,11 +130,7 @@ def midprice(high:pd.Series, low:pd.Series, length=None, offset=None, **kwargs):
 
 
 def dema(close:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Double Exponential Moving Average (DEMA)
-    
-    Use help(df.ta.dema) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Double Exponential Moving Average (DEMA)"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 10

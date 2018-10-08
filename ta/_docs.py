@@ -673,6 +673,37 @@ Returns:
     pd.Series: New feature generated.
 """
 
+dema_docs = \
+"""Double Exponential Moving Average (DEMA)
+
+The Double Exponential Moving Average attempts to a smoother average with less
+lag than the normal Exponential Moving Average (EMA).
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/double-exponential-moving-average-dema/
+
+Calculation:
+    Default Inputs:
+        length=1
+    EMA = Exponential Moving Average
+    ema1 = EMA(close, length)
+    ema2 = EMA(ema1, length)
+
+    DEMA = 2 * ema1 - ema2
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 14
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
 
 t3_docs = \
 """
@@ -1321,8 +1352,9 @@ hlc3.__doc__ = hlc3_docs
 ohlc4.__doc__ = ohlc4_docs
 median.__doc__ = median_docs
 midpoint.__doc__ = midpoint_docs
-# midprice.__doc__ = midprice_docs
-# rpn.__doc__ = rpn_docs
+midprice.__doc__ = midprice_docs
+dema.__doc__ = dema_docs
+# ema.__doc__ = ema_docs
 # t3.__doc__ = t3_docs
 
 # Statistics Documentation

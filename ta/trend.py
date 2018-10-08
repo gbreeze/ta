@@ -275,11 +275,7 @@ def increasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
 
 
 def kst(close:pd.Series, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, sma2=None, sma3=None, sma4=None, signal=None, drift=None, offset=None, **kwargs):
-    """Indicator: 'Know Sure Thing'
-    
-    Use help(df.ta.kst) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: 'Know Sure Thing'"""
     # Validate arguments
     close = verify_series(close)
     roc1 = int(roc1) if roc1 and roc1 > 0 else 10

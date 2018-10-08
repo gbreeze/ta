@@ -377,11 +377,7 @@ def vwma(close:pd.Series, volume:pd.Series, length=None, offset=None, **kwargs):
 
 
 def wma(close:pd.Series, length=None, asc=None, offset=None, **kwargs):
-    """Indicator: Weighted Moving Average (WMA)
-    
-    Use help(df.ta.wma) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Weighted Moving Average (WMA)"""
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 10

@@ -502,6 +502,34 @@ Returns:
 
 willr_docs = \
 """William's Percent R (WILLR)
+
+William's Percent R is a momentum oscillator similar to the RSI that
+attempts to identify overbought and oversold conditions.
+
+Sources:
+    https://www.tradingview.com/wiki/Williams_%25R_(%25R)
+
+Calculation:
+    Default Inputs:
+        length=20
+    lowest_low   = low.rolling(length).min()
+    highest_high = high.rolling(length).max()
+
+    WILLR = 100 ((close - lowest_low) / (highest_high - lowest_low) - 1)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 14
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
 """
 
 

@@ -606,7 +606,43 @@ Kwargs:
     fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature generated.
+    pd.DataFrame: adx, dmp, dmn columns.
+"""
+
+
+aroon_docs = \
+"""Aroon (AROON)
+
+Aroon attempts to identify if a security is trending and how strong.
+
+Sources:
+    https://www.tradingview.com/wiki/Aroon
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/aroon-ar/
+
+Calculation:
+    Default Inputs:
+        length=1
+    def maxidx(x):
+        return 100 * (int(np.argmax(x)) + 1) / length
+
+    def minidx(x):
+        return 100 * (int(np.argmin(x)) + 1) / length
+
+    _close = close.rolling(length, min_periods=min_periods)
+    aroon_up = _close.apply(maxidx, raw=True)
+    aroon_down = _close.apply(minidx, raw=True)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.DataFrame: aroon_up, aroon_down columns.
 """
 
 
@@ -1023,7 +1059,7 @@ willr.__doc__ = willr_docs
 
 # Trend Documentation
 adx.__doc__ = adx_docs
-# aroon.__doc__ = aroon_docs
+aroon.__doc__ = aroon_docs
 # decreasing.__doc__ = decreasing_docs
 # dpo.__doc__ = dpo_docs
 # ichimoku.__doc__ = ichimoku_docs

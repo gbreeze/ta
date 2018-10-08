@@ -76,11 +76,7 @@ def adx(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drift=None,
 
 
 def aroon(close:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Aroon Oscillator
-    
-    Use help(df.ta.aroon) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Aroon Oscillator"""
     # Validate Arguments
     close = verify_series(close)
     length = length if length and length > 0 else 14

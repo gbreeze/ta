@@ -327,29 +327,26 @@ def kst(close:pd.Series, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, 
     return kstdf
 
 
-def vortex(high:pd.Series, low:pd.Series, close:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Vortex
-
-    Use help(df.ta.vortex) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+def vortex(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drift=None, offset=None, **kwargs):
+    """Indicator: Vortex"""
     # Validate arguments
     high = verify_series(high)
     low = verify_series(low)
     close = verify_series(close)
     length = length if length and length > 0 else 14
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    drift = get_drift(drift)
     offset = get_offset(offset)
 
     # Calculate Result
     tr = true_range(high=high, low=low, close=close)
-    tr_sma = tr.rolling(length, min_periods=min_periods).sum()
+    tr_sum = tr.rolling(length, min_periods=min_periods).sum()
 
-    vmp = (high - low.shift(1)).abs()
-    vmm = (low - high.shift(1)).abs()
+    vmp = (high - low.shift(drift)).abs()
+    vmm = (low - high.shift(drift)).abs()
 
-    vip = vmp.rolling(length, min_periods=min_periods).sum() / tr_sma
-    vim = vmm.rolling(length, min_periods=min_periods).sum() / tr_sma
+    vip = vmp.rolling(length, min_periods=min_periods).sum() / tr_sum
+    vim = vmm.rolling(length, min_periods=min_periods).sum() / tr_sum
 
     # Offset
     vip = vip.shift(offset)

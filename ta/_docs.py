@@ -463,7 +463,8 @@ Sources:
 
 Calculation:
     Default Inputs:
-        fast=7, medium=14, slow=28, fast_w=4.0, medium_w=2.0, slow_w=1.0, drift=1
+        fast=7, medium=14, slow=28,
+        fast_w=4.0, medium_w=2.0, slow_w=1.0, drift=1
     min_low_or_pc  = close.shift(drift).combine(low, min)
     max_high_or_pc = close.shift(drift).combine(high, max)
 
@@ -824,6 +825,43 @@ Returns:
 """
 
 
+vortex_docs = \
+"""Vortex
+
+Two oscillators that capture positive and negative trend movement.
+
+Sources:
+    https://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:vortex_indicator
+
+Calculation:
+    Default Inputs:
+        length=14, drift=1
+    TR = True Range
+    SMA = Simple Moving Average
+    tr = TR(high, low, close)
+    tr_sum = tr.rolling(length).sum()
+
+    vmp = (high - low.shift(drift)).abs()
+    vmn = (low - high.shift(drift)).abs()
+
+    VIP = vmp.rolling(length).sum() / tr_sum
+    VIM = vmn.rolling(length).sum() / tr_sum
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    length (int): ROC 1 period.  Default: 14
+    drift (int): The difference period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.DataFrame: vip and vim columns
+"""
 
 # Volatility Documentation
 atr_docs = \

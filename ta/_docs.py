@@ -944,26 +944,34 @@ Returns:
 
 
 donchian_docs = \
-"""
-Donchian Channels
+"""Donchian Channels (DC)
 
-Returns a DataFrame with high, mid, and low values.  The high channel is max()
-and the low channel is the min() over a rolling period length of the source.
-The mid is the average of the high and low channels.
+Donchian Channels are used to measure volatility, similar to 
+Bollinger Bands.
+
+Sources:
+    https://www.tradingview.com/wiki/Donchian_Channels_(DC)
+
+Calculation:
+    Default Inputs:
+        length=20
+    LOWER = close.rolling(length).min()
+    UPPER = close.rolling(length).max()
+    MID = 0.5 * (LOWER + UPPER)
 
 Args:
-    close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-    length(int): How many
+    close (pd.Series): Series of 'close's
+    length (int): The short period.  Default: 20
+    offset (int): How many periods to offset the result.  Default: 0
 
-    append(bool): kwarg, optional.  If True, appends result to current df
-
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.DataFrame: lower, mid, upper columns.
 """
+
 
 kc_docs = \
 """

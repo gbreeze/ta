@@ -866,26 +866,43 @@ Returns:
 
 # Volatility Documentation
 atr_docs = \
-"""
-Average True Range
+"""Average True Range (ATR)
 
-Returns a Series of the Average True Range.
+Averge True Range is used to measure volatility, especially
+volatility caused by gaps or limit moves.
+
+Sources:
+    https://www.tradingview.com/wiki/Average_True_Range_(ATR)
+
+Calculation:
+    Default Inputs:
+        length=14, drift=1
+    SMA = Simple Moving Average
+    EMA = Exponential Moving Average
+    TR = True Range
+    tr = TR(high, low, close, drift)
+    if 'ema':
+        ATR = EMA(tr, length)
+    else:
+        ATR = SMA(tr, length)
 
 Args:
-    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-    signed (bool): True.  Returns zeros and ones.
-    offset (int): How many
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 14
+    mamode (str): Two options: None or 'ema'.  Default: 'ema'
+    drift (int): The difference period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
 
-    append(bool): kwarg, optional.  If True, appends result to current df
-
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.Series: New feature generated.
 """
+
 
 bbands_docs = \
 """

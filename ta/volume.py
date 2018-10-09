@@ -123,27 +123,24 @@ def cmf(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:
     return cmf
 
 
-def efi(close:pd.Series, volume:pd.Series, length=None, offset=None, mamode=None, drift=None, **kwargs):
-    """Indicator: Elder's Force Index (EFI)
-    
-    Use help(df.ta.efi) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+def efi(close:pd.Series, volume:pd.Series, length=None, drift=None, mamode=None, offset=None, **kwargs):
+    """Indicator: Elder's Force Index (EFI)"""
     # Validate arguments
     close = verify_series(close)
     volume = verify_series(volume)
-    length = int(length) if length and length > 0 else 1
+    length = int(length) if length and length > 0 else 13
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     drift = get_drift(drift)
+    mamode = mamode.lower() if mamode else None
     offset = get_offset(offset)
 
     # Calculate Result
     pv_diff = close.diff(drift) * volume
 
-    if mamode is None or mamode == 'alexander':
-        efi = pv_diff.ewm(span=length, min_periods=min_periods).mean()
-    else:
+    if mamode == 'sma':
         efi = pv_diff.rolling(length, min_periods=min_periods).mean()
+    else:
+        efi = pv_diff.ewm(span=length, min_periods=min_periods).mean()
 
     # Offset
     efi = efi.shift(offset)
@@ -162,11 +159,7 @@ def efi(close:pd.Series, volume:pd.Series, length=None, offset=None, mamode=None
 
 
 def eom(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length=None, divisor=None, offset=None, drift=None, **kwargs):
-    """Indicator: Ease of Movement(EOM)
-    
-    Use help(df.ta.eom) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Ease of Movement (EOM)"""
     # Validate arguments
     high = verify_series(high)
     low = verify_series(low)

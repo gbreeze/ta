@@ -1271,6 +1271,7 @@ Returns:
     pd.Series: New feature generated.
 """
 
+
 eom_docs = \
 """Ease of Movement (EOM)
 
@@ -1311,8 +1312,42 @@ Returns:
 
 
 nvi_docs = \
+"""Negative Volume Index (NVI)
+
+The Negative Volume Index is a cumulative indicator that uses volume change in
+an attempt to identify where smart money is active.
+
+Sources:
+    https://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:negative_volume_inde
+    https://www.motivewave.com/studies/negative_volume_index.htm
+
+Calculation:
+    Default Inputs:
+        length=20, initial=1000
+    ROC = Rate of Change
+
+    roc = ROC(close, length)
+    signed_volume = signed_series(volume, initial=1)
+    nvi = signed_volume[signed_volume < 0].abs() * roc_
+    nvi.fillna(0, inplace=True)
+    nvi.iloc[0]= initial
+    nvi = nvi.cumsum()
+
+Args:
+    close (pd.Series): Series of 'close's
+    volume (pd.Series): Series of 'volume's
+    length (int): The short period.  Default: 13
+    initial (int): The short period.  Default: 1000
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
 """
-"""
+
 
 obv_docs = \
 """
@@ -1369,7 +1404,7 @@ adosc.__doc__ = adosc_docs
 cmf.__doc__ = cmf_docs
 efi.__doc__ = efi_docs
 eom.__doc__ = eom_docs
-# nvi.__doc__ = nvi_docs
+nvi.__doc__ = nvi_docs
 # obv.__doc__ = obv_docs
 # pvol.__doc__ = pvol_docs
 # pvt.__doc__ = pvt_docs

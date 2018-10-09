@@ -194,12 +194,8 @@ def eom(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length
     return eom
 
 
-def nvi(close:pd.Series, volume:pd.Series, length=None, initial=None, signed=True, offset=None, **kwargs):
-    """Indicator: Negative Volume Index (NVI)
-    
-    Use help(df.ta.nvi) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+def nvi(close:pd.Series, volume:pd.Series, length=None, initial=None, offset=None, **kwargs):
+    """Indicator: Negative Volume Index (NVI)"""
     # Validate arguments
     close = verify_series(close)
     volume = verify_series(volume)

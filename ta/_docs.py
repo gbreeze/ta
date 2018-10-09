@@ -1076,23 +1076,32 @@ Returns:
 """
 
 
-true_range_docs = \
-"""
-True Range
 
-Returns a Series of the product of Price and Volume.
+natr_docs = \
+"""Normalized Average True Range (NATR)
+
+Normalized Average True Range attempt to normalize the average
+true range.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/normalized-average-true-range-natr/
+
+Calculation:
+    Default Inputs:
+        length=20
+    ATR = Average True Range
+    NATR = (100 / close) * ATR(high, low, close)
 
 Args:
-    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-    signed (bool): True.  Returns zeros and ones.
-    offset (int): How many
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    length (int): The short period.  Default: 20
+    offset (int): How many periods to offset the result.  Default: 0
 
-    append(bool): kwarg, optional.  If True, appends result to current df
-
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
     pd.Series: New feature
@@ -1313,8 +1322,8 @@ bbands.__doc__ = bbands_docs
 donchian.__doc__ = donchian_docs
 kc.__doc__ = kc_docs
 massi.__doc__ = massi_docs
-# natr.__doc__ = natr_docs
-# true_range.__doc__ = true_range_docs
+natr.__doc__ = natr_docs
+true_range.__doc__ = true_range_docs
 
 # Volume Documentation
 # ad.__doc__ = ad_docs

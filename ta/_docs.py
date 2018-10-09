@@ -1119,182 +1119,67 @@ Returns:
 
 # Volume Documentation
 ad_docs = \
-"""
-Accumulation/Distribution
+"""Accumulation/Distribution (AD)
 
-Returns a Series of the product of Price and Volume.
+Accumulation/Distribution indicator utilizes the relative position
+of the close to it's High-Low range with volume.  Then it is cumulated.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/accumulationdistribution-ad/
+
+Calculation:
+    CUM = Cumulative Sum
+    if 'open':
+        AD = close - open
+    else:
+        AD = 2 * close - high - low
+
+    hl_range = high - low
+    AD = AD * volume / hl_range
+    AD = CUM(AD)
 
 Args:
-    high (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'high'
-    low (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'low'
-    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-    open_ (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'open_'
-    signed (bool): True.  Returns zeros and ones.
-    offset (int): How many
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    volume (pd.Series): Series of 'volume'
+    offset (int): How many periods to offset the result.  Default: 0
 
-    append(bool): kwarg, optional.  If True, appends result to current df
-
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
 
 Returns:
-    pd.Series: New feature
+    pd.Series: New feature generated.
 """
+
 
 cmf_docs = \
 """
-Chaikin Money Flow
-
-Returns a Series of the product of Price and Volume.
-
-Args:
-    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-    signed (bool): True.  Returns zeros and ones.
-    offset (int): How many
-
-    append(bool): kwarg, optional.  If True, appends result to current df
-
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-
-Returns:
-    pd.Series: New feature
 """
 
 efi_docs = \
 """
-Elder's Force Index
-
-Returns a Series of the product of Price and Volume.
-
-Args:
-    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-    signed (bool): True.  Returns zeros and ones.
-    offset (int): How many
-
-    append(bool): kwarg, optional.  If True, appends result to current df
-
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-
-Returns:
-    pd.Series: New feature
 """
 
 eom_docs = \
 """
-Ease of Movement
-
-Returns a Series of the product of Price and Volume.
-
-Args:
-    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-    signed (bool): True.  Returns zeros and ones.
-    offset (int): How many
-
-    append(bool): kwarg, optional.  If True, appends result to current df
-
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-
-Returns:
-    pd.Series: New feature
 """
 
 nvi_docs = \
 """
-Negative Volume Index
-
-Returns a Series of the product of Price and Volume.
-
-Args:
-    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-    signed (bool): True.  Returns zeros and ones.
-    offset (int): How many
-
-    append(bool): kwarg, optional.  If True, appends result to current df
-
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-
-Returns:
-    pd.Series: New feature
 """
 
 obv_docs = \
 """
-On Balance Volume
-
-Returns a Series of the product of Price and Volume.
-
-Args:
-    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-    signed (bool): True.  Returns zeros and ones.
-    offset (int): How many
-
-    append(bool): kwarg, optional.  If True, appends result to current df
-
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-
-Returns:
-    pd.Series: New feature
 """
 
 pvol_docs = \
 """
-Price Volume
-
-Returns a Series of the product of Price and Volume.
-
-Args:
-    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-    signed (bool): True.  Returns zeros and ones.
-    offset (int): How many
-
-    append(bool): kwarg, optional.  If True, appends result to current df
-
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-
-Returns:
-    pd.Series: New feature
 """
 
 pvt_docs = \
 """
-Price Volume Trend
-
-Returns a Series of the product of Price and Volume.
-
-Args:
-    close (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-    volume (None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'volume'
-    signed (bool): True.  Returns zeros and ones.
-    offset (int): How many
-
-    append(bool): kwarg, optional.  If True, appends result to current df
-
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-
-Returns:
-    pd.Series: New feature
 """
 
 

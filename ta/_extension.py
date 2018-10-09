@@ -1524,77 +1524,76 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Indicator Aliases by Category, more to be added later...
-    def FullName(self):
-        # Momentum: momomentum.py ✅
-        AbsolutePriceOscillator = apo #🤦🏻‍♂️
-        AwesomeOscillator = ao
-        BalanceOfPower = bop
-        CommodityChannelIndex = cci
-        KnowSureThing = kst
-        MACD = macd
-        MassIndex = massi
-        Momentum = mom
-        PercentagePriceOscillator = ppo
-        RateOfChange = roc
-        RelativeStrengthIndex = rsi
-        Stochastic = stoch
-        TrueStrengthIndex = tsi
-        UltimateOscillator = uo
-        WilliamsR = willr
+    # # Momentum: momomentum.py ✅
+    # AbsolutePriceOscillator = apo #🤦🏻‍♂️
+    # AwesomeOscillator = ao
+    # BalanceOfPower = bop
+    # CommodityChannelIndex = cci
+    # KnowSureThing = kst
+    # MACD = macd
+    # MassIndex = massi
+    # Momentum = mom
+    # PercentagePriceOscillator = ppo
+    # RateOfChange = roc
+    # RelativeStrengthIndex = rsi
+    # Stochastic = stoch
+    # TrueStrengthIndex = tsi
+    # UltimateOscillator = uo
+    # WilliamsR = willr
 
-        # Overlap: overlap.py ✅
-        HL2 = hl2
-        HLC3 = TypicalPrice = hlc3
-        OHLC4 = ohlc4
-        Median = median
-        Midpoint = midpoint
-        Midprice = midprice
-        DoubleExponentialMovingAverage = dema
-        ExponentialMovingAverage = ema
-        HullMovingAverage = hma
-        SimpleMovingAverage = sma
-        TriangularMovingAverage = trima # require scipy
-        VolumeWeightedAveragePrice = vwap
-        VolumeWeightedMovingAverage = vwma
-        WeightedMovingAverage = wma
+    # # Overlap: overlap.py ✅
+    # HL2 = hl2
+    # HLC3 = TypicalPrice = hlc3
+    # OHLC4 = ohlc4
+    # Median = median
+    # Midpoint = midpoint
+    # Midprice = midprice
+    # DoubleExponentialMovingAverage = dema
+    # ExponentialMovingAverage = ema
+    # HullMovingAverage = hma
+    # SimpleMovingAverage = sma
+    # TriangularMovingAverage = trima # require scipy
+    # VolumeWeightedAveragePrice = vwap
+    # VolumeWeightedMovingAverage = vwma
+    # WeightedMovingAverage = wma
 
-        # Performance: performance.py ✅
-        LogReturn = log_return
-        PctReturn = percent_return
+    # # Performance: performance.py ✅
+    # LogReturn = log_return
+    # PctReturn = percent_return
 
-        # Statistics: statistics.py ✅
-        Kurtosis = kurtosis
-        Quantile = quantile
-        Skew = skew
-        StandardDeviation = stdev
-        Variance = variance
-        ZScore = zscore
+    # # Statistics: statistics.py ✅
+    # Kurtosis = kurtosis
+    # Quantile = quantile
+    # Skew = skew
+    # StandardDeviation = stdev
+    # Variance = variance
+    # ZScore = zscore
 
-        # Trend: trend.py ✅
-        AverageDirectionalMovmentIndex = adx
-        Decreasing = decreasing
-        DetrendPriceOscillator = dpo
-        Increasing = increasing
-        Vortex = vortex
+    # # Trend: trend.py ✅
+    # AverageDirectionalMovmentIndex = adx
+    # Decreasing = decreasing
+    # DetrendPriceOscillator = dpo
+    # Increasing = increasing
+    # Vortex = vortex
 
-        # Volatility: volatility.py ✅
-        AverageTrueRange = atr
-        BollingerBands = bbands
-        DonchianChannels = donchian
-        KeltnerChannels = kc
-        NormalizedAverageTrueRange = natr
-        TrueRange = true_range
+    # # Volatility: volatility.py ✅
+    # AverageTrueRange = atr
+    # BollingerBands = bbands
+    # DonchianChannels = donchian
+    # KeltnerChannels = kc
+    # NormalizedAverageTrueRange = natr
+    # TrueRange = true_range
 
-        # Volume: volume.py ✅
-        AccumDist = ad
-        AccumDistOscillator = adosc
-        ChaikinMoneyFlow = cmf
-        EldersForceIndex = efi
-        EaseOfMovement = eom
-        NegativeVolumeIndex = nvi
-        OnBalanceVolume = obv
-        PriceVolume = pvol
-        PriceVolumeTrend = pvt
+    # # Volume: volume.py ✅
+    # AccumDist = ad
+    # AccumDistOscillator = adosc
+    # ChaikinMoneyFlow = cmf
+    # EldersForceIndex = efi
+    # EaseOfMovement = eom
+    # NegativeVolumeIndex = nvi
+    # OnBalanceVolume = obv
+    # PriceVolume = pvol
+    # PriceVolumeTrend = pvt
 
 
 ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))

@@ -150,23 +150,23 @@ def kc(high:pd.Series, low:pd.Series, close:pd.Series, length=None, scalar=None,
     high = verify_series(high)
     low = verify_series(low)
     close = verify_series(close)
-    length = int(length) if length and length > 0 else 9999
+    length = int(length) if length and length > 0 else 20
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     scalar = float(scalar) if scalar and scalar > 0 else 2
-    mamode = mamode.lower() if mamode else 'classic'
+    mamode = mamode.lower() if mamode else None
     offset = get_offset(offset)
 
     # Calculate Result
     std = variance(close=close, length=length).apply(np.sqrt)
 
     if mamode == 'ema':
+        basis = close.ewm(span=length, min_periods=min_periods).mean()
+        band = atr(high=high, low=low, close=close)
+    else:
         hl_range = high - low
         typical_price = hlc3(high=high, low=low, close=close)
         basis = typical_price.rolling(length, min_periods=min_periods).mean()
         band = hl_range.rolling(length, min_periods=min_periods).mean()
-    else:
-        basis = close.ewm(span=length, min_periods=min_periods).mean()
-        band = atr(high=high, low=low, close=close)
 
     lower = basis - scalar * band
     upper = basis + scalar * band

@@ -947,7 +947,7 @@ donchian_docs = \
 """Donchian Channels (DC)
 
 Donchian Channels are used to measure volatility, similar to 
-Bollinger Bands.
+Bollinger Bands and Keltner Channels.
 
 Sources:
     https://www.tradingview.com/wiki/Donchian_Channels_(DC)
@@ -996,6 +996,51 @@ Returns:
 """
 
 
+kc_docs = \
+"""Keltner Channels (KC)
+
+A popular volatility indicator similar to Bollinger Bands and
+Donchian Channels.
+
+Sources:
+    https://www.tradingview.com/wiki/Keltner_Channels_(KC)
+
+Calculation:
+    Default Inputs:
+        length=20, scalar=2
+    ATR = Average True Range
+    EMA = Exponential Moving Average
+    SMA = Simple Moving Average
+    if 'ema':
+        BASIS = EMA(close, length)
+        BAND = ATR(high, low, close)
+    else:
+        hl_range = high - low
+        tp = typical_price = hlc3(high, low, close)
+        BASIS = SMA(tp, length)
+        BAND = SMA(hl_range, length)
+    
+    LOWER = BASIS - scalar * BAND
+    UPPER = BASIS + scalar * BAND
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    length (int): The short period.  Default: 20
+    scalar (float): A positive float to scale the bands.   Default: 2
+    mamode (str): Two options: None or 'ema'.  Default: 'ema'
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.DataFrame: lower, basis, upper columns.
+"""
+
+
 massi_docs = \
 """Mass Index (MASSI)
 
@@ -1008,11 +1053,12 @@ Sources:
 Calculation:
     Default Inputs:
         fast: 9, slow: 25
+    EMA = Exponential Moving Average
     hl = high - low
     hl_ema1 = EMA(hl, fast)
     hl_ema2 = EMA(hl_ema1, fast)
     hl_ratio = hl_ema1 / hl_ema2
-    massi = SUM(hl_ratio, slow)
+    MASSI = SUM(hl_ratio, slow)
 
 Args:
     high (pd.Series): Series of 'high's
@@ -1262,10 +1308,10 @@ kst.__doc__ = kst_docs
 vortex.__doc__ = vortex_docs
 
 # Volatility Documentation
-# atr.__doc__ = atr_docs
-# bbands.__doc__ = bbands_docs
-# donchian.__doc__ = donchian_docs
-# kc.__doc__ = kc_docs
+atr.__doc__ = atr_docs
+bbands.__doc__ = bbands_docs
+donchian.__doc__ = donchian_docs
+kc.__doc__ = kc_docs
 massi.__doc__ = massi_docs
 # natr.__doc__ = natr_docs
 # true_range.__doc__ = true_range_docs

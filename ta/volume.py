@@ -14,7 +14,7 @@ from .momentum import roc
 from .overlap import hl2, ema
 
 
-def ad(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, signed=True, offset=None, **kwargs):
+def ad(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, offset=None, **kwargs):
     """Indicator: Accumulation/Distribution (AD)"""
     # Validate Arguments
     high = verify_series(high)
@@ -50,12 +50,8 @@ def ad(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:p
     return ad
 
 
-def adosc(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, fast=None, slow=None, signed=True, offset=None, **kwargs):
-    """Indicator: Accumulation/Distribution Oscillator
-    
-    Use help(df.ta.adosc) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+def adosc(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, fast=None, slow=None, offset=None, **kwargs):
+    """Indicator: Accumulation/Distribution Oscillator"""
     # Validate Arguments
     high = verify_series(high)
     low = verify_series(low)
@@ -68,8 +64,10 @@ def adosc(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open
     offset = get_offset(offset)
 
     # Calculate Result
-    ad_ = ad(high=high, low=low, close=close, volume=volume, open_=open_, signed=signed, **kwargs)
-    adosc = ema(close=ad_, length=fast) - ema(close=ad_, length=slow)
+    ad_ = ad(high=high, low=low, close=close, volume=volume, open_=open_)
+    fast_ad = ema(close=ad_, length=fast)
+    slow_ad = ema(close=ad_, length=slow)
+    adosc = fast_ad - slow_ad
 
     # Offset
     adosc = adosc.shift(offset)

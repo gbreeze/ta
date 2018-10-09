@@ -198,7 +198,7 @@ Args:
     high (pd.Series): Series of 'high's
     low (pd.Series): Series of 'low's
     close (pd.Series): Series of 'close's
-    volume (pd.Series): Series of 'volume'
+    volume (pd.Series): Series of 'volume's
     length (int): The sum period.  Default: 14
     drift (int): The difference period.   Default: 1
     offset (int): How many periods to offset the result.  Default: 0
@@ -1142,7 +1142,44 @@ Args:
     high (pd.Series): Series of 'high's
     low (pd.Series): Series of 'low's
     close (pd.Series): Series of 'close's
-    volume (pd.Series): Series of 'volume'
+    volume (pd.Series): Series of 'volume's
+    open (pd.Series): Series of 'open's
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+adosc_docs = \
+"""Accumulation/Distribution Oscillator or Chaikin Oscillator
+
+Accumulation/Distribution Oscillator indicator utilizes 
+Accumulation/Distribution and treats it similarily to MACD
+or APO.
+
+Sources:
+    https://www.investopedia.com/articles/active-trading/031914/understanding-chaikin-oscillator.asp
+
+Calculation:
+    Default Inputs:
+        fast=12, slow=26
+    AD = Accum/Dist
+    ad = AD(high, low, close, open)
+    fast_ad = EMA(ad, fast)
+    slow_ad = EMA(ad, slow)
+    ADOSC = fast_ad - slow_ad
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    open (pd.Series): Series of 'open's
+    volume (pd.Series): Series of 'volume's
     offset (int): How many periods to offset the result.  Default: 0
 
 Kwargs:
@@ -1220,8 +1257,8 @@ natr.__doc__ = natr_docs
 true_range.__doc__ = true_range_docs
 
 # Volume Documentation
-# ad.__doc__ = ad_docs
-# adosc.__doc__ = adosc_docs
+ad.__doc__ = ad_docs
+adosc.__doc__ = adosc_docs
 # cmf.__doc__ = cmf_docs
 # efi.__doc__ = efi_docs
 # eom.__doc__ = eom_docs

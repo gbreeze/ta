@@ -974,29 +974,6 @@ Returns:
 
 
 kc_docs = \
-"""
-Keltner Channels
-
-Returns a DataFrame with high, mid, and low values.  The high channel is max()
-and the low channel is the min() over a rolling period length of the source.
-The mid is the average of the high and low channels.
-
-Args:
-    close(None,pd.Series,pd.DataFrame): optional.  If None, uses local df column: 'close'
-    length(int): How many
-
-    append(bool): kwarg, optional.  If True, appends result to current df
-
-    **kwargs:
-        fillna (value, optional): pd.DataFrame.fillna(value)
-        fill_method (value, optional): Type of fill method
-
-Returns:
-    pd.Series: New feature
-"""
-
-
-kc_docs = \
 """Keltner Channels (KC)
 
 A popular volatility indicator similar to Bollinger Bands and
@@ -1076,7 +1053,6 @@ Returns:
 """
 
 
-
 natr_docs = \
 """Normalized Average True Range (NATR)
 
@@ -1106,6 +1082,39 @@ Kwargs:
 Returns:
     pd.Series: New feature
 """
+
+
+true_range_docs = \
+"""True Range
+
+An method to expand a classical range (high minus low) to include
+possible gap scenarios.
+
+Sources:
+    https://www.macroption.com/true-range/
+
+Calculation:
+    Default Inputs:
+        drift=1
+    ABS = Absolute Value
+    prev_close = close.shift(drift)
+    TRUE_RANGE = ABS([high - low, high - prev_close, low - prev_close]) 
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    drift (int): The shift period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature
+"""
+
 
 
 # Volume Documentation

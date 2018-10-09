@@ -1273,7 +1273,42 @@ Returns:
 
 eom_docs = \
 """Ease of Movement (EOM)
+
+Ease of Movement is a volume based oscillator that is designed to measure the
+relationship between price and volume flucuating across a zero line.
+
+Sources:
+    https://www.tradingview.com/wiki/Ease_of_Movement_(EOM)
+    https://www.motivewave.com/studies/ease_of_movement.htm
+    https://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ease_of_movement_emv
+
+Calculation:
+    Default Inputs:
+        length=14, divisor=100000000, drift=1
+    SMA = Simple Moving Average    
+    hl_range = high - low
+    distance = 0.5 * (high - high.shift(drift) + low - low.shift(drift))
+    box_ratio = (volume / divisor) / hl_range
+    eom = distance / box_ratio
+    EOM = SMA(eom, length)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    volume (pd.Series): Series of 'volume's
+    length (int): The short period.  Default: 14
+    drift (int): The diff period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
 """
+
 
 nvi_docs = \
 """
@@ -1332,8 +1367,8 @@ true_range.__doc__ = true_range_docs
 ad.__doc__ = ad_docs
 adosc.__doc__ = adosc_docs
 cmf.__doc__ = cmf_docs
-# efi.__doc__ = efi_docs
-# eom.__doc__ = eom_docs
+efi.__doc__ = efi_docs
+eom.__doc__ = eom_docs
 # nvi.__doc__ = nvi_docs
 # obv.__doc__ = obv_docs
 # pvol.__doc__ = pvol_docs

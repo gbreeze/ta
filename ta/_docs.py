@@ -787,6 +787,7 @@ The 'Know Sure Thing' is a momentum based oscillator and based on ROC.
 
 Sources:
     https://www.tradingview.com/wiki/Know_Sure_Thing_(KST)
+    https://www.incrediblecharts.com/indicators/kst.php
 
 Calculation:
     Default Inputs:
@@ -1215,8 +1216,8 @@ decreasing.__doc__ = decreasing_docs
 dpo.__doc__ = dpo_docs
 ichimoku.__doc__ = ichimoku_docs
 increasing.__doc__ = increasing_docs
-# kst.__doc__ = kst_docs
-# vortex.__doc__ = vortex_docs
+kst.__doc__ = kst_docs
+vortex.__doc__ = vortex_docs
 
 # Volatility Documentation
 # atr.__doc__ = atr_docs

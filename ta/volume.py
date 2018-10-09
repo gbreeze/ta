@@ -86,17 +86,13 @@ def adosc(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open
 
 
 def cmf(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, length=None, offset=None, **kwargs):
-    """Indicator: Chaikin Money Flow (CMF)
-    
-    Use help(df.ta.cmf) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Chaikin Money Flow (CMF)"""
     # Validate Arguments
     high = verify_series(high)
     low = verify_series(low)
     close = verify_series(close)
     volume = verify_series(volume)
-    length = int(length) if length and length > 0 else 1
+    length = int(length) if length and length > 0 else 20
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     offset = get_offset(offset)
 

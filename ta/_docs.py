@@ -1180,6 +1180,8 @@ Args:
     close (pd.Series): Series of 'close's
     open (pd.Series): Series of 'open's
     volume (pd.Series): Series of 'volume's
+    fast (int): The short period.  Default: 12
+    slow (int): The long period.   Default: 26
     offset (int): How many periods to offset the result.  Default: 0
 
 Kwargs:
@@ -1192,8 +1194,44 @@ Returns:
 
 
 cmf_docs = \
+"""Chaikin Money Flow (CMF)
+
+Chailin Money Flow measures the amount of money flow volume over a specific
+period in conjunction with Accumulation/Distribution.
+
+Sources:
+    https://www.tradingview.com/wiki/Chaikin_Money_Flow_(CMF)
+    https://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:chaikin_money_flow_cmf
+
+Calculation:
+    Default Inputs:
+        length=20
+    if 'open':
+        ad = close - open
+    else:
+        ad = 2 * close - high - low
+    
+    hl_range = high - low
+    ad = ad * volume / hl_range
+    CMF = SUM(ad, length) / SUM(volume, length)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    open (pd.Series): Series of 'open's
+    volume (pd.Series): Series of 'volume's
+    length (int): The short period.  Default: 20
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
 """
-"""
+
 
 efi_docs = \
 """
@@ -1259,7 +1297,7 @@ true_range.__doc__ = true_range_docs
 # Volume Documentation
 ad.__doc__ = ad_docs
 adosc.__doc__ = adosc_docs
-# cmf.__doc__ = cmf_docs
+cmf.__doc__ = cmf_docs
 # efi.__doc__ = efi_docs
 # eom.__doc__ = eom_docs
 # nvi.__doc__ = nvi_docs

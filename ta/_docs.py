@@ -1379,11 +1379,59 @@ Returns:
 
 
 pvol_docs = \
-"""
+"""Price-Volume (PVOL)
+
+Returns a series of the product of price and volume.
+
+Calculation:
+    if signed:
+        pvol = signed_series(close, 1) * close * volume
+    else:
+        pvol = close * volume
+
+Args:
+    close (pd.Series): Series of 'close's
+    volume (pd.Series): Series of 'volume's
+    signed (bool): Keeps the sign of the difference in 'close's.  Default: True
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
 """
 
+
 pvt_docs = \
-"""
+"""Price-Volume Trend (PVT)
+
+The Price-Volume Trend utilizes the Rate of Change with volume to
+and it's cumulative values to determine money flow.
+
+Sources:
+    https://www.tradingview.com/wiki/Price_Volume_Trend_(PVT)
+
+Calculation:
+    Default Inputs:
+        drift=1
+    ROC = Rate of Change
+    pv = ROC(close, drift) * volume
+    PVT = pv.cumsum()
+
+Args:
+    close (pd.Series): Series of 'close's
+    volume (pd.Series): Series of 'volume's
+    drift (int): The diff period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
 """
 
 
@@ -1430,6 +1478,6 @@ cmf.__doc__ = cmf_docs
 efi.__doc__ = efi_docs
 eom.__doc__ = eom_docs
 nvi.__doc__ = nvi_docs
-# obv.__doc__ = obv_docs
-# pvol.__doc__ = pvol_docs
-# pvt.__doc__ = pvt_docs
+obv.__doc__ = obv_docs
+pvol.__doc__ = pvol_docs
+pvt.__doc__ = pvt_docs

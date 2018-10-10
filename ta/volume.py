@@ -229,11 +229,7 @@ def nvi(close:pd.Series, volume:pd.Series, length=None, initial=None, offset=Non
 
 
 def obv(close:pd.Series, volume:pd.Series, offset=None, **kwargs):
-    """Indicator: On Balance Volume (OBV)
-    
-    Use help(df.ta.obv) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: On Balance Volume (OBV)"""
     # Validate arguments
     close = verify_series(close)
     volume = verify_series(volume)
@@ -259,11 +255,7 @@ def obv(close:pd.Series, volume:pd.Series, offset=None, **kwargs):
     return obv
 
 def pvol(close:pd.Series, volume:pd.Series, signed=True, offset=None, **kwargs):
-    """Indicator: Price-Volume (PVOL)
-    
-    Use help(df.ta.pvol) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+    """Indicator: Price-Volume (PVOL)"""
     # Validate arguments
     close = verify_series(close)
     volume = verify_series(volume)
@@ -291,19 +283,16 @@ def pvol(close:pd.Series, volume:pd.Series, signed=True, offset=None, **kwargs):
     return pvol
 
 
-def pvt(close:pd.Series, volume:pd.Series, offset=None, **kwargs):
-    """Indicator: Price-Volume Trend (PVT)
-    
-    Use help(df.ta.pvt) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
+def pvt(close:pd.Series, volume:pd.Series, drift=None, offset=None, **kwargs):
+    """Indicator: Price-Volume Trend (PVT)"""
     # Validate arguments
     close = verify_series(close)
     volume = verify_series(volume)
+    drift = get_drift(drift)
     offset = get_offset(offset)
 
     # Calculate Result
-    pv = roc(close=close) * volume
+    pv = roc(close=close, length=drift) * volume
     pvt = pv.cumsum()
 
     # Offset

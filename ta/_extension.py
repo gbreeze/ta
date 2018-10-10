@@ -90,8 +90,8 @@ class AnalysisIndicators(BasePandasObject):
         return indicator
 
 
-    # @property
-    def defaults(self, value, min_range:int = -100, max_range:int = 100, every:int = 10):
+    def constants(self, value, min_range:int = -100, max_range:int = 100, every:int = 10):
+        """Creates or removes columns of a range of integers.  Useful for indicator levels."""
         _levels = [x for x in range(min_range, max_range + 1) if x % every == 0]
         if value:
             for x in _levels:

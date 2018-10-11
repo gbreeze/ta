@@ -45,23 +45,7 @@ def signed_series(series:pd.Series, initial:int = None):
 
 
 def verify_series(series:pd.Series):
-    """Raises an AttributeError if not a Pandas Series otherwise returns the Series"""
-    # if not isinstance(series, pd.DataFrame) or not isinstance(series, pd.Series):
-    #     pass
-    # if not isinstance(series, pd.core.frame.DataFrame) or not isinstance(series, pd.core.series.Series):
-    # # if not isinstance(series, pd.DataFrame):
-    #     print(f"[X] series[{type(series)}] is not a Pandas DataFrame or Series")
-    # # if not isinstance(series, pd.Series):
-    #     # raise AttributeError(f"[X] series[{type(series)}] is not a Pandas Series\n{series}")
-    #     # print(f"[X] series[{type(series)}] is not a Pandas Series\n{series}")
-    #     # print(f"[X] series[{type(series)}] is not a Pandas Series")
-    # if not isclass(series):
-    # print(f"verify_series: series[{type(series)}]: {isinstance(series, pd.core.series.Series)}")
-
-    # if series is None or not isinstance(series, pd.core.series.Series):
-    #     print(f"[X] Ruh Rohh!  '{str(series)}' is not a Pandas' Series")
-    # else:
-    #     return series
+    """If a Pandas Series return it."""
     if series is not None and isinstance(series, pd.core.series.Series):
         return series
 

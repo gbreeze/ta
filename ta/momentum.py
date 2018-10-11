@@ -17,6 +17,9 @@ from .overlap import hlc3, ema
 def ao(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwargs):
     """Indicator: Awesome Oscillator (AO)"""
     # Validate Arguments
+    # if high is None or low is None: return
+    # print(f"args: {locals()}")
+    # if not (isinstance(high, pd.Series) and isinstance(low, pd.Series)): return
     high = verify_series(high)
     low = verify_series(low)
     fast = int(fast) if fast and fast > 0 else 5
@@ -51,7 +54,10 @@ def ao(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwarg
 def apo(close:pd.Series, fast=None, slow=None, offset=None, **kwargs):
     """Indicator: Absolute Price Oscillator (APO)"""
     # Validate Arguments
+    if close is None or not isinstance(close, pd.Series):
+        return
     close = verify_series(close)
+    # print(f"close[{type(close)}]")
     fast = int(fast) if fast and fast > 0 else 12
     slow = int(slow) if slow and slow > 0 else 26
     if slow < fast:

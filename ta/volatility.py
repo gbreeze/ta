@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 from .utils import *
-from .overlap import ema
+from .overlap import ema, hlc3
 from .statistics import variance, stdev
 
 

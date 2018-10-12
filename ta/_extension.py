@@ -87,7 +87,8 @@ class AnalysisIndicators(BasePandasObject):
             indicator.timed = f"{ms:2.3f} ms ({time_diff:2.3f} s)"
         
         # Add an alias if passed
-        if alias: indicator.alias = f"{alias}"
+        if alias:
+            indicator.alias = f"{alias}"
 
         return indicator
 
@@ -131,9 +132,10 @@ class AnalysisIndicators(BasePandasObject):
         
 
     # Misc Methods
-    def constants(self, value, min_range:int = -100, max_range:int = 100, every:int = 10):
+    def constants(self, value, min_range=-100, max_range=100, every=10):
         """Creates or removes columns of a range of integers.  Useful for indicator levels."""
         levels = [x for x in range(min_range, max_range + 1) if x % every == 0]
+        isbool(value)
         if value:
             for x in levels:
                 self._df[f'{x}'] = x
@@ -143,7 +145,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Momentum Indicators
-    def ao(self, high=None, low=None, fast:int = None, slow:int = None, offset=None, **kwargs):
+    def ao(self, high=None, low=None, fast=None, slow=None, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -153,7 +155,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def apo(self, close=None, fast:int = None, slow:int = None, offset=None, **kwargs):
+    def apo(self, close=None, fast=None, slow=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -162,7 +164,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def aroon(self, close=None, length:int = None, offset:int = None, **kwargs):
+    def aroon(self, close=None, length=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -171,7 +173,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def bop(self, open_:str = None, high:str = None, low:str = None, close:str = None, percentage:bool = False, offset=None, **kwargs):
+    def bop(self, open_=None, high=None, low=None, close=None, percentage=False, offset=None, **kwargs):
         # Get the correct column(s).
         open_ = self._get_column(open_, 'open')
         high = self._get_column(high, 'high')
@@ -183,7 +185,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def cci(self, high:str = None, low:str = None, close:str = None, length:int = None, c:float = None, offset=None, **kwargs):
+    def cci(self, high=None, low=None, close=None, length=None, c=None, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -194,7 +196,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def macd(self, close=None, fast:int = None, slow:int = None, signal:int = None, offset:int = None, **kwargs):
+    def macd(self, close=None, fast=None, slow=None, signal=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -203,7 +205,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def massi(self, high:str = None, low:str = None, fast=None, slow=None, offset=None, **kwargs):
+    def massi(self, high=None, low=None, fast=None, slow=None, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -213,7 +215,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def mfi(self, high:str = None, low:str = None, close:str = None, volume:str = None, length:int = None, drift:int = None, offset:int = None, **kwargs):
+    def mfi(self, high=None, low=None, close=None, volume=None, length=None, drift=None, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -225,7 +227,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def mom(self, close:str = None, length:int = None, offset:int = None, **kwargs):
+    def mom(self, close=None, length=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -234,7 +236,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def ppo(self, close:str = None, fast:int = None, slow:int = None, percentage=True, offset=None, **kwargs):
+    def ppo(self, close=None, fast=None, slow=None, percentage=True, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -243,7 +245,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def roc(self, close:str = None, length:int = None, offset:int = None, **kwargs):
+    def roc(self, close=None, length=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -252,7 +254,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def rsi(self, close:str = None, length:int = None, drift:int = None, offset:int = None, **kwargs):
+    def rsi(self, close=None, length=None, drift=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -261,7 +263,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def stoch(self, high:str = None, low:str = None, close:str = None, fast_k:int = None, slow_k:int = None, slow_d:int = None, offset:int = None, **kwargs):
+    def stoch(self, high=None, low=None, close=None, fast_k=None, slow_k=None, slow_d=None, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -272,7 +274,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def trix(self, close=None, length:int = None, drift:int = None, offset:int = None, **kwargs):
+    def trix(self, close=None, length=None, drift=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -281,7 +283,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def tsi(self, close=None, fast:int = None, slow:int = None, drift:int = None, offset=None, **kwargs):
+    def tsi(self, close=None, fast=None, slow=None, drift=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -290,7 +292,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def uo(self, high=None, low=None, close=None, fast:int = None, medium:int = None, slow:int = None, fast_w:int = None, medium_w:int = None, slow_w:int = None, drift:int = None, offset:int = None, **kwargs):
+    def uo(self, high=None, low=None, close=None, fast=None, medium=None, slow=None, fast_w=None, medium_w=None, slow_w=None, drift=None, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -301,7 +303,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def willr(self, high:str = None, low:str = None, close:str = None, length:int = None, percentage:bool = True, offset:int = None,**kwargs):
+    def willr(self, high=None, low=None, close=None, length=None, percentage=True, offset=None,**kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -366,7 +368,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def dema(self, close=None, length:int = None, offset:int = None, **kwargs):
+    def dema(self, close=None, length=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -375,7 +377,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def ema(self, close=None, length:int = None, offset:int = None, adjust:bool = None, **kwargs):
+    def ema(self, close=None, length=None, offset=None, adjust=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -384,7 +386,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def hma(self, close=None, length:int = None, offset:int = None, **kwargs):
+    def hma(self, close=None, length=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -393,7 +395,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def rma(self, close=None, length:int = None, offset:int = None, **kwargs):
+    def rma(self, close=None, length=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -402,7 +404,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def sma(self, close=None, length:int = None, offset:int = None, **kwargs):
+    def sma(self, close=None, length=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -411,7 +413,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def t3(self, close=None, length:int = None, a:float = None, offset:int = None, **kwargs):
+    def t3(self, close=None, length=None, a=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -420,7 +422,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def tema(self, close=None, length:int = None, offset:int = None, **kwargs):
+    def tema(self, close=None, length=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -429,7 +431,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def trima(self, close=None, length:int = None, offset:int = None, **kwargs):
+    def trima(self, close=None, length=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -438,7 +440,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def vwap(self, high=None, low=None, close=None, volume=None, offset:int = None, **kwargs):
+    def vwap(self, high=None, low=None, close=None, volume=None, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -450,7 +452,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def vwma(self, close=None, volume=None, length:int = None, offset:int = None, **kwargs):
+    def vwma(self, close=None, volume=None, length=None, offset=None, **kwargs):
         # Get the correct column(s).
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
@@ -460,7 +462,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def wma(self, close=None, length:int = None, offset:int = None, **kwargs):
+    def wma(self, close=None, length=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -470,7 +472,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Performance Indicators
-    def log_return(self, close=None, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
+    def log_return(self, close=None, length=None, cumulative=False, percent=False, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -479,7 +481,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def percent_return(self, close=None, length=None, cumulative:bool = False, percent:bool = False, offset:int = None, **kwargs):
+    def percent_return(self, close=None, length=None, cumulative=False, percent=False, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -499,7 +501,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def median(self, close=None, length=None, offset:int = None, **kwargs):
+    def median(self, close=None, length=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -555,7 +557,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Trend Indicators
-    def adx(self, high=None, low=None, close=None, drift:int = None, offset:int = None, **kwargs):
+    def adx(self, high=None, low=None, close=None, drift=None, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -566,7 +568,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def decreasing(self, close:str = None, length:int = None, asint:bool = True, offset=None, **kwargs):
+    def decreasing(self, close=None, length=None, asint=True, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -575,7 +577,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def dpo(self, close:str = None, length:int = None, centered:bool = True, offset=None, **kwargs):
+    def dpo(self, close=None, length=None, centered=True, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -584,7 +586,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def ichimoku(self, high:str = None, low:str = None, close:str = None, tenkan=None, kijun=None, senkou=None, offset:int = None, **kwargs):
+    def ichimoku(self, high=None, low=None, close=None, tenkan=None, kijun=None, senkou=None, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -595,7 +597,7 @@ class AnalysisIndicators(BasePandasObject):
         return result, span
 
 
-    def increasing(self, close:str = None, length:int = None, asint:bool = True, offset=None, **kwargs):
+    def increasing(self, close=None, length=None, asint=True, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -604,7 +606,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def kst(self, close=None, roc1:int = None, roc2:int = None, roc3:int = None, roc4:int = None, sma1:int = None, sma2:int = None, sma3:int = None, sma4:int = None, signal:int = None, offset:int = None, **kwargs):
+    def kst(self, close=None, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, sma2=None, sma3=None, sma4=None, signal=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -615,7 +617,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Volatility Indicators
-    def atr(self, high=None, low=None, close=None, length=None, mamode:str = None, offset:int = None, **kwargs):
+    def atr(self, high=None, low=None, close=None, length=None, mamode=None, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -626,7 +628,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def bbands(self, close=None, length:int = None, stdev:float = None, mamode:str = None, offset:int = None, **kwargs):
+    def bbands(self, close=None, length=None, stdev=None, mamode=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
         
@@ -635,7 +637,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def donchian(self, close=None, length:int = None, offset:int = None, **kwargs):
+    def donchian(self, close=None, length=None, offset=None, **kwargs):
         # Get the correct column.
         close = self._get_column(close, 'close')
 
@@ -644,7 +646,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def kc(self, high=None, low=None, close=None, length=None, scalar=None, mamode:str = None, offset:int = None, **kwargs):
+    def kc(self, high=None, low=None, close=None, length=None, scalar=None, mamode=None, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -655,7 +657,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def natr(self, high=None, low=None, close=None, length=None, mamode:str = None, offset:int = None, **kwargs):
+    def natr(self, high=None, low=None, close=None, length=None, mamode=None, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -666,7 +668,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def true_range(self, high=None, low=None, close=None, drift:int = None, offset:int = None, **kwargs):
+    def true_range(self, high=None, low=None, close=None, drift=None, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -677,7 +679,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def vortex(self, high=None, low=None, close=None, drift:int = None, offset:int = None, **kwargs):
+    def vortex(self, high=None, low=None, close=None, drift=None, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -690,7 +692,7 @@ class AnalysisIndicators(BasePandasObject):
 
 
     ## Volume Indicators
-    def ad(self, high=None, low=None, close=None, volume=None, open_=None, signed:bool = True, offset:int = None, **kwargs):
+    def ad(self, high=None, low=None, close=None, volume=None, open_=None, signed=True, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -705,7 +707,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def adosc(self, high=None, low=None, close=None, volume=None, open_=None, fast:int = None, slow:int = None, signed:bool = True, offset:int = None, **kwargs):
+    def adosc(self, high=None, low=None, close=None, volume=None, open_=None, fast=None, slow=None, signed=True, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -720,7 +722,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def cmf(self, high=None, low=None, close=None, volume=None, open_=None, length=None, offset:int = None, **kwargs):
+    def cmf(self, high=None, low=None, close=None, volume=None, open_=None, length=None, offset=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -735,7 +737,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def efi(self, close=None, volume=None, length=None, mamode:str = None, offset:int = None, drift:int = None, **kwargs):
+    def efi(self, close=None, volume=None, length=None, mamode=None, offset=None, drift=None, **kwargs):
         # Get the correct column(s).
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
@@ -745,7 +747,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def eom(self, high=None, low=None, close=None, volume=None, length=None, divisor:int = None, offset:int = None, drift:int = None, **kwargs):
+    def eom(self, high=None, low=None, close=None, volume=None, length=None, divisor=None, offset=None, drift=None, **kwargs):
         # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -757,7 +759,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def nvi(self, close=None, volume=None, length:int = None, initial:int = None, signed:bool = True, offset:int = None, **kwargs):
+    def nvi(self, close=None, volume=None, length=None, initial=None, signed=True, offset=None, **kwargs):
         # Get the correct column(s).
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
@@ -767,7 +769,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def obv(self, close=None, volume=None, offset:int = None, **kwargs):
+    def obv(self, close=None, volume=None, offset=None, **kwargs):
         # Get the correct column(s).
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
@@ -777,7 +779,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def pvol(self, close:str = None, volume:str = None, signed:bool = True, offset:int = None, **kwargs):
+    def pvol(self, close=None, volume=None, signed=True, offset=None, **kwargs):
         # Get the correct column(s).
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
@@ -787,7 +789,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def pvt(self, close=None, volume=None, offset:int = None, **kwargs):
+    def pvt(self, close=None, volume=None, offset=None, **kwargs):
         # Get the correct column(s).
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')

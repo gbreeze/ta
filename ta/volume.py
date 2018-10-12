@@ -14,7 +14,7 @@ from .momentum import roc
 from .overlap import hl2, ema
 
 
-def ad(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, offset=None, **kwargs):
+def ad(high, low, close, volume, open_=None, offset=None, **kwargs):
     """Indicator: Accumulation/Distribution (AD)"""
     # Validate Arguments
     high = verify_series(high)
@@ -50,7 +50,7 @@ def ad(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:p
     return ad
 
 
-def adosc(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, fast=None, slow=None, offset=None, **kwargs):
+def adosc(high, low, close, volume, open_=None, fast=None, slow=None, offset=None, **kwargs):
     """Indicator: Accumulation/Distribution Oscillator"""
     # Validate Arguments
     high = verify_series(high)
@@ -85,7 +85,7 @@ def adosc(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open
     return adosc
 
 
-def cmf(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:pd.Series, length=None, offset=None, **kwargs):
+def cmf(high, low, close, volume, open_=None, length=None, offset=None, **kwargs):
     """Indicator: Chaikin Money Flow (CMF)"""
     # Validate Arguments
     high = verify_series(high)
@@ -123,7 +123,7 @@ def cmf(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, open_:
     return cmf
 
 
-def efi(close:pd.Series, volume:pd.Series, length=None, drift=None, mamode=None, offset=None, **kwargs):
+def efi(close, volume, length=None, drift=None, mamode=None, offset=None, **kwargs):
     """Indicator: Elder's Force Index (EFI)"""
     # Validate arguments
     close = verify_series(close)
@@ -158,7 +158,7 @@ def efi(close:pd.Series, volume:pd.Series, length=None, drift=None, mamode=None,
     return efi
 
 
-def eom(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length=None, divisor=None, drift=None, offset=None, **kwargs):
+def eom(high, low, close, volume, length=None, divisor=None, drift=None, offset=None, **kwargs):
     """Indicator: Ease of Movement (EOM)"""
     # Validate arguments
     high = verify_series(high)
@@ -194,7 +194,7 @@ def eom(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length
     return eom
 
 
-def nvi(close:pd.Series, volume:pd.Series, length=None, initial=None, offset=None, **kwargs):
+def nvi(close, volume, length=None, initial=None, offset=None, **kwargs):
     """Indicator: Negative Volume Index (NVI)"""
     # Validate arguments
     close = verify_series(close)
@@ -228,7 +228,7 @@ def nvi(close:pd.Series, volume:pd.Series, length=None, initial=None, offset=Non
     return nvi
 
 
-def obv(close:pd.Series, volume:pd.Series, offset=None, **kwargs):
+def obv(close, volume, offset=None, **kwargs):
     """Indicator: On Balance Volume (OBV)"""
     # Validate arguments
     close = verify_series(close)
@@ -254,7 +254,7 @@ def obv(close:pd.Series, volume:pd.Series, offset=None, **kwargs):
 
     return obv
 
-def pvol(close:pd.Series, volume:pd.Series, signed=True, offset=None, **kwargs):
+def pvol(close, volume, signed=True, offset=None, **kwargs):
     """Indicator: Price-Volume (PVOL)"""
     # Validate arguments
     close = verify_series(close)
@@ -283,7 +283,7 @@ def pvol(close:pd.Series, volume:pd.Series, signed=True, offset=None, **kwargs):
     return pvol
 
 
-def pvt(close:pd.Series, volume:pd.Series, drift=None, offset=None, **kwargs):
+def pvt(close, volume, drift=None, offset=None, **kwargs):
     """Indicator: Price-Volume Trend (PVT)"""
     # Validate arguments
     close = verify_series(close)

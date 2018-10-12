@@ -16,7 +16,7 @@ from .volatility import atr, true_range
 
 
 
-def adx(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drift=None, offset=None, **kwargs):
+def adx(high, low, close, length=None, drift=None, offset=None, **kwargs):
     """Indicator: ADX"""
     # Validate Arguments
     high = verify_series(high)
@@ -75,7 +75,7 @@ def adx(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drift=None,
     return adxdf
 
 
-def aroon(close:pd.Series, length=None, offset=None, **kwargs):
+def aroon(close, length=None, offset=None, **kwargs):
     """Indicator: Aroon Oscillator"""
     # Validate Arguments
     close = verify_series(close)
@@ -117,7 +117,7 @@ def aroon(close:pd.Series, length=None, offset=None, **kwargs):
     return aroondf
 
 
-def decreasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
+def decreasing(close, length=None, asint=True, offset=None, **kwargs):
     """Indicator: Decreasing"""
     # Validate Arguments
     close = verify_series(close)
@@ -145,7 +145,7 @@ def decreasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
     return decreasing
 
 
-def dpo(close:pd.Series, length=None, centered=True, offset=None, **kwargs):
+def dpo(close, length=None, centered=True, offset=None, **kwargs):
     """Indicator: Detrend Price Oscillator (DPO)"""
     # Validate Arguments
     close = verify_series(close)
@@ -176,7 +176,7 @@ def dpo(close:pd.Series, length=None, centered=True, offset=None, **kwargs):
     return dpo
 
 
-def ichimoku(high:pd.Series, low:pd.Series, close:pd.Series, tenkan=None, kijun=None, senkou=None, offset=None, **kwargs):
+def ichimoku(high, low, close, tenkan=None, kijun=None, senkou=None, offset=None, **kwargs):
     """Indicator: Ichimoku Kinkō Hyō (Ichimoku)"""
     high = verify_series(high)
     low = verify_series(low)
@@ -246,7 +246,7 @@ def ichimoku(high:pd.Series, low:pd.Series, close:pd.Series, tenkan=None, kijun=
     return ichimokudf, spandf
 
 
-def increasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
+def increasing(close, length=None, asint=True, offset=None, **kwargs):
     """Indicator: Increasing"""
     # Validate Arguments
     close = verify_series(close)
@@ -274,7 +274,7 @@ def increasing(close:pd.Series, length=None, asint=True, offset=None, **kwargs):
     return increasing
 
 
-def kst(close:pd.Series, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, sma2=None, sma3=None, sma4=None, signal=None, drift=None, offset=None, **kwargs):
+def kst(close, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, sma2=None, sma3=None, sma4=None, signal=None, drift=None, offset=None, **kwargs):
     """Indicator: 'Know Sure Thing'"""
     # Validate arguments
     close = verify_series(close)
@@ -327,7 +327,7 @@ def kst(close:pd.Series, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, 
     return kstdf
 
 
-def vortex(high:pd.Series, low:pd.Series, close:pd.Series, length=None, drift=None, offset=None, **kwargs):
+def vortex(high, low, close, length=None, drift=None, offset=None, **kwargs):
     """Indicator: Vortex"""
     # Validate arguments
     high = verify_series(high)

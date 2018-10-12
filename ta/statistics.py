@@ -6,7 +6,7 @@ from .overlap import ema, sma, vwma
 from .utils import get_offset, verify_series
 
 
-def kurtosis(close:pd.Series, length=None, offset=None, **kwargs):
+def kurtosis(close, length=None, offset=None, **kwargs):
     """Indicator: Kurtosis"""
     # Validate Arguments
     close = verify_series(close)
@@ -27,7 +27,7 @@ def kurtosis(close:pd.Series, length=None, offset=None, **kwargs):
     return kurtosis
 
 
-def median(close:pd.Series, length=None, offset=None, **kwargs):
+def median(close, length=None, offset=None, **kwargs):
     """Indicator: Median"""
     # Validate Arguments
     close = verify_series(close)
@@ -48,7 +48,7 @@ def median(close:pd.Series, length=None, offset=None, **kwargs):
     return median
 
 
-def quantile(close:pd.Series, length=None, q=None, offset=None, **kwargs):
+def quantile(close, length=None, q=None, offset=None, **kwargs):
     """Indicator: Quantile"""
     # Validate Arguments
     close = verify_series(close)
@@ -70,7 +70,7 @@ def quantile(close:pd.Series, length=None, q=None, offset=None, **kwargs):
     return quantile
 
 
-def skew(close:pd.Series, length=None, offset=None, **kwargs):
+def skew(close, length=None, offset=None, **kwargs):
     """Indicator: Skew"""
     # Validate Arguments
     close = verify_series(close)
@@ -91,7 +91,7 @@ def skew(close:pd.Series, length=None, offset=None, **kwargs):
     return skew
 
 
-def stdev(close:pd.Series, length=None, offset=None, **kwargs):
+def stdev(close, length=None, offset=None, **kwargs):
     """Indicator: Standard Deviation"""
     # Validate Arguments
     close = verify_series(close)
@@ -112,7 +112,7 @@ def stdev(close:pd.Series, length=None, offset=None, **kwargs):
     return stdev
 
 
-def variance(close:pd.Series, length=None, offset=None, **kwargs):
+def variance(close, length=None, offset=None, **kwargs):
     """Indicator: Variance"""
     # Validate Arguments
     close = verify_series(close)
@@ -133,7 +133,7 @@ def variance(close:pd.Series, length=None, offset=None, **kwargs):
     return variance
 
 
-def zscore(close:pd.Series, length=None, std=None, offset=None, **kwargs):
+def zscore(close, length=None, std=None, offset=None, **kwargs):
     """Indicator: Z Score"""
     # Validate Arguments
     close = verify_series(close)

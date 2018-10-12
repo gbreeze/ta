@@ -15,7 +15,6 @@ def dropna(df):
 
 def ema_depreciated(series:pd.Series, periods:int):
     """Modified EMA with an SMA
-    
     Rolled into ema when kwargs['presma'] = True
     """
     series = verify_series(series)

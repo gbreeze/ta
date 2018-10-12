@@ -7,7 +7,7 @@ from .utils import get_drift, get_offset, verify_series
 # from .volatility import 
 
 
-def hl2(high:pd.Series, low:pd.Series, offset=None, **kwargs):
+def hl2(high, low, offset=None, **kwargs):
     """Indicator: HL2 """
     # Validate Arguments
     high = verify_series(high)
@@ -27,7 +27,7 @@ def hl2(high:pd.Series, low:pd.Series, offset=None, **kwargs):
     return hl2
 
 
-def hlc3(high:pd.Series, low:pd.Series, close:pd.Series, offset=None, **kwargs):
+def hlc3(high, low, close, offset=None, **kwargs):
     """Indicator: HLC3"""
     # Validate Arguments
     high = verify_series(high)
@@ -48,7 +48,7 @@ def hlc3(high:pd.Series, low:pd.Series, close:pd.Series, offset=None, **kwargs):
     return hlc3
 
 
-def ohlc4(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, offset=None, **kwargs):
+def ohlc4(open_, high, low, close, offset=None, **kwargs):
     """Indicator: OHLC4"""
     # Validate Arguments
     open_ = verify_series(open_)
@@ -70,7 +70,7 @@ def ohlc4(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, offse
     return ohlc4
 
 
-def midpoint(close:pd.Series, length=None, offset=None, **kwargs):
+def midpoint(close, length=None, offset=None, **kwargs):
     """Indicator: Midpoint"""
     # Validate arguments
     close = verify_series(close)
@@ -99,7 +99,7 @@ def midpoint(close:pd.Series, length=None, offset=None, **kwargs):
     return midpoint
 
 
-def midprice(high:pd.Series, low:pd.Series, length=None, offset=None, **kwargs):
+def midprice(high, low, length=None, offset=None, **kwargs):
     """Indicator: Midprice"""
     # Validate arguments
     high = verify_series(high)
@@ -129,7 +129,7 @@ def midprice(high:pd.Series, low:pd.Series, length=None, offset=None, **kwargs):
     return midprice
 
 
-def dema(close:pd.Series, length=None, offset=None, **kwargs):
+def dema(close, length=None, offset=None, **kwargs):
     """Indicator: Double Exponential Moving Average (DEMA)"""
     # Validate Arguments
     close = verify_series(close)
@@ -152,7 +152,7 @@ def dema(close:pd.Series, length=None, offset=None, **kwargs):
     return dema
 
 
-def ema(close:pd.Series, length=None, offset=None, **kwargs):
+def ema(close, length=None, offset=None, **kwargs):
     """Indicator: Exponential Moving Average (EMA)"""
     # Validate Arguments
     close = verify_series(close)
@@ -179,7 +179,7 @@ def ema(close:pd.Series, length=None, offset=None, **kwargs):
     return ema
 
 
-def hma(close:pd.Series, length=None, offset=None, **kwargs):
+def hma(close, length=None, offset=None, **kwargs):
     """Indicator: Hull Moving Average (HMA)
     
     Use help(df.ta.hma) for specific documentation where 'df' represents
@@ -209,7 +209,7 @@ def hma(close:pd.Series, length=None, offset=None, **kwargs):
     return hma
 
 
-def rma(close:pd.Series, length=None, offset=None, **kwargs):
+def rma(close, length=None, offset=None, **kwargs):
     """Indicator: wildeR's Moving Average (RMA)"""
     # Validate Arguments
     close = verify_series(close)
@@ -231,7 +231,7 @@ def rma(close:pd.Series, length=None, offset=None, **kwargs):
     return rma
 
 
-def sma(close:pd.Series, length=None, offset=None, **kwargs):
+def sma(close, length=None, offset=None, **kwargs):
     """Indicator: Simple Moving Average (SMA)"""
     # Validate Arguments
     close = verify_series(close)
@@ -252,7 +252,7 @@ def sma(close:pd.Series, length=None, offset=None, **kwargs):
     return sma
 
 
-def t3(close:pd.Series, length=None, a=None, offset=None, **kwargs):
+def t3(close, length=None, a=None, offset=None, **kwargs):
     """Indicator: T3"""
     # Validate Arguments
     close = verify_series(close)
@@ -285,7 +285,7 @@ def t3(close:pd.Series, length=None, a=None, offset=None, **kwargs):
     return t3
 
 
-def tema(close:pd.Series, length=None, offset=None, **kwargs):
+def tema(close, length=None, offset=None, **kwargs):
     """Indicator: Triple Exponential Moving Average (TEMA)"""
     # Validate Arguments
     close = verify_series(close)
@@ -309,7 +309,7 @@ def tema(close:pd.Series, length=None, offset=None, **kwargs):
     return tema
 
 
-def trima(close:pd.Series, length=None, offset=None, **kwargs):
+def trima(close, length=None, offset=None, **kwargs):
     """Indicator: Triangular Moving Average (TRIMA)  *requires scipy"""
     # Validate Arguments
     close = verify_series(close)
@@ -330,7 +330,7 @@ def trima(close:pd.Series, length=None, offset=None, **kwargs):
     return trima
 
 
-def vwap(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, offset=None, **kwargs):
+def vwap(high, low, close, volume, offset=None, **kwargs):
     """Indicator: Volume Weighted Average Price (VWAP)"""
     # Validate Arguments
     high = verify_series(high)
@@ -354,7 +354,7 @@ def vwap(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, offse
     return vwap
 
 
-def vwma(close:pd.Series, volume:pd.Series, length=None, offset=None, **kwargs):
+def vwma(close, volume, length=None, offset=None, **kwargs):
     """Indicator: Volume Weighted Moving Average (VWMA)"""
     # Validate Arguments
     close = verify_series(close)
@@ -376,7 +376,7 @@ def vwma(close:pd.Series, volume:pd.Series, length=None, offset=None, **kwargs):
     return vwma
 
 
-def wma(close:pd.Series, length=None, asc=None, offset=None, **kwargs):
+def wma(close, length=None, asc=None, offset=None, **kwargs):
     """Indicator: Weighted Moving Average (WMA)"""
     # Validate Arguments
     close = verify_series(close)

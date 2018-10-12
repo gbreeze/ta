@@ -14,7 +14,7 @@ from .overlap import ema, hlc3
 from .statistics import variance, stdev
 
 
-def atr(high:pd.Series, low:pd.Series, close:pd.Series, length=None, mamode=None, drift=None, offset=None, **kwargs):
+def atr(high, low, close, length=None, mamode=None, drift=None, offset=None, **kwargs):
     """Indicator: Average True Range (ATR)"""
     # Validate arguments
     high = verify_series(high)
@@ -49,7 +49,7 @@ def atr(high:pd.Series, low:pd.Series, close:pd.Series, length=None, mamode=None
     return atr
 
 
-def bbands(close:pd.Series, length=None, std=None, mamode=None, offset=None, **kwargs):
+def bbands(close, length=None, std=None, mamode=None, offset=None, **kwargs):
     """Indicator: Bollinger Bands (BBANDS)"""
     # Validate arguments
     close = verify_series(close)
@@ -101,7 +101,7 @@ def bbands(close:pd.Series, length=None, std=None, mamode=None, offset=None, **k
     return bbandsdf
 
 
-def donchian(close:pd.Series, length=None, offset=None, **kwargs):
+def donchian(close, length=None, offset=None, **kwargs):
     """Indicator: Donchian Channels (DC)"""
     # Validate arguments
     close = verify_series(close)
@@ -144,7 +144,7 @@ def donchian(close:pd.Series, length=None, offset=None, **kwargs):
     return dcdf
 
 
-def kc(high:pd.Series, low:pd.Series, close:pd.Series, length=None, scalar=None, mamode=None, offset=None, **kwargs):
+def kc(high, low, close, length=None, scalar=None, mamode=None, offset=None, **kwargs):
     """Indicator: Keltner Channels (KC)"""
     # Validate arguments
     high = verify_series(high)
@@ -201,7 +201,7 @@ def kc(high:pd.Series, low:pd.Series, close:pd.Series, length=None, scalar=None,
     return kcdf
 
 
-def massi(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwargs):
+def massi(high, low, fast=None, slow=None, offset=None, **kwargs):
     """Indicator: Mass Index (MASSI)"""
     # Validate arguments
     high = verify_series(high)
@@ -237,7 +237,7 @@ def massi(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kw
     return massi
 
 
-def natr(high:pd.Series, low:pd.Series, close:pd.Series, length=None, mamode=None, drift=None, offset=None, **kwargs):
+def natr(high, low, close, length=None, mamode=None, drift=None, offset=None, **kwargs):
     """Indicator: Normalized Average True Range (NATR)"""
     # Validate arguments
     high = verify_series(high)
@@ -267,7 +267,7 @@ def natr(high:pd.Series, low:pd.Series, close:pd.Series, length=None, mamode=Non
     return natr
 
 
-def true_range(high:pd.Series, low:pd.Series, close:pd.Series, drift=None, offset=None, **kwargs):
+def true_range(high, low, close, drift=None, offset=None, **kwargs):
     """Indicator: True Range"""
     # Validate arguments
     high = verify_series(high)

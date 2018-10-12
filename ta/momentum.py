@@ -14,14 +14,12 @@ from .overlap import hlc3, ema
 # from .utils import get_drift, get_offset, signed_series, verify_series
 
 
-def ao(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwargs):
+def ao(high, low, fast=None, slow=None, offset=None, **kwargs):
     """Indicator: Awesome Oscillator (AO)"""
     # Validate Arguments
-    # if high is None or low is None: return
-    # print(f"args: {locals()}")
-    # if not (isinstance(high, pd.Series) and isinstance(low, pd.Series)): return
     high = verify_series(high)
     low = verify_series(low)
+
     fast = int(fast) if fast and fast > 0 else 5
     slow = int(slow) if slow and slow > 0 else 34
     if slow < fast:
@@ -51,13 +49,11 @@ def ao(high:pd.Series, low:pd.Series, fast=None, slow=None, offset=None, **kwarg
     return ao
 
 
-def apo(close:pd.Series, fast=None, slow=None, offset=None, **kwargs):
+def apo(close, fast=None, slow=None, offset=None, **kwargs):
     """Indicator: Absolute Price Oscillator (APO)"""
     # Validate Arguments
-    if close is None or not isinstance(close, pd.Series):
-        return
     close = verify_series(close)
-    # print(f"close[{type(close)}]")
+
     fast = int(fast) if fast and fast > 0 else 12
     slow = int(slow) if slow and slow > 0 else 26
     if slow < fast:
@@ -83,7 +79,7 @@ def apo(close:pd.Series, fast=None, slow=None, offset=None, **kwargs):
     return apo
 
 
-def bop(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, offset=None, **kwargs):
+def bop(open_, high, low, close, offset=None, **kwargs):
     """Indicator: Balance of Power (BOP)"""
     # Validate Arguments
     open_ = verify_series(open_)
@@ -113,7 +109,7 @@ def bop(open_:pd.Series, high:pd.Series, low:pd.Series, close:pd.Series, offset=
     return bop
 
 
-def cci(high:pd.Series, low:pd.Series, close:pd.Series, length=None, c=None, offset=None, **kwargs):
+def cci(high, low, close, length=None, c=None, offset=None, **kwargs):
     """Indicator: Commodity Channel Index (CCI)"""
     # Validate Arguments
     high = verify_series(high)
@@ -151,7 +147,7 @@ def cci(high:pd.Series, low:pd.Series, close:pd.Series, length=None, c=None, off
     return cci
 
 
-def macd(close:pd.Series, fast=None, slow=None, signal=None, offset=None, **kwargs):
+def macd(close, fast=None, slow=None, signal=None, offset=None, **kwargs):
     """Indicator: Moving Average, Convergence/Divergence (MACD)"""
     # Validate arguments
     close = verify_series(close)
@@ -201,7 +197,7 @@ def macd(close:pd.Series, fast=None, slow=None, signal=None, offset=None, **kwar
     return macddf
 
 
-def mfi(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length=None, drift=None, offset=None, **kwargs):
+def mfi(high, low, close, volume, length=None, drift=None, offset=None, **kwargs):
     """Indicator: Money Flow Index (MFI)"""
     # Validate arguments
     high = verify_series(high)
@@ -243,7 +239,7 @@ def mfi(high:pd.Series, low:pd.Series, close:pd.Series, volume:pd.Series, length
     return mfi
 
 
-def mom(close:pd.Series, length=None, offset=None, **kwargs):
+def mom(close, length=None, offset=None, **kwargs):
     """Indicator: Momentum (MOM)"""
     # Validate Arguments
     close = verify_series(close)
@@ -269,7 +265,7 @@ def mom(close:pd.Series, length=None, offset=None, **kwargs):
     return mom
 
 
-def ppo(close:pd.Series, fast=None, slow=None, signal=None, offset=None, **kwargs):
+def ppo(close, fast=None, slow=None, signal=None, offset=None, **kwargs):
     """Indicator: Percentage Price Oscillator (PPO)"""
     # Validate Arguments
     close = verify_series(close)
@@ -319,7 +315,7 @@ def ppo(close:pd.Series, fast=None, slow=None, signal=None, offset=None, **kwarg
     return ppodf
 
 
-def roc(close:pd.Series, length=None, offset=None, **kwargs):
+def roc(close, length=None, offset=None, **kwargs):
     """Indicator: Rate of Change (ROC)"""
     # Validate Arguments
     close = verify_series(close)
@@ -346,7 +342,7 @@ def roc(close:pd.Series, length=None, offset=None, **kwargs):
     return roc
 
 
-def rsi(close:pd.Series, length=None, drift=None, offset=None, **kwargs):
+def rsi(close, length=None, drift=None, offset=None, **kwargs):
     """Indicator: Relative Strength Index (RSI)"""
     # Validate arguments
     close = verify_series(close)
@@ -382,7 +378,7 @@ def rsi(close:pd.Series, length=None, drift=None, offset=None, **kwargs):
     return rsi
 
 
-def stoch(high:pd.Series, low:pd.Series, close:pd.Series, fast_k=None, slow_k=None, slow_d=None, offset=None, **kwargs):
+def stoch(high, low, close, fast_k=None, slow_k=None, slow_d=None, offset=None, **kwargs):
     """Indicator: Stochastic Oscillator (STOCH)"""
     # Validate arguments
     high = verify_series(high)
@@ -437,7 +433,7 @@ def stoch(high:pd.Series, low:pd.Series, close:pd.Series, fast_k=None, slow_k=No
     return stochdf
 
 
-def trix(close:pd.Series, length=None, drift=None, offset=None, **kwargs):
+def trix(close, length=None, drift=None, offset=None, **kwargs):
     """Indicator: Trix (TRIX)"""
     # Validate Arguments
     close = verify_series(close)
@@ -462,7 +458,7 @@ def trix(close:pd.Series, length=None, drift=None, offset=None, **kwargs):
     return trix
 
 
-def tsi(close:pd.Series, fast=None, slow=None, drift=None, offset=None, **kwargs):
+def tsi(close, fast=None, slow=None, drift=None, offset=None, **kwargs):
     """Indicator: True Strength Index (TSI)"""
     # Validate Arguments
     close = verify_series(close)
@@ -500,7 +496,7 @@ def tsi(close:pd.Series, fast=None, slow=None, drift=None, offset=None, **kwargs
     return tsi
 
 
-def uo(high:pd.Series, low:pd.Series, close:pd.Series, fast=None, medium=None, slow=None, fast_w=None, medium_w=None, slow_w=None, drift=None, offset=None, **kwargs):
+def uo(high, low, close, fast=None, medium=None, slow=None, fast_w=None, medium_w=None, slow_w=None, drift=None, offset=None, **kwargs):
     """Indicator: Ultimate Oscillator (UO)"""
     # Validate arguments
     high = verify_series(high)
@@ -549,7 +545,7 @@ def uo(high:pd.Series, low:pd.Series, close:pd.Series, fast=None, medium=None, s
     return uo
 
 
-def willr(high=None, low=None, close=None, length=None, offset=None, **kwargs):
+def willr(high, low, close, length=None, offset=None, **kwargs):
     """Indicator: William's Percent R (WILLR)"""
     # Validate arguments
     high = verify_series(high)

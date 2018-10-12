@@ -5,7 +5,7 @@ import pandas as pd
 from .utils import get_offset, verify_series
 
 
-def log_return(close:pd.Series, length=None, cumulative:bool = False, offset:int = None, **kwargs):
+def log_return(close, length=None, cumulative=False, offset=None, **kwargs):
     """Indicator: Log Return"""
     # Validate Arguments
     close = verify_series(close)
@@ -28,7 +28,7 @@ def log_return(close:pd.Series, length=None, cumulative:bool = False, offset:int
     return log_return
 
 
-def percent_return(close:pd.Series, length=None, cumulative:bool = False, offset:int = None, **kwargs):
+def percent_return(close, length=None, cumulative=False, offset=None, **kwargs):
     """Indicator: Percent Return"""
     # Validate Arguments
     close = verify_series(close)

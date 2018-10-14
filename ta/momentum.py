@@ -19,7 +19,6 @@ def ao(high, low, fast=None, slow=None, offset=None, **kwargs):
     # Validate Arguments
     high = verify_series(high)
     low = verify_series(low)
-
     fast = int(fast) if fast and fast > 0 else 5
     slow = int(slow) if slow and slow > 0 else 34
     if slow < fast:
@@ -53,7 +52,6 @@ def apo(close, fast=None, slow=None, offset=None, **kwargs):
     """Indicator: Absolute Price Oscillator (APO)"""
     # Validate Arguments
     close = verify_series(close)
-
     fast = int(fast) if fast and fast > 0 else 12
     slow = int(slow) if slow and slow > 0 else 26
     if slow < fast:

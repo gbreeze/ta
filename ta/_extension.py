@@ -42,59 +42,107 @@ class BasePandasObject(PandasObject):
 
 @pd.api.extensions.register_dataframe_accessor('ta')
 class AnalysisIndicators(BasePandasObject):
-    """AnalysisIndicators is class that extends a DataFrame.  The name extension is
-    registered to all instances of the DataFrame wit the name of 'ta'.
+    """AnalysisIndicators is class that extends the Pandas DataFrame via
+    Pandas @pd.api.extensions.register_dataframe_accessor('name') decorator.
+
+    This Pandas Extension is named 'ta' for Technical Analysis that allows us
+    to apply technical indicators with an one extension.  Even though 'ta' is
+    now a Pandas DataFrame Extension, you can still call the Indicators
+    individually. However many of the Indicators have been updated and new ones
+    added, so make sure to check help.
+    
+    By default the 'ta' extensions uses lower case column names: open, high,
+    low, close, and volume.  You can override the defaults but providing the
+    it's replacement name when calling the indicator.  For example, to call the
+    indicator hl2().  
+
+    With 'default' columns: open, high, low, close, and volume.
+    >>> df.ta.hl2()
+    >>> df.ta(kind='hl2')
+
+    With DataFrame columns: Open, High, Low, Close, and Volume.
+    >>> df.ta.hl2(high='High', low='Low')
+    >>> df.ta(kind='hl2', high='High', low='Low')
 
     Args:
-        kind(str): Name of the indicator.  Converts kind to lowercase.
-        kwargs(dict): Method specific modifiers
+        kind (str, optional): Default: None.  Name of the indicator.  Converts
+            kind to lowercase before calling.
+        timed (bool, optional): Default: False.  Curious about the execution
+            speed?  Well it's not ground breaking, but you can enable with True.
+        kwargs: Extension specific modifiers.
+            append (bool, optional):  Default: False.  When True, it appends to
+            result column(s) of the indicator onto the DataFrame.
 
     Returns:
-        Either a Pandas Series or DataFrame of the results of the called indicator.
+        Most Indicators will return a Pandas Series.  Others like MACD, BBANDS,
+        KC, et al will return a Pandas DataFrame.  Ichimoku on the other hand
+        will return two DataFrames, the Ichimoku DataFrame for the known period
+        and a Span DataFrame for the future of the Span values.
 
-    Example A:  Loading Data and multiply ways of calling a function.
-    # Load some data. If local, this would do.
-    # Assum having a CSV with columns: date,open,high,low,close,volume
-    df = pd.read_csv('AAPL.csv', index_col='date', parse_dates=True, dtype=float, infer_datetime_format=False, keep_date_col=True)
+    Let's get started!
 
-    # Calling HL2.  All equivalent.  Thy return a new Series/DataFrame with
-    #  the Indicator result
-    hl2 = df.ta.hl2()
-    hl2 = df.ta.HL2()
-    hl2 = df.ta(kind='hl2')
+    1. Loading the 'ta' module:
+    >>> import pandas as pd
+    >>> import ta as ta
 
-    #Given a TimeSeries DataFrame called df with lower case column names. ie. open, high, lose, close, volume
+    2. Load some data:
+    >>> df = pd.read_csv('AAPL.csv', index_col='date', parse_dates=True)
+    
+    3. Help!
+    3a. General Help:
+    >>> help(df.ta)
+    >>> df.ta()
+    3a. Indicator Help:
+    >>> help(ta.apo)
+    3b. Indicator Extension Help:
+    >>> help(df.ta.apo)
 
-    Additional kwargs:
-    * append: Default: False.  If True, appends the indicator result to the df.
+    4. Ways of calling an indicator.
+    4a. Calling just the MACD indicator without 'ta' DataFrame extension.
+    >>> ta.apo(df['close'])
+    4b. Calling just the MACD indicator with 'ta' DataFrame extension.
+    >>> df.ta.apo()
+    4c. Calling using kind.
+    >>> df.ta(kind='apo')
+
+    5. Working with kwargs
+    5a. Append the result to the working df.
+    >>> df.ta.apo(append=True)
+    5b. Timing an indicator.
+    >>> apo = df.ta(kind='apo', timed=True)
+    >>> print(apo.timed)
     """
     def __call__(self, kind=None, alias=None, timed=False, **kwargs):
         try:
-            kind = kind.lower() if isinstance(kind, str) else None
-            fn = getattr(self, kind.lower())
-        except AttributeError:
-            raise ValueError(f"kind='{kind.lower()}' is not valid for {self.__class__.__name__}")
+            if isinstance(kind, str):
+                kind = kind.lower() 
+                fn = getattr(self, kind)
 
-        if timed:
-            stime = time.time()
+                if timed:
+                    stime = time.time()
 
-        # Run the indicator
-        indicator = fn(**kwargs)
+                # Run the indicator
+                indicator = fn(**kwargs)
 
-        if timed:
-            time_diff = time.time() - stime
-            ms = time_diff * 1000
-            indicator.timed = f"{ms:2.3f} ms ({time_diff:2.3f} s)"
-        
-        # Add an alias if passed
-        if alias:
-            indicator.alias = f"{alias}"
+                if timed:
+                    time_diff = time.time() - stime
+                    ms = time_diff * 1000
+                    indicator.timed = f"{ms:2.3f} ms ({time_diff:2.3f} s)"
 
-        return indicator
+                # Add an alias if passed
+                if alias:
+                    indicator.alias = f"{alias}"
+                
+                return indicator
+            else:
+                self.help()
+
+        except:
+            self.help()
 
 
     def _append(self, result=None, **kwargs):
-        """Appends a Pandas Series or DataFrame columns of the result to self._df."""
+        """Appends a Pandas Series or DataFrame columns to self._df."""
         if 'append' in kwargs and kwargs['append']:
             df = self._df
             if df is None or result is None: return
@@ -131,12 +179,30 @@ class AnalysisIndicators(BasePandasObject):
                 return df.iloc[:,match[0]] if len(match) else  print(NOT_FOUND)
         
 
-    # Misc Methods
-    def constants(self, value, min_range=-100, max_range=100, every=10):
-        """Creates or removes columns of a range of integers.  Useful for indicator levels."""
+    def constants(self, apply, min_range=-100, max_range=100, every=10):
+        """Constants
+
+        Useful for indicator levels or if you need some constant value.
+        
+        Adding constants that range of constants from -4 to 4 inclusive
+        >>> df.ta.constants(True, -4, 4, 1)
+        Removing constants that range of constants from -4 to 4 inclusive
+        >>> df.ta.constants(False, -4, 4, 1)
+
+        Args:
+            apply (bool): Default: None.  If True, appends the range of constants to the
+                working DataFrame.  If False, it removes the constant range from the working
+                DataFrame.
+            min_range (int): Default: -100.  Lowest integer for the constant range.
+            max_range (int): Default: 100.  Largest integer for the constant range.
+            every (int): Default: 10.  How often to include a new constant.
+        
+        Returns:
+            Returns nothing to the user.  Either adds or removes constant ranges from the
+            working DataFrame.
+        """
         levels = [x for x in range(min_range, max_range + 1) if x % every == 0]
-        isbool(value)
-        if value:
+        if apply:
             for x in levels:
                 self._df[f'{x}'] = x
         else:
@@ -144,656 +210,528 @@ class AnalysisIndicators(BasePandasObject):
                 del self._df[f'{x}']
 
 
-    ## Momentum Indicators
+    def help(self):
+        """Simple Help Screen"""
+        ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))
+        total_indicators = len(ta_indicators) - 2  # Excluding constants and help methods.
+        print(f"TA - Technical Analysis Indicators\n")
+        # print(f"")
+        print(f"Total Indicators: {total_indicators}\nShort Names: {', '.join(ta_indicators)}")
+
+
+
     def ao(self, high=None, low=None, fast=None, slow=None, offset=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
-
         result = ao(high=high, low=low, fast=fast, slow=slow, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def apo(self, close=None, fast=None, slow=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = apo(close=close, fast=fast, slow=slow, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def aroon(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = aroon(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def bop(self, open_=None, high=None, low=None, close=None, percentage=False, offset=None, **kwargs):
-        # Get the correct column(s).
         open_ = self._get_column(open_, 'open')
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-        
         result = bop(open_=open_, high=high, low=low, close=close, percentage=percentage, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def cci(self, high=None, low=None, close=None, length=None, c=None, offset=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-
         result = cci(high=high, low=low, close=close, length=length, c=c, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def macd(self, close=None, fast=None, slow=None, signal=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = macd(close=close, fast=fast, slow=slow, signal=signal, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def massi(self, high=None, low=None, fast=None, slow=None, offset=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
-
         result = massi(high=high, low=low, fast=fast, slow=slow, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def mfi(self, high=None, low=None, close=None, volume=None, length=None, drift=None, offset=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
-
         result = mfi(high=high, low=low, close=close, volume=volume, length=length, drift=drift, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def mom(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = mom(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def ppo(self, close=None, fast=None, slow=None, percentage=True, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = ppo(close=close, fast=fast, slow=slow, percentage=percentage, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def roc(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = roc(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def rsi(self, close=None, length=None, drift=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = rsi(close=close, length=length, drift=drift, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def stoch(self, high=None, low=None, close=None, fast_k=None, slow_k=None, slow_d=None, offset=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-
         result = stoch(high=high, low=low, close=close, fast_k=fast_k, slow_k=slow_k, slow_d=slow_d, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def trix(self, close=None, length=None, drift=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = trix(close=close, length=length, drift=drift, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def tsi(self, close=None, fast=None, slow=None, drift=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = tsi(close=close, fast=fast, slow=slow, drift=drift, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def uo(self, high=None, low=None, close=None, fast=None, medium=None, slow=None, fast_w=None, medium_w=None, slow_w=None, drift=None, offset=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-
         result = uo(high=high, low=low, close=close, fast=fast, medium=medium, slow=slow, fast_w=fast_w, medium_w=medium_w, slow_w=slow_w, drift=drift, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def willr(self, high=None, low=None, close=None, length=None, percentage=True, offset=None,**kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-        
         result = willr(high=high, low=low, close=close, length=length, percentage=percentage, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
 
-    ## Overlap Indicators
     def hl2(self, high=None, low=None, offset=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
-
         result = hl2(high=high, low=low, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def hlc3(self, high=None, low=None, close=None, offset=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-
         result = hlc3(high=high, low=low, close=close, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def ohlc4(self, open_=None, high=None, low=None, close=None, offset=None, **kwargs):
-        # Get the correct column(s).
         open_ = self._get_column(open_, 'open')
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-
         result = ohlc4(open_=open_, high=high, low=low, close=close, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def midpoint(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = midpoint(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)        
         return result
 
 
     def midprice(self, high=None, low=None, length=None, offset=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
-
         result = midprice(high=high, low=low, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)        
         return result
 
 
     def dema(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = dema(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def ema(self, close=None, length=None, offset=None, adjust=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = ema(close=close, length=length, offset=offset, adjust=adjust, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def hma(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = hma(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def rma(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = rma(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def sma(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = sma(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def t3(self, close=None, length=None, a=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = t3(close=close, length=length, a=a, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def tema(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = tema(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def trima(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = trima(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def vwap(self, high=None, low=None, close=None, volume=None, offset=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
-
         result = vwap(high=high, low=low, close=close, volume=volume, offset=offset, **kwargs)
         self._append(result, **kwargs)        
         return result
 
 
     def vwma(self, close=None, volume=None, length=None, offset=None, **kwargs):
-        # Get the correct column(s).
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
-
         result = vwma(close=close, volume=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def wma(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = wma(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
-    ## Performance Indicators
     def log_return(self, close=None, length=None, cumulative=False, percent=False, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = log_return(close=close, length=length, cumulative=cumulative, percent=percent, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def percent_return(self, close=None, length=None, cumulative=False, percent=False, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = percent_return(close=close, length=length, cumulative=cumulative, percent=percent, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
 
-    ## Statistics Indicators
     def kurtosis(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = kurtosis(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def median(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = median(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def quantile(self, close=None, length=None, q=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = quantile(close=close, length=length, q=q, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def skew(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = skew(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def stdev(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = stdev(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def variance(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = variance(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def zscore(self, close=None, length=None, std=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = zscore(close=close, length=length, std=std, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
 
-    ## Trend Indicators
     def adx(self, high=None, low=None, close=None, drift=None, offset=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-
         result = adx(high=high, low=low, close=close, drift=drift, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def decreasing(self, close=None, length=None, asint=True, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = decreasing(close=close, length=length, asint=asint, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def dpo(self, close=None, length=None, centered=True, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = dpo(close=close, length=length, centered=centered, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
-    def ichimoku(self, high=None, low=None, close=None, tenkan=None, kijun=None, senkou=None, offset=None, **kwargs):
-        # Get the correct column(s).
+    def ichimoku(self, high=None, low=None, close=None, tenkan=None, kijun=None, senkou=None, offset=None, **kwargs):        
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-
         result, span = ichimoku(high=high, low=low, close=close, tenkan=tenkan, kijun=kijun, senkou=senkou, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result, span
 
 
     def increasing(self, close=None, length=None, asint=True, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = increasing(close=close, length=length, asint=asint, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def kst(self, close=None, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, sma2=None, sma3=None, sma4=None, signal=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = kst(close=close, roc1=roc1, roc2=roc2, roc3=roc3, roc4=roc4, sma1=sma1, sma2=sma2, sma3=sma3, sma4=sma4, signal=signal, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
 
-    ## Volatility Indicators
     def atr(self, high=None, low=None, close=None, length=None, mamode=None, offset=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-
         result = atr(high=high, low=low, close=close, length=length, mamode=mamode, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def bbands(self, close=None, length=None, stdev=None, mamode=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-        
         result = bbands(close=close, length=length, stdev=stdev, mamode=mamode, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def donchian(self, close=None, length=None, offset=None, **kwargs):
-        # Get the correct column.
         close = self._get_column(close, 'close')
-
         result = donchian(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def kc(self, high=None, low=None, close=None, length=None, scalar=None, mamode=None, offset=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-
         result = kc(high=high, low=low, close=close, length=length, scalar=scalar, mamode=mamode, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def natr(self, high=None, low=None, close=None, length=None, mamode=None, offset=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-
         result = natr(high=high, low=low, close=close, length=length, mamode=mamode, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def true_range(self, high=None, low=None, close=None, drift=None, offset=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-
         result = true_range(high=high, low=low, close=close, drift=drift, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def vortex(self, high=None, low=None, close=None, drift=None, offset=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-
         result = vortex(high=high, low=low, close=close, drift=drift, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
 
-    ## Volume Indicators
     def ad(self, high=None, low=None, close=None, volume=None, open_=None, signed=True, offset=None, **kwargs):
-        # Get the correct column(s).
+        if open_ is not None:
+            open_ = self._get_column(open_, 'open')
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
-
-        if open_ is not None:
-            open_ = self._get_column(open_, 'open')
-
         result = ad(high=high, low=low, close=close, volume=volume, open_=open_, signed=signed, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def adosc(self, high=None, low=None, close=None, volume=None, open_=None, fast=None, slow=None, signed=True, offset=None, **kwargs):
-        # Get the correct column(s).
+        if open_ is not None:
+            open_ = self._get_column(open_, 'open')        
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
-
-        if open_ is not None:
-            open_ = self._get_column(open_, 'open')
-
         result = adosc(high=high, low=low, close=close, volume=volume, open_=open_, fast=fast, slow=slow, signed=signed, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def cmf(self, high=None, low=None, close=None, volume=None, open_=None, length=None, offset=None, **kwargs):
-        # Get the correct column(s).
+        if open_ is not None:
+            open_ = self._get_column(open_, 'open')
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
-
-        if open_ is not None:
-            open_ = self._get_column(open_, 'open')
-
         result = cmf(high=high, low=low, close=close, volume=volume, open_=open_, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def efi(self, close=None, volume=None, length=None, mamode=None, offset=None, drift=None, **kwargs):
-        # Get the correct column(s).
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
-
         result = efi(close=close, volume=volume, length=length, offset=offset, mamode=mamode, drift=drift, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def eom(self, high=None, low=None, close=None, volume=None, length=None, divisor=None, offset=None, drift=None, **kwargs):
-        # Get the correct column(s).
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
-
         result = eom(high=high, low=low, close=close, volume=volume, length=length, divisor=divisor, offset=offset, drift=drift, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def nvi(self, close=None, volume=None, length=None, initial=None, signed=True, offset=None, **kwargs):
-        # Get the correct column(s).
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
-
         result = nvi(close=close, volume=volume, length=length, initial=initial, signed=signed, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def obv(self, close=None, volume=None, offset=None, **kwargs):
-        # Get the correct column(s).
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
-
         result = obv(close=close, volume=volume, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def pvol(self, close=None, volume=None, signed=True, offset=None, **kwargs):
-        # Get the correct column(s).
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
-
         result = pvol(close=close, volume=volume, signed=signed, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
     def pvt(self, close=None, volume=None, offset=None, **kwargs):
-        # Get the correct column(s).
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
-
         result = pvt(close=close, volume=volume, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
@@ -802,7 +740,7 @@ class AnalysisIndicators(BasePandasObject):
 
     ## Indicator Aliases by Category, more to be added later...
     # # Momentum: momomentum.py ✅
-    # AbsolutePriceOscillator = apo #🤦🏻‍♂️
+    # AbsolutePriceOscillator = apo
     # AwesomeOscillator = ao
     # BalanceOfPower = bop
     # CommodityChannelIndex = cci
@@ -873,6 +811,6 @@ class AnalysisIndicators(BasePandasObject):
     # PriceVolumeTrend = pvt
 
 
-ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))
-if True:
-    print(f"[i] TA Indicators: {len(ta_indicators)}\n{', '.join(ta_indicators)}")
+# ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))
+# if True:
+#     print(f"[i] TA Indicators: {len(ta_indicators)}\n{', '.join(ta_indicators)}")

@@ -157,7 +157,7 @@ def ema(close, length=None, offset=None, **kwargs):
     # Validate Arguments
     close = verify_series(close)
     length = int(length) if length and length > 0 else 10
-    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length#int(0.25 * length)
     adjust = bool(kwargs['adjust']) if 'adjust' in kwargs and kwargs['adjust'] is not None else True
     offset = get_offset(offset)
 
@@ -583,7 +583,7 @@ Returns:
 
 
 ema_docs = \
-"""Exponential Moving Average (DEMA)
+"""Exponential Moving Average (EMA)
 
 The Exponential Moving Average is more responsive moving average compared to the
 Simple Moving Average (SMA).  The weights are determined by alpha which is
@@ -599,7 +599,7 @@ Calculation:
     Default Inputs:
         length=10
     SMA = Simple Moving Average
-    If 'presma':
+    if kwargs['presma']:
         initial = SMA(close, length)
         rest = close[length:]
         close = initial + rest

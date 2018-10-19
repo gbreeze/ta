@@ -233,7 +233,7 @@ def ichimoku(high, low, close, tenkan=None, kijun=None, senkou=None, offset=None
     ichimokudf.name = f"ICHIMOKU_{tenkan}_{kijun}_{senkou}"
     ichimokudf.category = 'trend'
 
-    # Prepare Span DataFrame
+    # Prepare Span DataFrame, assuming it is a 'Daily' content
     last_date = close.index[-1]
     df_freq = close.index.value_counts().mode()[0]
     tdelta = pd.Timedelta(df_freq, unit='d')

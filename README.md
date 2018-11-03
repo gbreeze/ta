@@ -4,7 +4,7 @@
 
 ![Example Chart](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_TA_Chart.png)
 
-It is a Technical Analysis library to financial time series datasets (open, close, high, low, volume) with over 60 Indicators. You can use it to do feature engineering from financial datasets. It is built upon Python Pandas library.
+Technical Analysis is a library, with more than 60 Indicators, to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is built upon Python Pandas library.
 
 ## Momentum (15)
 
@@ -53,6 +53,8 @@ Example MACD:
 * Log Return: log_return
 * Percent Return: percent_return
 
+Example Cumulative Percent Return:
+![Example MACD](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_CumulativePercentReturn.png)
 
 ## Statistics (7)
 
@@ -63,6 +65,9 @@ Example MACD:
 * Standard Deviation: stdev
 * Variance: variance
 * Z Score: zscore
+
+Example Z Score:
+![Example Z Score](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_ZScore.png)
 
 
 ## Trend (6)
@@ -98,6 +103,9 @@ Example MACD:
 * On-Balance Volume: obv
 * Price-Volume: pvol
 * Price Volume Trend: pvt
+
+Example OBV:
+![Example OBV](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_OBV.png)
 
 
 # Documentation

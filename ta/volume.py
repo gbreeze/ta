@@ -11,7 +11,7 @@ import pandas as pd
 
 from .utils import get_drift, get_offset, signed_series, verify_series
 from .momentum import roc
-from .overlap import hl2, ema
+from .overlap import hl2, hlc3, ema
 
 
 def ad(high, low, close, volume, open_=None, offset=None, **kwargs):

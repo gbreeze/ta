@@ -2,7 +2,7 @@
 
 <!-- ![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png) -->
 
-![alt text](https://raw.githubusercontent.com/twopirllc/ta/master/doc/Example_TA_Chart.png)
+![Example Chart](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_TA_Chart.png)
 
 It is a Technical Analysis library to financial time series datasets (open, close, high, low, volume) with over 60 Indicators. You can use it to do feature engineering from financial datasets. It is built upon Python Pandas library.
 
@@ -25,7 +25,7 @@ It is a Technical Analysis library to financial time series datasets (open, clos
 * Williams %R: willr
 
 Example MACD:
-![Example MACD](https://raw.githubusercontent.com/twopirllc/ta/master/doc/Example_SPY_MACD.png)
+![Example MACD](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_MACD.png)
 
 
 ## Overlap (17)

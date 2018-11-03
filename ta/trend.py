@@ -176,76 +176,6 @@ def dpo(close, length=None, centered=True, offset=None, **kwargs):
     return dpo
 
 
-def ichimoku(high, low, close, tenkan=None, kijun=None, senkou=None, offset=None, **kwargs):
-    """Indicator: Ichimoku Kinkō Hyō (Ichimoku)"""
-    high = verify_series(high)
-    low = verify_series(low)
-    close = verify_series(close)
-    tenkan = int(tenkan) if tenkan and tenkan > 0 else 9
-    kijun = int(kijun) if kijun and kijun > 0 else 26
-    senkou = int(senkou) if senkou and senkou > 0 else 52
-    offset = get_offset(offset)
-
-    # Calculate Result
-    tenkan_sen = midprice(high=high, low=low, length=tenkan)
-    kijun_sen = midprice(high=high, low=low, length=kijun)
-    span_a = 0.5 * (tenkan_sen + kijun_sen)
-    span_b = midprice(high=high, low=low, length=senkou)
-
-    # Copy Span A and B values before their shift
-    _span_a = span_a[-kijun:].copy()
-    _span_b = span_b[-kijun:].copy()
-
-    span_a = span_a.shift(kijun)
-    span_b = span_b.shift(kijun)
-    chikou_span = close.shift(-kijun)
-
-    # Offset
-    tenkan_sen = tenkan_sen.shift(offset)
-    kijun_sen = kijun_sen.shift(offset)
-    span_a = span_a.shift(offset)
-    span_b = span_b.shift(offset)
-    chikou_span = chikou_span.shift(offset)
-
-    # Handle fills
-    if 'fillna' in kwargs:
-        span_a.fillna(kwargs['fillna'], inplace=True)
-        span_b.fillna(kwargs['fillna'], inplace=True)
-        chikou_span.fillna(kwargs['fillna'], inplace=True)
-    if 'fill_method' in kwargs:
-        span_a.fillna(method=kwargs['fill_method'], inplace=True)
-        span_b.fillna(method=kwargs['fill_method'], inplace=True)
-        chikou_span.fillna(method=kwargs['fill_method'], inplace=True)
-
-    # Name and Categorize it
-    span_a.name = f"ISA_{tenkan}"
-    span_b.name = f"ISB_{kijun}"
-    tenkan_sen.name = f"ITS_{tenkan}"
-    kijun_sen.name = f"IKS_{kijun}"
-    chikou_span.name = f"ICS_{kijun}"
-
-    chikou_span.category = kijun_sen.category = tenkan_sen.category = 'trend'
-    span_b.category = span_a.category = chikou_span
-
-    # Prepare Ichimoku DataFrame
-    data = {span_a.name: span_a, span_b.name: span_b, tenkan_sen.name: tenkan_sen, kijun_sen.name: kijun_sen, chikou_span.name: chikou_span}
-    ichimokudf = pd.DataFrame(data)
-    ichimokudf.name = f"ICHIMOKU_{tenkan}_{kijun}_{senkou}"
-    ichimokudf.category = 'trend'
-
-    # Prepare Span DataFrame, assuming it is a 'Daily' content
-    last_date = close.index[-1]
-    df_freq = close.index.value_counts().mode()[0]
-    tdelta = pd.Timedelta(df_freq, unit='d')
-    new_dt = pd.date_range(start=last_date + tdelta, periods=kijun, freq='B')
-    spandf = pd.DataFrame(index=new_dt, columns=[span_a.name, span_b.name])
-    _span_a.index = _span_b.index = new_dt
-    spandf[span_a.name] = _span_a
-    spandf[span_b.name] = _span_b
-
-    return ichimokudf, spandf
-
-
 def increasing(close, length=None, asint=True, offset=None, **kwargs):
     """Indicator: Increasing"""
     # Validate Arguments
@@ -272,59 +202,6 @@ def increasing(close, length=None, asint=True, offset=None, **kwargs):
     increasing.category = 'trend'
 
     return increasing
-
-
-def kst(close, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, sma2=None, sma3=None, sma4=None, signal=None, drift=None, offset=None, **kwargs):
-    """Indicator: 'Know Sure Thing'"""
-    # Validate arguments
-    close = verify_series(close)
-    roc1 = int(roc1) if roc1 and roc1 > 0 else 10
-    roc2 = int(roc2) if roc2 and roc2 > 0 else 15
-    roc3 = int(roc3) if roc3 and roc3 > 0 else 20
-    roc4 = int(roc4) if roc4 and roc4 > 0 else 30
-
-    sma1 = int(sma1) if sma1 and sma1 > 0 else 10
-    sma2 = int(sma2) if sma2 and sma2 > 0 else 10
-    sma3 = int(sma3) if sma3 and sma3 > 0 else 10
-    sma4 = int(sma4) if sma4 and sma4 > 0 else 15
-
-    signal = int(signal) if signal and signal > 0 else 9
-    drift = get_drift(drift)
-    offset = get_offset(offset)
-
-    # Calculate Result
-    rocma1 = roc(close, roc1).rolling(sma1).mean()
-    rocma2 = roc(close, roc2).rolling(sma2).mean()
-    rocma3 = roc(close, roc3).rolling(sma3).mean()
-    rocma4 = roc(close, roc4).rolling(sma4).mean()
-
-    kst = 100 * (rocma1 + 2 * rocma2 + 3 * rocma3 + 4 * rocma4)
-    kst_signal = kst.rolling(signal).mean()
-
-    # Offset
-    kst = kst.shift(offset)
-    kst_signal = kst_signal.shift(offset)
-
-    # Handle fills
-    if 'fillna' in kwargs:
-        kst.fillna(kwargs['fillna'], inplace=True)
-        kst_signal.fillna(kwargs['fillna'], inplace=True)
-    if 'fill_method' in kwargs:
-        kst.fillna(method=kwargs['fill_method'], inplace=True)
-        kst_signal.fillna(method=kwargs['fill_method'], inplace=True)
-
-    # Name and Categorize it
-    kst.name = f"KST_{roc1}_{roc2}_{roc3}_{roc4}_{sma1}_{sma2}_{sma3}_{sma4}"
-    kst_signal.name = f"KSTS_{signal}"
-    kst.category = kst_signal.category = 'momentum'
-
-    # Prepare DataFrame to return
-    data = {kst.name: kst, kst_signal.name: kst_signal}
-    kstdf = pd.DataFrame(data)
-    kstdf.name = f"KST_{roc1}_{roc2}_{roc3}_{roc4}_{sma1}_{sma2}_{sma3}_{sma4}_{signal}"
-    kstdf.category = 'momentum'
-
-    return kstdf
 
 
 def vortex(high, low, close, length=None, drift=None, offset=None, **kwargs):

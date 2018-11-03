@@ -1,63 +1,107 @@
 # Technical Analysis Library in Python
 
-It is a Technical Analysis library to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is builded on Python Pandas library.
+It is a Technical Analysis library to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is built upon Python Pandas library.
 
 ![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png)
 
-The library has implemented 32 indicators and 58 features:
+The library has 64 indicators:
 
-#### Volume
+## Momentum (15)
 
-* Accumulation/Distribution Index (ADI)
-* On-Balance Volume (OBV)
-* On-Balance Volume mean (OBV mean)
-* Chaikin Money Flow (CMF)
-* Force Index (FI)
-* Ease of Movement (EoM, EMV)
-* Volume-price Trend (VPT)
-* Negative Volume Index (NVI)
+* Awesome Oscillator: ao
+* Absolute Price Oscillator: apo
+* Balance of Power: bop
+* Commodity Channel Index: cci
+* KST Oscillator: kst
+* Moving Average Convergence Divergence: macd
+* Momentum: mom
+* Percentage Price Oscillator: ppo
+* Rate of Change: roc
+* Relative Strength Index: rsi
+* Stochastic Oscillator: stoch
+* Trix: trix
+* True strength index: tsi
+* Ultimate Oscillator: uo
+* Williams %R: willr
 
-#### Volatility
 
-* Average True Range (ATR)
-* Bollinger Bands (BB)
-* Keltner Channel (KC)
-* Donchian Channel (DC)
+## Overlap (17)
 
-#### Trend
+* Double Exponential Moving Average: dema
+* Exponential Moving Average: ema
+* High-Low Average: hl2
+* High-Low-Close Average: hlc3
+* Hull Exponential Moving Average: hma
+* Ichimoku Kinkō Hyō: ichimoku
+* Midpoint: midpoint
+* Midprice: midprice
+* Open-High-Low-Close Average: ohlc4
+* William's Moving Average: rma
+* Simple Moving Average: sma
+* T3 Moving Average: t3
+* Triple Exponential Moving Average: tema
+* Triangular Moving Average: trima (requires scipy)
+* Volume Weighted Average Price: vwap
+* Volume Weighted Moving Average: vwma
+* Weighted Moving Average: wma
 
-* Moving Average Convergence Divergence (MACD)
-* Average Directional Movement Index (ADX)
-* Vortex Indicator (VI)
-* Trix (TRIX)
-* Mass Index (MI)
-* Commodity Channel Index (CCI)
-* Detrended Price Oscillator (DPO)
-* KST Oscillator (KST)
-* Ichimoku Kinkō Hyō (Ichimoku)
+## Performance (2)
 
-#### Momentum
+* Log Return: log_return
+* Percent Return: percent_return
 
-* Money Flow Index (MFI)
-* Relative Strength Index (RSI)
-* True strength index (TSI)
-* Ultimate Oscillator (UO)
-* Stochastic Oscillator (SR)
-* Williams %R (WR)
-* Awesome Oscillator (AO)
 
-#### Others
+## Statistics (7)
 
-* Daily Return (DR)
-* Daily Log Return (DLR)
-* Cumulative Return (CR)
+* Kurtosis: kurtosis
+* Median: median
+* Quantile: quantile
+* Skew: skew
+* Standard Deviation: stdev
+* Variance: variance
+* Z Score: zscore
+
+
+## Trend (6)
+
+* Average Directional Movement Index: adx
+* Aroon Oscillator: aroon
+* Decreasing: decreasing
+* Detrended Price Oscillator: dpo
+* Increasing: increasing
+* Vortex Indicator: vortex
+
+
+## Volatility (7)
+
+* Average True Range: atr
+* Bollinger Bands: bbands
+* Donchian Channel: donchain
+* Keltner Channel: kc
+* Mass Index: massi
+* Normalized Average True Range: natr
+* True Range: true_range
+
+
+## Volume (10)
+
+* Accumulation/Distribution Index: ad
+* Accumulation/Distribution Oscillator: adosc
+* Chaikin Money Flow: cmf
+* Elder's Force Index: efi
+* Ease of Movement: eom
+* Money Flow Index: mfi
+* Negative Volume Index: nvi
+* On-Balance Volume: obv
+* Price-Volume: pvol
+* Price Volume Trend: pvt
 
 
 # Documentation
 
 https://technical-analysis-library-in-python.readthedocs.io/en/latest/
 
-# Motivation to use
+# Motivation
 
 * English: https://towardsdatascience.com/technical-analysis-library-to-financial-datasets-with-pandas-python-4b2b390d3543
 * Spanish: https://medium.com/datos-y-ciencia/biblioteca-de-an%C3%A1lisis-t%C3%A9cnico-sobre-series-temporales-financieras-para-machine-learning-con-cb28f9427d0
@@ -72,7 +116,7 @@ $ pip install ta
 
 To use this library you should have a financial time series dataset including “Timestamp”, “Open”, “High”, “Low”, “Close” and “Volume” columns.
 
-You should clean or fill NaN values in your dataset before add technical analysis features.
+You should clean or fill NaN values in your dataset before adding technical analysis features.
 
 You can get code examples in [examples_to_use](https://github.com/bukosabino/ta/tree/master/examples_to_use) folder.
 

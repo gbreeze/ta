@@ -194,6 +194,48 @@ def eom(high, low, close, volume, length=None, divisor=None, drift=None, offset=
     return eom
 
 
+def mfi(high, low, close, volume, length=None, drift=None, offset=None, **kwargs):
+    """Indicator: Money Flow Index (MFI)"""
+    # Validate arguments
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    volume = verify_series(volume)
+    length = int(length) if length and length > 0 else 14
+    drift = get_drift(drift)
+    offset = get_offset(offset)
+
+    # Calculate Result
+    typical_price = hlc3(high=high, low=low, close=close)
+    raw_money_flow = typical_price * volume
+
+    tdf = pd.DataFrame({'diff': 0, 'rmf': raw_money_flow, '+mf': 0, '-mf': 0})
+
+    tdf.loc[(typical_price.diff(drift) > 0), 'diff'] =  1
+    tdf.loc[tdf['diff'] ==  1, '+mf'] = raw_money_flow
+
+    tdf.loc[(typical_price.diff(drift) < 0), 'diff'] = -1
+    tdf.loc[tdf['diff'] == -1, '-mf'] = raw_money_flow
+
+    psum = tdf['+mf'].rolling(length).sum()
+    nsum = tdf['-mf'].rolling(length).sum()
+    tdf['mr'] = psum / nsum
+    mfi = 100 * psum / (psum + nsum)
+    tdf['mfi'] = mfi
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        mfi.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        mfi.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    mfi.name = f"MFI_{length}"
+    mfi.category = 'momentum'
+
+    return mfi
+
+
 def nvi(close, volume, length=None, initial=None, offset=None, **kwargs):
     """Indicator: Negative Volume Index (NVI)"""
     # Validate arguments
@@ -253,6 +295,7 @@ def obv(close, volume, offset=None, **kwargs):
     obv.category = 'volume'
 
     return obv
+
 
 def pvol(close, volume, signed=True, offset=None, **kwargs):
     """Indicator: Price-Volume (PVOL)"""

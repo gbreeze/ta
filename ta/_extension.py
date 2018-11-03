@@ -219,7 +219,7 @@ class AnalysisIndicators(BasePandasObject):
         print(f"Total Indicators: {total_indicators}\nShort Names: {', '.join(ta_indicators)}")
 
 
-
+    # Momentum Indicators
     def ao(self, high=None, low=None, fast=None, slow=None, offset=None, **kwargs):
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -231,13 +231,6 @@ class AnalysisIndicators(BasePandasObject):
     def apo(self, close=None, fast=None, slow=None, offset=None, **kwargs):
         close = self._get_column(close, 'close')
         result = apo(close=close, fast=fast, slow=slow, offset=offset, **kwargs)
-        self._append(result, **kwargs)
-        return result
-
-
-    def aroon(self, close=None, length=None, offset=None, **kwargs):
-        close = self._get_column(close, 'close')
-        result = aroon(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
@@ -261,6 +254,13 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    def kst(self, close=None, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, sma2=None, sma3=None, sma4=None, signal=None, offset=None, **kwargs):
+        close = self._get_column(close, 'close')
+        result = kst(close=close, roc1=roc1, roc2=roc2, roc3=roc3, roc4=roc4, sma1=sma1, sma2=sma2, sma3=sma3, sma4=sma4, signal=signal, offset=offset, **kwargs)
+        self._append(result, **kwargs)
+        return result
+
+
     def macd(self, close=None, fast=None, slow=None, signal=None, offset=None, **kwargs):
         close = self._get_column(close, 'close')
         result = macd(close=close, fast=fast, slow=slow, signal=signal, offset=offset, **kwargs)
@@ -272,16 +272,6 @@ class AnalysisIndicators(BasePandasObject):
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         result = massi(high=high, low=low, fast=fast, slow=slow, offset=offset, **kwargs)
-        self._append(result, **kwargs)
-        return result
-
-
-    def mfi(self, high=None, low=None, close=None, volume=None, length=None, drift=None, offset=None, **kwargs):
-        high = self._get_column(high, 'high')
-        low = self._get_column(low, 'low')
-        close = self._get_column(close, 'close')
-        volume = self._get_column(volume, 'volume')
-        result = mfi(high=high, low=low, close=close, volume=volume, length=length, drift=drift, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
@@ -355,6 +345,20 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    # Overlap Indicators
+    def dema(self, close=None, length=None, offset=None, **kwargs):
+        close = self._get_column(close, 'close')
+        result = dema(close=close, length=length, offset=offset, **kwargs)
+        self._append(result, **kwargs)
+        return result
+
+
+    def ema(self, close=None, length=None, offset=None, adjust=None, **kwargs):
+        close = self._get_column(close, 'close')
+        result = ema(close=close, length=length, offset=offset, adjust=adjust, **kwargs)
+        self._append(result, **kwargs)
+        return result
+
 
     def hl2(self, high=None, low=None, offset=None, **kwargs):
         high = self._get_column(high, 'high')
@@ -373,14 +377,20 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def ohlc4(self, open_=None, high=None, low=None, close=None, offset=None, **kwargs):
-        open_ = self._get_column(open_, 'open')
+    def hma(self, close=None, length=None, offset=None, **kwargs):
+        close = self._get_column(close, 'close')
+        result = hma(close=close, length=length, offset=offset, **kwargs)
+        self._append(result, **kwargs)
+        return result
+
+
+    def ichimoku(self, high=None, low=None, close=None, tenkan=None, kijun=None, senkou=None, offset=None, **kwargs):        
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-        result = ohlc4(open_=open_, high=high, low=low, close=close, offset=offset, **kwargs)
+        result, span = ichimoku(high=high, low=low, close=close, tenkan=tenkan, kijun=kijun, senkou=senkou, offset=offset, **kwargs)
         self._append(result, **kwargs)
-        return result
+        return result, span
 
 
     def midpoint(self, close=None, length=None, offset=None, **kwargs):
@@ -398,23 +408,12 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def dema(self, close=None, length=None, offset=None, **kwargs):
+    def ohlc4(self, open_=None, high=None, low=None, close=None, offset=None, **kwargs):
+        open_ = self._get_column(open_, 'open')
+        high = self._get_column(high, 'high')
+        low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-        result = dema(close=close, length=length, offset=offset, **kwargs)
-        self._append(result, **kwargs)
-        return result
-
-
-    def ema(self, close=None, length=None, offset=None, adjust=None, **kwargs):
-        close = self._get_column(close, 'close')
-        result = ema(close=close, length=length, offset=offset, adjust=adjust, **kwargs)
-        self._append(result, **kwargs)
-        return result
-
-
-    def hma(self, close=None, length=None, offset=None, **kwargs):
-        close = self._get_column(close, 'close')
-        result = hma(close=close, length=length, offset=offset, **kwargs)
+        result = ohlc4(open_=open_, high=high, low=low, close=close, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
@@ -479,6 +478,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    # Performance Indicators
     def log_return(self, close=None, length=None, cumulative=False, percent=False, offset=None, **kwargs):
         close = self._get_column(close, 'close')
         result = log_return(close=close, length=length, cumulative=cumulative, percent=percent, offset=offset, **kwargs)
@@ -493,7 +493,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-
+    # Statistics Indicators
     def kurtosis(self, close=None, length=None, offset=None, **kwargs):
         close = self._get_column(close, 'close')
         result = kurtosis(close=close, length=length, offset=offset, **kwargs)
@@ -543,12 +543,19 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-
+    # Trend Indicators
     def adx(self, high=None, low=None, close=None, drift=None, offset=None, **kwargs):
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
         result = adx(high=high, low=low, close=close, drift=drift, offset=offset, **kwargs)
+        self._append(result, **kwargs)
+        return result
+
+
+    def aroon(self, close=None, length=None, offset=None, **kwargs):
+        close = self._get_column(close, 'close')
+        result = aroon(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
@@ -567,15 +574,6 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def ichimoku(self, high=None, low=None, close=None, tenkan=None, kijun=None, senkou=None, offset=None, **kwargs):        
-        high = self._get_column(high, 'high')
-        low = self._get_column(low, 'low')
-        close = self._get_column(close, 'close')
-        result, span = ichimoku(high=high, low=low, close=close, tenkan=tenkan, kijun=kijun, senkou=senkou, offset=offset, **kwargs)
-        self._append(result, **kwargs)
-        return result, span
-
-
     def increasing(self, close=None, length=None, asint=True, offset=None, **kwargs):
         close = self._get_column(close, 'close')
         result = increasing(close=close, length=length, asint=asint, offset=offset, **kwargs)
@@ -583,14 +581,16 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def kst(self, close=None, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, sma2=None, sma3=None, sma4=None, signal=None, offset=None, **kwargs):
+    def vortex(self, high=None, low=None, close=None, drift=None, offset=None, **kwargs):
+        high = self._get_column(high, 'high')
+        low = self._get_column(low, 'low')
         close = self._get_column(close, 'close')
-        result = kst(close=close, roc1=roc1, roc2=roc2, roc3=roc3, roc4=roc4, sma1=sma1, sma2=sma2, sma3=sma3, sma4=sma4, signal=signal, offset=offset, **kwargs)
+        result = vortex(high=high, low=low, close=close, drift=drift, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
 
-
+    # Volatility Indicators
     def atr(self, high=None, low=None, close=None, length=None, mamode=None, offset=None, **kwargs):
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -641,16 +641,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    def vortex(self, high=None, low=None, close=None, drift=None, offset=None, **kwargs):
-        high = self._get_column(high, 'high')
-        low = self._get_column(low, 'low')
-        close = self._get_column(close, 'close')
-        result = vortex(high=high, low=low, close=close, drift=drift, offset=offset, **kwargs)
-        self._append(result, **kwargs)
-        return result
-
-
-
+    # Volume Indicators
     def ad(self, high=None, low=None, close=None, volume=None, open_=None, signed=True, offset=None, **kwargs):
         if open_ is not None:
             open_ = self._get_column(open_, 'open')
@@ -705,6 +696,16 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    def mfi(self, high=None, low=None, close=None, volume=None, length=None, drift=None, offset=None, **kwargs):
+        high = self._get_column(high, 'high')
+        low = self._get_column(low, 'low')
+        close = self._get_column(close, 'close')
+        volume = self._get_column(volume, 'volume')
+        result = mfi(high=high, low=low, close=close, volume=volume, length=length, drift=drift, offset=offset, **kwargs)
+        self._append(result, **kwargs)
+        return result
+
+
     def nvi(self, close=None, volume=None, length=None, initial=None, signed=True, offset=None, **kwargs):
         close = self._get_column(close, 'close')
         volume = self._get_column(volume, 'volume')
@@ -740,33 +741,36 @@ class AnalysisIndicators(BasePandasObject):
 
     ## Indicator Aliases by Category, more to be added later...
     # # Momentum: momomentum.py ✅
-    # AbsolutePriceOscillator = apo
     # AwesomeOscillator = ao
+    # AbsolutePriceOscillator = apo
     # BalanceOfPower = bop
     # CommodityChannelIndex = cci
     # KnowSureThing = kst
     # MACD = macd
-    # MassIndex = massi
     # Momentum = mom
     # PercentagePriceOscillator = ppo
     # RateOfChange = roc
     # RelativeStrengthIndex = rsi
     # Stochastic = stoch
+    # TRIX = trix
     # TrueStrengthIndex = tsi
     # UltimateOscillator = uo
     # WilliamsR = willr
 
     # # Overlap: overlap.py ✅
-    # HL2 = hl2
-    # HLC3 = TypicalPrice = hlc3
-    # OHLC4 = ohlc4
-    # Median = median
-    # Midpoint = midpoint
-    # Midprice = midprice
     # DoubleExponentialMovingAverage = dema
     # ExponentialMovingAverage = ema
+    # HL2 = hl2
+    # HLC3 = TypicalPrice = hlc3
     # HullMovingAverage = hma
+    # Ichimoku = ichimoku
+    # Midpoint = midpoint
+    # Midprice = midprice
+    # OHLC4 = ohlc4
+    # WilliamsMovingAverage = rma
     # SimpleMovingAverage = sma
+    # T3 = t3
+    # TripleExponentialMovingAverage = tema
     # TriangularMovingAverage = trima # require scipy
     # VolumeWeightedAveragePrice = vwap
     # VolumeWeightedMovingAverage = vwma
@@ -778,6 +782,7 @@ class AnalysisIndicators(BasePandasObject):
 
     # # Statistics: statistics.py ✅
     # Kurtosis = kurtosis
+    # Median = median
     # Quantile = quantile
     # Skew = skew
     # StandardDeviation = stdev
@@ -786,6 +791,7 @@ class AnalysisIndicators(BasePandasObject):
 
     # # Trend: trend.py ✅
     # AverageDirectionalMovmentIndex = adx
+    # Aroon = aroon
     # Decreasing = decreasing
     # DetrendPriceOscillator = dpo
     # Increasing = increasing
@@ -796,6 +802,7 @@ class AnalysisIndicators(BasePandasObject):
     # BollingerBands = bbands
     # DonchianChannels = donchian
     # KeltnerChannels = kc
+    # MassIndex = massi
     # NormalizedAverageTrueRange = natr
     # TrueRange = true_range
 
@@ -805,6 +812,7 @@ class AnalysisIndicators(BasePandasObject):
     # ChaikinMoneyFlow = cmf
     # EldersForceIndex = efi
     # EaseOfMovement = eom
+    # MoneyFlowIndex = mfi
     # NegativeVolumeIndex = nvi
     # OnBalanceVolume = obv
     # PriceVolume = pvol

@@ -7,6 +7,57 @@ from .utils import get_drift, get_offset, verify_series
 # from .volatility import 
 
 
+
+def dema(close, length=None, offset=None, **kwargs):
+    """Indicator: Double Exponential Moving Average (DEMA)"""
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 10
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = get_offset(offset)
+
+    # Calculate Result
+    ema1 = ema(close=close, length=length, min_periods=min_periods)
+    ema2 = ema(close=ema1, length=length, min_periods=min_periods)
+    dema = 2 * ema1 - ema2
+
+    # Offset
+    dema = dema.shift(offset)
+
+    # Name & Category
+    dema.name = f"DEMA_{length}"
+    dema.category = 'overlap'
+
+    return dema
+
+
+def ema(close, length=None, offset=None, **kwargs):
+    """Indicator: Exponential Moving Average (EMA)"""
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 10
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length#int(0.25 * length)
+    adjust = bool(kwargs['adjust']) if 'adjust' in kwargs and kwargs['adjust'] is not None else True
+    offset = get_offset(offset)
+
+    # Calculate Result
+    if 'presma' in kwargs and kwargs['presma']:
+        initial_sma = sma(close=close, length=length)[:length]
+        rest = close[length:]
+        close = pd.concat([initial_sma, rest])
+
+    ema = close.ewm(span=length, min_periods=min_periods, adjust=adjust).mean()
+
+    # Offset
+    ema = ema.shift(offset)
+
+    # Name & Category
+    ema.name = f"EMA_{length}"
+    ema.category = 'overlap'
+
+    return ema
+
+
 def hl2(high, low, offset=None, **kwargs):
     """Indicator: HL2 """
     # Validate Arguments
@@ -48,26 +99,104 @@ def hlc3(high, low, close, offset=None, **kwargs):
     return hlc3
 
 
-def ohlc4(open_, high, low, close, offset=None, **kwargs):
-    """Indicator: OHLC4"""
+def hma(close, length=None, offset=None, **kwargs):
+    """Indicator: Hull Moving Average (HMA)
+    
+    Use help(df.ta.hma) for specific documentation where 'df' represents
+    the DataFrame you are using.
+    """
     # Validate Arguments
-    open_ = verify_series(open_)
-    high = verify_series(high)
-    low = verify_series(low)
     close = verify_series(close)
+    length = int(length) if length and length > 0 else 10
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     offset = get_offset(offset)
 
     # Calculate Result
-    ohlc4 = 0.25 * (open_ + high + low + close)
+    half_length = int(length / 2)
+    sqrt_length = int(sqrt(length))
+
+    wmaf = wma(close=close, length=half_length)
+    wmas = wma(close=close, length=length)
+    hma = wma(close=2 * wmaf - wmas, length=sqrt_length)
 
     # Offset
-    ohlc4 = ohlc4.shift(offset)
+    hma = hma.shift(offset)
 
     # Name & Category
-    ohlc4.name = "OHLC4"
-    ohlc4.category = 'overlap'
+    hma.name = f"HMA_{length}"
+    hma.category = 'overlap'
 
-    return ohlc4
+    return hma
+
+
+def ichimoku(high, low, close, tenkan=None, kijun=None, senkou=None, offset=None, **kwargs):
+    """Indicator: Ichimoku Kinkō Hyō (Ichimoku)"""
+    high = verify_series(high)
+    low = verify_series(low)
+    close = verify_series(close)
+    tenkan = int(tenkan) if tenkan and tenkan > 0 else 9
+    kijun = int(kijun) if kijun and kijun > 0 else 26
+    senkou = int(senkou) if senkou and senkou > 0 else 52
+    offset = get_offset(offset)
+
+    # Calculate Result
+    tenkan_sen = midprice(high=high, low=low, length=tenkan)
+    kijun_sen = midprice(high=high, low=low, length=kijun)
+    span_a = 0.5 * (tenkan_sen + kijun_sen)
+    span_b = midprice(high=high, low=low, length=senkou)
+
+    # Copy Span A and B values before their shift
+    _span_a = span_a[-kijun:].copy()
+    _span_b = span_b[-kijun:].copy()
+
+    span_a = span_a.shift(kijun)
+    span_b = span_b.shift(kijun)
+    chikou_span = close.shift(-kijun)
+
+    # Offset
+    tenkan_sen = tenkan_sen.shift(offset)
+    kijun_sen = kijun_sen.shift(offset)
+    span_a = span_a.shift(offset)
+    span_b = span_b.shift(offset)
+    chikou_span = chikou_span.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        span_a.fillna(kwargs['fillna'], inplace=True)
+        span_b.fillna(kwargs['fillna'], inplace=True)
+        chikou_span.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        span_a.fillna(method=kwargs['fill_method'], inplace=True)
+        span_b.fillna(method=kwargs['fill_method'], inplace=True)
+        chikou_span.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    span_a.name = f"ISA_{tenkan}"
+    span_b.name = f"ISB_{kijun}"
+    tenkan_sen.name = f"ITS_{tenkan}"
+    kijun_sen.name = f"IKS_{kijun}"
+    chikou_span.name = f"ICS_{kijun}"
+
+    chikou_span.category = kijun_sen.category = tenkan_sen.category = 'trend'
+    span_b.category = span_a.category = chikou_span
+
+    # Prepare Ichimoku DataFrame
+    data = {span_a.name: span_a, span_b.name: span_b, tenkan_sen.name: tenkan_sen, kijun_sen.name: kijun_sen, chikou_span.name: chikou_span}
+    ichimokudf = pd.DataFrame(data)
+    ichimokudf.name = f"ICHIMOKU_{tenkan}_{kijun}_{senkou}"
+    ichimokudf.category = 'overlap'
+
+    # Prepare Span DataFrame, assuming it is a 'Daily' content
+    last_date = close.index[-1]
+    df_freq = close.index.value_counts().mode()[0]
+    tdelta = pd.Timedelta(df_freq, unit='d')
+    new_dt = pd.date_range(start=last_date + tdelta, periods=kijun, freq='B')
+    spandf = pd.DataFrame(index=new_dt, columns=[span_a.name, span_b.name])
+    _span_a.index = _span_b.index = new_dt
+    spandf[span_a.name] = _span_a
+    spandf[span_b.name] = _span_b
+
+    return ichimokudf, spandf
 
 
 def midpoint(close, length=None, offset=None, **kwargs):
@@ -129,84 +258,26 @@ def midprice(high, low, length=None, offset=None, **kwargs):
     return midprice
 
 
-def dema(close, length=None, offset=None, **kwargs):
-    """Indicator: Double Exponential Moving Average (DEMA)"""
+def ohlc4(open_, high, low, close, offset=None, **kwargs):
+    """Indicator: OHLC4"""
     # Validate Arguments
+    open_ = verify_series(open_)
+    high = verify_series(high)
+    low = verify_series(low)
     close = verify_series(close)
-    length = int(length) if length and length > 0 else 10
-    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     offset = get_offset(offset)
 
     # Calculate Result
-    ema1 = ema(close=close, length=length, min_periods=min_periods)
-    ema2 = ema(close=ema1, length=length, min_periods=min_periods)
-    dema = 2 * ema1 - ema2
+    ohlc4 = 0.25 * (open_ + high + low + close)
 
     # Offset
-    dema = dema.shift(offset)
+    ohlc4 = ohlc4.shift(offset)
 
     # Name & Category
-    dema.name = f"DEMA_{length}"
-    dema.category = 'overlap'
+    ohlc4.name = "OHLC4"
+    ohlc4.category = 'overlap'
 
-    return dema
-
-
-def ema(close, length=None, offset=None, **kwargs):
-    """Indicator: Exponential Moving Average (EMA)"""
-    # Validate Arguments
-    close = verify_series(close)
-    length = int(length) if length and length > 0 else 10
-    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length#int(0.25 * length)
-    adjust = bool(kwargs['adjust']) if 'adjust' in kwargs and kwargs['adjust'] is not None else True
-    offset = get_offset(offset)
-
-    # Calculate Result
-    if 'presma' in kwargs and kwargs['presma']:
-        initial_sma = sma(close=close, length=length)[:length]
-        rest = close[length:]
-        close = pd.concat([initial_sma, rest])
-
-    ema = close.ewm(span=length, min_periods=min_periods, adjust=adjust).mean()
-
-    # Offset
-    ema = ema.shift(offset)
-
-    # Name & Category
-    ema.name = f"EMA_{length}"
-    ema.category = 'overlap'
-
-    return ema
-
-
-def hma(close, length=None, offset=None, **kwargs):
-    """Indicator: Hull Moving Average (HMA)
-    
-    Use help(df.ta.hma) for specific documentation where 'df' represents
-    the DataFrame you are using.
-    """
-    # Validate Arguments
-    close = verify_series(close)
-    length = int(length) if length and length > 0 else 10
-    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
-    offset = get_offset(offset)
-
-    # Calculate Result
-    half_length = int(length / 2)
-    sqrt_length = int(sqrt(length))
-
-    wmaf = wma(close=close, length=half_length)
-    wmas = wma(close=close, length=length)
-    hma = wma(close=2 * wmaf - wmas, length=sqrt_length)
-
-    # Offset
-    hma = hma.shift(offset)
-
-    # Name & Category
-    hma.name = f"HMA_{length}"
-    hma.category = 'overlap'
-
-    return hma
+    return ohlc4
 
 
 def rma(close, length=None, offset=None, **kwargs):

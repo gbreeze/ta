@@ -6,6 +6,7 @@
 
 Technical Analysis is a library, with more than 60 Indicators, to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is built upon Python Pandas library.
 
+
 ## Momentum (15)
 
 * Awesome Oscillator: ao
@@ -24,7 +25,6 @@ Technical Analysis is a library, with more than 60 Indicators, to financial time
 * Ultimate Oscillator: uo
 * Williams %R: willr
 
-Example MACD:
 ![Example MACD](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_MACD.png)
 
 
@@ -48,13 +48,16 @@ Example MACD:
 * Volume Weighted Moving Average: vwma
 * Weighted Moving Average: wma
 
+Example: See the first chart above.
+
+
 ## Performance (2)
 
 * Log Return: log_return
 * Percent Return: percent_return
 
-Example Cumulative Percent Return:
 ![Example Cumulative Percent Return](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_CumulativePercentReturn.png)
+
 
 ## Statistics (7)
 
@@ -66,7 +69,6 @@ Example Cumulative Percent Return:
 * Variance: variance
 * Z Score: zscore
 
-Example Z Score:
 ![Example Z Score](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_ZScore.png)
 
 
@@ -79,6 +81,8 @@ Example Z Score:
 * Increasing: increasing
 * Vortex Indicator: vortex
 
+![Example ADX](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_ADX.png)
+
 
 ## Volatility (7)
 
@@ -89,6 +93,8 @@ Example Z Score:
 * Mass Index: massi
 * Normalized Average True Range: natr
 * True Range: true_range
+
+![Example ATR](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_ATR.png)
 
 
 ## Volume (10)

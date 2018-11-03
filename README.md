@@ -1,10 +1,10 @@
 # Technical Analysis Library in Python
 
-It is a Technical Analysis library to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is built upon Python Pandas library.
+<!-- ![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png) -->
 
-![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png)
+![alt text](https://raw.githubusercontent.com/twopirllc/ta/master/doc/Example_TA_Chart.png)
 
-The library has 64 indicators:
+It is a Technical Analysis library to financial time series datasets (open, close, high, low, volume) with over 60 Indicators. You can use it to do feature engineering from financial datasets. It is built upon Python Pandas library.
 
 ## Momentum (15)
 
@@ -23,6 +23,9 @@ The library has 64 indicators:
 * True strength index: tsi
 * Ultimate Oscillator: uo
 * Williams %R: willr
+
+Example MACD:
+![Example MACD](https://raw.githubusercontent.com/twopirllc/ta/master/doc/Example_SPY_MACD.png)
 
 
 ## Overlap (17)
@@ -187,5 +190,7 @@ $ python bollinger_band_features_example.py
 # Credits:
 
 Developed by Bukosabino at Lecrin Technologies - http://lecrintech.com
+
+Refactored, Expanded and Extended (via Pandas) by Kevin Johnson - https://github.com/twopirllc
 
 Please, let us know about any comment or feedback.

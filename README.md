@@ -54,7 +54,7 @@ Example MACD:
 * Percent Return: percent_return
 
 Example Cumulative Percent Return:
-![Example MACD](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_CumulativePercentReturn.png)
+![Example Cumulative Percent Return](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_CumulativePercentReturn.png)
 
 ## Statistics (7)
 

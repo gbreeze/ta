@@ -2,9 +2,7 @@
 
 <!-- ![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png) -->
 
-![Example Chart](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_TA_Chart.png)
-
-Technical Analysis (TA) is a Python library, with more than 60 Indicators, for financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is built upon Python Pandas library.
+Technical Analysis (TA) is a Python library, with more than 60 Indicators, for financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets and built upon Python's Pandas library.
 
 ## New Changes
 
@@ -16,117 +14,142 @@ Technical Analysis (TA) is a Python library, with more than 60 Indicators, for f
 * Refactoring indicators into categories similar to [TA-lib](https://github.com/mrjbq7/ta-lib/tree/master/docs/func_groups).
 
 
-### What is Pandas DataFrame Extension?
+### What is a Pandas DataFrame Extension?
 
 A [Pandas DataFrame Extension](https://pandas.pydata.org/pandas-docs/stable/extending.html), extends a DataFrame allowing one to add more functionality and features to Pandas to suit your needs.  As such, it is now easier to run Technical Analysis on existing Financial Time Series without leaving the current DataFrame.  This extension by default returns the Indicator result or, inclusively, it can append the result to the existing DataFrame by including the parameter 
 'append=True' in the method call. See examples below.
 
 
-## Momentum (15)
 
-* Awesome Oscillator: ao
-* Absolute Price Oscillator: apo
-* Balance of Power: bop
-* Commodity Channel Index: cci
-* KST Oscillator: kst
-* Moving Average Convergence Divergence: macd
-* Momentum: mom
-* Percentage Price Oscillator: ppo
-* Rate of Change: roc
-* Relative Strength Index: rsi
-* Stochastic Oscillator: stoch
-* Trix: trix
-* True strength index: tsi
-* Ultimate Oscillator: uo
-* Williams %R: willr
+# Technical Analysis Indicators (by Category)
 
-![Example MACD](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_MACD.png)
+List of currently implemented Technical Analysis Indicators grouped by Category.
 
+## _Momentum_ (15)
 
-## Overlap (17)
-
-* Double Exponential Moving Average: dema
-* Exponential Moving Average: ema
-* High-Low Average: hl2
-* High-Low-Close Average: hlc3
-* Hull Exponential Moving Average: hma
-* Ichimoku Kinkō Hyō: ichimoku
-* Midpoint: midpoint
-* Midprice: midprice
-* Open-High-Low-Close Average: ohlc4
-* William's Moving Average: rma
-* Simple Moving Average: sma
-* T3 Moving Average: t3
-* Triple Exponential Moving Average: tema
-* Triangular Moving Average: trima (requires scipy)
-* Volume Weighted Average Price: vwap
-* Volume Weighted Moving Average: vwma
-* Weighted Moving Average: wma
-
-Example: See the first chart above.
+* _Awesome Oscillator_: **ao**
+* _Absolute Price Oscillator_: **apo**
+* _Balance of Power_: **bop**
+* _Commodity Channel Index_: **cci**
+* _KST Oscillator_: **kst**
+* _Moving Average Convergence Divergence_: **macd**
+* _Momentum_: **mom**
+* _Percentage Price Oscillator_: **ppo**
+* _Rate of Change_: **roc**
+* _Relative Strength Index_: **rsi**
+* _Stochastic Oscillator_: **stoch**
+* _Trix_: **trix**
+* _True strength index_: **tsi**
+* _Ultimate Oscillator_: **uo**
+* _Williams %R_: **willr**
 
 
-## Performance (2)
-
-* Log Return: log_return
-* Percent Return: percent_return
-
-![Example Cumulative Percent Return](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_CumulativePercentReturn.png)
+| _Moving Average Convergence Divergence_ (MACD) |
+|:--------:|
+| ![Example MACD](/doc/Example_SPY_MACD.png) |
 
 
-## Statistics (7)
+## _Overlap_ (17)
 
-* Kurtosis: kurtosis
-* Median: median
-* Quantile: quantile
-* Skew: skew
-* Standard Deviation: stdev
-* Variance: variance
-* Z Score: zscore
+* _Double Exponential Moving Average_: **dema**
+* _Exponential Moving Average_: **ema**
+* _High-Low Average_: **hl2**
+* _High-Low-Close Average_: **hlc3**
+    * Also knowns as 'Typical Price'
+* _Hull Exponential Moving Average_: **hma**
+* _Ichimoku Kinkō Hyō_: **ichimoku**
+    * help(ta.ichimoku)
+* _Midpoint_: **midpoint**
+* _Midprice_: **midprice**
+* _Open-High-Low-Close Average_: **ohlc4**
+* _William's Moving Average_: **rma**
+* _Simple Moving Average_: **sma**
+* _T3 Moving Average_: **t3**
+* _Triple Exponential Moving Average_: **tema**
+* _Triangular Moving Average_: **trima** (requires scipy)
+* _Volume Weighted Average Price_: **vwap**
+* _Volume Weighted Moving Average_: **vwma**
+* _Weighted Moving Average_: **wma**
 
-![Example Z Score](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_ZScore.png)
-
-
-## Trend (6)
-
-* Average Directional Movement Index: adx
-* Aroon Oscillator: aroon
-* Decreasing: decreasing
-* Detrended Price Oscillator: dpo
-* Increasing: increasing
-* Vortex Indicator: vortex
-
-![Example ADX](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_ADX.png)
-
-
-## Volatility (7)
-
-* Average True Range: atr
-* Bollinger Bands: bbands
-* Donchian Channel: donchain
-* Keltner Channel: kc
-* Mass Index: massi
-* Normalized Average True Range: natr
-* True Range: true_range
-
-![Example ATR](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_ATR.png)
+| _Simple Moving Averages_ (SMA) and _Bollinger Bands_ (BBANDS) |
+|:--------:|
+| ![Example Chart](/doc/Example_TA_Chart.png) |
 
 
-## Volume (10)
+## _Performance_ (2)
 
-* Accumulation/Distribution Index: ad
-* Accumulation/Distribution Oscillator: adosc
-* Chaikin Money Flow: cmf
-* Elder's Force Index: efi
-* Ease of Movement: eom
-* Money Flow Index: mfi
-* Negative Volume Index: nvi
-* On-Balance Volume: obv
-* Price-Volume: pvol
-* Price Volume Trend: pvt
+Use parameter: cumulative=**True** for cumulative results.
 
-Example OBV:
-![Example OBV](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_SPY_OBV.png)
+* _Log Return_: **log_return**
+* _Percent Return_: **percent_return**
+
+| _Percent Return_ (Cumulative) with _Simple Moving Average_ (SMA) |
+|:--------:|
+| ![Example Cumulative Percent Return](/doc/Example_SPY_CumulativePercentReturn.png) |
+
+
+## _Statistics_ (8)
+
+* _Kurtosis_: **kurtosis**
+* _Mean_: **mean**
+    * Alias of **sma**
+* _Median_: **median**
+* _Quantile_: **quantile**
+* _Skew_: **skew**
+* _Standard Deviation_: **stdev**
+* _Variance_: **variance**
+* _Z Score_: **zscore**
+
+| _Z Score_ |
+|:--------:|
+| ![Example Z Score](/doc/Example_SPY_ZScore.png) |
+
+
+## _Trend_ (6)
+
+* _Average Directional Movement Index_: **adx**
+* _Aroon Oscillator_: **aroon**
+* _Decreasing_: **decreasing**
+* _Detrended Price Oscillator_: **dpo**
+* _Increasing_: **increasing**
+* _Vortex Indicator_: **vortex**
+
+| _Average Directional Movement Index_ (ADX) |
+|:--------:|
+| ![Example ADX](/doc/Example_SPY_ADX.png) |
+
+
+## _Volatility_ (7)
+
+* _Average True Range_: **atr**
+* _Bollinger Bands_: **bbands**
+* _Donchian Channel_: **donchain**
+* _Keltner Channel_: **kc**
+* _Mass Index_: **massi**
+* _Normalized Average True Range_: **natr**
+* _True Range_: **true_range**
+
+| _Average True Range_ (ATR) |
+|:--------:|
+| ![Example ATR](/doc/Example_SPY_ATR.png) |
+
+
+## _Volume_ (10)
+
+* _Accumulation/Distribution Index_: **ad**
+* _Accumulation/Distribution Oscillator_: **adosc**
+* _Chaikin Money Flow_: **cmf**
+* _Elder's Force Index_: **efi**
+* _Ease of Movement_: **eom**
+* _Money Flow Index_: **mfi**
+* _Negative Volume Index_: **nvi**
+* _On-Balance Volume_: **obv**
+* _Price-Volume_: **pvol**
+* _Price Volume Trend_: **pvt**
+
+| _On-Balance Volume_ (OBV) |
+|:--------:|
+| ![Example OBV](/doc/Example_SPY_OBV.png) |
 
 
 # Documentation
@@ -138,7 +161,7 @@ https://technical-analysis-library-in-python.readthedocs.io/en/latest/
 * English: https://towardsdatascience.com/technical-analysis-library-to-financial-datasets-with-pandas-python-4b2b390d3543
 * Spanish: https://medium.com/datos-y-ciencia/biblioteca-de-an%C3%A1lisis-t%C3%A9cnico-sobre-series-temporales-financieras-para-machine-learning-con-cb28f9427d0
 
-# How to use (python 3)
+# Python 3 Installation
 
 ```sh
 $ virtualenv -p python3 virtualenvironment
@@ -146,35 +169,43 @@ $ source virtualenvironment/bin/activate
 $ pip install ta
 ```
 
-To use this library you should have a financial time series dataset including “Timestamp”, “Open”, “High”, “Low”, “Close” and “Volume” columns.
+To use this library you will need a financial time series dataset including “Open”, “High”, “Low”, “Close” and “Volume” columns.  A “Timestamp” or "Date" column is not required, but is typically included anyhow.  It is preferred that the original columns are lowercase, however it will do it's best to find the intended column.  The majority of Technical Analysis Indicators use price or volume.
 
-You should clean or fill NaN values in your dataset before adding technical analysis features.
+You should clean or fill NaN values in your dataset before adding technical analysis indicators.
 
 You can get code examples in [examples_to_use](https://github.com/bukosabino/ta/tree/master/examples_to_use) folder.
 
 You can visualize the features in [this notebook](https://github.com/bukosabino/ta/blob/master/examples_to_use/visualize_features.ipynb).
 
-### Indicator Help
+# Getting Started and Examples
+
+## Module and Indicator Help
 
 ```python
 import pandas as pd
 from ta import ta
 
-# Help about an indicator
+# Help about this, 'ta', extension
+help(pd.DataFrame().ta)
+
+# List of all indicators
+pd.DataFrame().ta.indicators()
+
+# Help about the OBV indicator
 help(ta.obv)
 
-# Help about an indicator as a DataFrame Extension
+# Help about the OBV indicator as a DataFrame Extension
 help(pd.DataFrame().ta.obv)
 ```
 
-### Calling an Indicator
+## Calling an Indicator
 
 ```python
 # Download some data from Alpha Vantage
 import alphaVantageAPI as av
 
-# Download Daily 'SPY' data
-spy = pd.DataFrame().av.D('SPY')
+# Download Daily Adjusted 'SPY' data
+spy = pd.DataFrame().av.DA('SPY')
 
 # Typical Call
 spy_ema50 = ta.ema(spy['close'], length=50)
@@ -182,26 +213,28 @@ spy_ema50 = ta.ema(spy['close'], length=50)
 # Extended Call
 spy_ema50 = spy.ta.ema(length=50)
 
-# Extended Call with appending to the DataFrame and returning the result
-# By default, apending is False
+# Extended Call with appending to the 'spy' DataFrame and returning the result
+# By default, appending is False
 spy_ema50 = spy.ta.ema(length=50, append=True)
+# Notice as 'spy_ema50' has been appended to 'spy' DataFrame
+spy.columns
 ```
 
-### Additional ways of calling an Indicator
+## Additional ways of calling an Indicator
 
 ```python
-# You can also use the 'kind' parameter.  The 'kind' automatically lowercases 'kind' so either is equivalent
+# You can also use the 'kind' parameter.  Below are equivalent calls.
 spy_ema50 = spy.ta(kind='ema', length=50)
 spy_ema50 = spy.ta(kind='Ema', length=50)
 
 # Using a non-default series as an input.
-# For example instead of 'ema' of using the default 'close' column, use 'open' instead
+# For example instead of having 'ema' using the default 'close' column, have it use the 'open' column instead
 spy_ema50_open = spy.ta.ema(close='open', length=50)
 ```
 
 
-## Legacy Examples
-### Example adding all features
+# Legacy Examples
+## Example adding all features
 
 ```python
 import pandas as pd
@@ -217,7 +250,7 @@ df = utils.dropna(df)
 df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=True)
 ```
 
-### Example adding individual features
+## Example adding individual features
 
 ```python
 import pandas as pd
@@ -237,7 +270,7 @@ df['bb_low_indicator'] = bollinger_lband_indicator_depreciated(df["Close"], n=20
 ```
 
 
-## Developer Edition
+# Developer Edition
 
 ```sh
 $ git clone https://github.com/bukosabino/ta.git
@@ -248,7 +281,7 @@ $ python bollinger_band_features_example.py
 ```
 
 
-# Based on:
+# Inspiration:
 
 * https://en.wikipedia.org/wiki/Technical_analysis
 * https://pandas.pydata.org
@@ -258,14 +291,14 @@ $ python bollinger_band_features_example.py
 
 # TODO:
 
-* add [more technical analysis features](https://en.wikipedia.org/wiki/Technical_analysis).
-* use dask library to parallelize
+* Add [more technical analysis features](https://en.wikipedia.org/wiki/Technical_analysis).
+* Incorporate dask library to parallelize
 
 
 # Credits:
 
 Developed by Bukosabino at Lecrin Technologies - http://lecrintech.com
 
-Refactored, Expanded and Extended (via Pandas) by Kevin Johnson - https://github.com/twopirllc
+Expanded and Extended (via Pandas) by Kevin Johnson - https://github.com/twopirllc
 
 Please leave any comments, feedback, or suggestions.

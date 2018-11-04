@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 import time
-import math
-import re
-import numpy as np
 import pandas as pd
 
 from .momentum import *
@@ -29,9 +26,7 @@ class BasePandasObject(PandasObject):
     def __init__(self, df, **kwargs):
         if df.empty: return
 
-        total_columns = len(df.columns)
-        if total_columns > 0:
-            # df._total_columns = total_columns
+        if len(df.columns) > 0:
             self._df = df
         else:
             raise AttributeError(f"[X] No columns!")
@@ -212,14 +207,14 @@ class AnalysisIndicators(BasePandasObject):
 
     def indicators(self):
         """Indicator list"""
+        helper_methods = ['indicators', 'constants']
         ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))
-        total_indicators = len(ta_indicators) - len(['help', 'constants'])  # Excluding constants and help methods.
+        total_indicators = len(ta_indicators) - len(helper_methods)  # Excluding constants and help methods.
         header = f"TA - Technical Analysis Indicators\n"
         print(f"{header}Total Indicators: {total_indicators}\nAbbreviations: {', '.join(ta_indicators)}")
 
 
 
-    # Momentum Indicators
     def ao(self, high=None, low=None, fast=None, slow=None, offset=None, **kwargs):
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -345,7 +340,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    # Overlap Indicators
+
     def dema(self, close=None, length=None, offset=None, **kwargs):
         close = self._get_column(close, 'close')
         result = dema(close=close, length=length, offset=offset, **kwargs)
@@ -478,7 +473,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    # Performance Indicators
+
     def log_return(self, close=None, length=None, cumulative=False, percent=False, offset=None, **kwargs):
         close = self._get_column(close, 'close')
         result = log_return(close=close, length=length, cumulative=cumulative, percent=percent, offset=offset, **kwargs)
@@ -493,13 +488,14 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    # Statistics Indicators
+
     def kurtosis(self, close=None, length=None, offset=None, **kwargs):
         close = self._get_column(close, 'close')
         result = kurtosis(close=close, length=length, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
 
+    mean = sma
 
     def median(self, close=None, length=None, offset=None, **kwargs):
         close = self._get_column(close, 'close')
@@ -543,7 +539,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    # Trend Indicators
+
     def adx(self, high=None, low=None, close=None, drift=None, offset=None, **kwargs):
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -590,7 +586,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    # Volatility Indicators
+
     def atr(self, high=None, low=None, close=None, length=None, mamode=None, offset=None, **kwargs):
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -641,7 +637,7 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
-    # Volume Indicators
+
     def ad(self, high=None, low=None, close=None, volume=None, open_=None, signed=True, offset=None, **kwargs):
         if open_ is not None:
             open_ = self._get_column(open_, 'open')
@@ -782,6 +778,7 @@ class AnalysisIndicators(BasePandasObject):
 
     # # Statistics: statistics.py ✅
     # Kurtosis = kurtosis
+    # mean = sma
     # Median = median
     # Quantile = quantile
     # Skew = skew

@@ -300,7 +300,7 @@ def true_range(high, low, close, drift=None, offset=None, **kwargs):
 
 
 # Legacy Code
-def average_true_range(high, low, close, n=14, fillna=False):
+def average_true_range_depreciated(high, low, close, n=14, fillna=False):
     """Average True Range (ATR)
 
     The indicator provide an indication of the degree of price volatility.
@@ -326,7 +326,7 @@ def average_true_range(high, low, close, n=14, fillna=False):
     return pd.Series(tr, name='atr')
 
 
-def bollinger_mavg(close, n=20, fillna=False):
+def bollinger_mavg_depreciated(close, n=20, fillna=False):
     """Bollinger Bands (BB)
 
     N-period simple moving average (MA).
@@ -346,7 +346,7 @@ def bollinger_mavg(close, n=20, fillna=False):
     return pd.Series(mavg, name='mavg')
 
 
-def bollinger_hband(close, n=20, ndev=2, fillna=False):
+def bollinger_hband_depreciated(close, n=20, ndev=2, fillna=False):
     """Bollinger Bands (BB)
 
     Upper band at K times an N-period standard deviation above the moving
@@ -370,7 +370,7 @@ def bollinger_hband(close, n=20, ndev=2, fillna=False):
     return pd.Series(hband, name='hband')
 
 
-def bollinger_lband(close, n=20, ndev=2, fillna=False):
+def bollinger_lband_depreciated(close, n=20, ndev=2, fillna=False):
     """Bollinger Bands (BB)
 
     Lower band at K times an N-period standard deviation below the moving
@@ -394,7 +394,7 @@ def bollinger_lband(close, n=20, ndev=2, fillna=False):
     return pd.Series(lband, name='lband')
 
 
-def bollinger_hband_indicator(close, n=20, ndev=2, fillna=False):
+def bollinger_hband_indicator_depreciated(close, n=20, ndev=2, fillna=False):
     """Bollinger High Band Indicator
 
     Returns 1, if close is higher than bollinger high band. Else, return 0.
@@ -421,7 +421,7 @@ def bollinger_hband_indicator(close, n=20, ndev=2, fillna=False):
     return pd.Series(hband, name='bbihband')
 
 
-def bollinger_lband_indicator(close, n=20, ndev=2, fillna=False):
+def bollinger_lband_indicator_depreciated(close, n=20, ndev=2, fillna=False):
     """Bollinger Low Band Indicator
 
     Returns 1, if close is lower than bollinger low band. Else, return 0.
@@ -448,7 +448,7 @@ def bollinger_lband_indicator(close, n=20, ndev=2, fillna=False):
     return pd.Series(lband, name='bbilband')
 
 
-def keltner_channel_central(high, low, close, n=10, fillna=False):
+def keltner_channel_central_depreciated(high, low, close, n=10, fillna=False):
     """Keltner channel (KC)
 
     Showing a simple moving average line (central) of typical price.
@@ -471,7 +471,7 @@ def keltner_channel_central(high, low, close, n=10, fillna=False):
     return pd.Series(tp, name='kc_central')
 
 
-def keltner_channel_hband(high, low, close, n=10, fillna=False):
+def keltner_channel_hband_depreciated(high, low, close, n=10, fillna=False):
     """Keltner channel (KC)
 
     Showing a simple moving average line (high) of typical price.
@@ -494,7 +494,7 @@ def keltner_channel_hband(high, low, close, n=10, fillna=False):
     return pd.Series(tp, name='kc_hband')
 
 
-def keltner_channel_lband(high, low, close, n=10, fillna=False):
+def keltner_channel_lband_depreciated(high, low, close, n=10, fillna=False):
     """Keltner channel (KC)
 
     Showing a simple moving average line (low) of typical price.
@@ -517,7 +517,7 @@ def keltner_channel_lband(high, low, close, n=10, fillna=False):
     return pd.Series(tp, name='kc_lband')
 
 
-def keltner_channel_hband_indicator(high, low, close, n=10, fillna=False):
+def keltner_channel_hband_indicator_depreciated(high, low, close, n=10, fillna=False):
     """Keltner Channel High Band Indicator (KC)
 
     Returns 1, if close is higher than keltner high band channel. Else,
@@ -544,7 +544,7 @@ def keltner_channel_hband_indicator(high, low, close, n=10, fillna=False):
     return pd.Series(hband, name='kci_hband')
 
 
-def keltner_channel_lband_indicator(high, low, close, n=10, fillna=False):
+def keltner_channel_lband_indicator_depreciated(high, low, close, n=10, fillna=False):
     """Keltner Channel Low Band Indicator (KC)
 
     Returns 1, if close is lower than keltner low band channel. Else, return 0.
@@ -570,7 +570,7 @@ def keltner_channel_lband_indicator(high, low, close, n=10, fillna=False):
     return pd.Series(lband, name='kci_lband')
 
 
-def donchian_channel_hband(close, n=20, fillna=False):
+def donchian_channel_hband_depreciated(close, n=20, fillna=False):
     """Donchian channel (DC)
 
     The upper band marks the highest price of an issue for n periods.
@@ -590,7 +590,7 @@ def donchian_channel_hband(close, n=20, fillna=False):
     return pd.Series(hband, name='dchband')
 
 
-def donchian_channel_lband(close, n=20, fillna=False):
+def donchian_channel_lband_depreciated(close, n=20, fillna=False):
     """Donchian channel (DC)
 
     The lower band marks the lowest price for n periods.
@@ -610,7 +610,7 @@ def donchian_channel_lband(close, n=20, fillna=False):
     return pd.Series(lband, name='dclband')
 
 
-def donchian_channel_hband_indicator(close, n=20, fillna=False):
+def donchian_channel_hband_indicator_depreciated(close, n=20, fillna=False):
     """Donchian High Band Indicator
 
     Returns 1, if close is higher than donchian high band channel. Else,
@@ -635,7 +635,7 @@ def donchian_channel_hband_indicator(close, n=20, fillna=False):
     return pd.Series(hband, name='dcihband')
 
 
-def donchian_channel_lband_indicator(close, n=20, fillna=False):
+def donchian_channel_lband_indicator_depreciated(close, n=20, fillna=False):
     """Donchian Low Band Indicator
 
     Returns 1, if close is lower than donchian low band channel. Else, return 0.

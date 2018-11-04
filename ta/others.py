@@ -11,7 +11,7 @@ import pandas as pd
 
 
 # Legacy Code, relocated to performance
-def daily_return(close, fillna=False):
+def daily_return_depreciated(close, fillna=False):
     """Daily Return (DR)
 
     Args:
@@ -28,7 +28,7 @@ def daily_return(close, fillna=False):
     return pd.Series(dr, name='d_ret')
 
 
-def daily_log_return(close, fillna=False):
+def daily_log_return_depreciated(close, fillna=False):
     """Daily Log Return (DLR)
 
     https://stackoverflow.com/questions/31287552/logarithmic-returns-in-pandas-dataframe
@@ -47,7 +47,7 @@ def daily_log_return(close, fillna=False):
     return pd.Series(dr, name='d_logret')
 
 
-def cumulative_return(close, fillna=False):
+def cumulative_return_depreciated(close, fillna=False):
     """Cumulative Return (CR)
 
     Args:

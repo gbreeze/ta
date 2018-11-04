@@ -356,7 +356,7 @@ def pvt(close, volume, drift=None, offset=None, **kwargs):
 
 
 # Legacy Code
-def acc_dist_index(high, low, close, volume, fillna=False):
+def acc_dist_index_depreciated(high, low, close, volume, fillna=False):
     """Accumulation/Distribution Index (ADI)
 
     Acting as leading indicator of price movements.
@@ -382,7 +382,7 @@ def acc_dist_index(high, low, close, volume, fillna=False):
     return pd.Series(ad, name='adi')
 
 
-def on_balance_volume(close, volume, fillna=False):
+def on_balance_volume_depreciated(close, volume, fillna=False):
     """On-balance volume (OBV)
 
     It relates price and volume in the stock market. OBV is based on
@@ -412,7 +412,7 @@ def on_balance_volume(close, volume, fillna=False):
     return pd.Series(obv, name='obv')
 
 
-def on_balance_volume_mean(close, volume, n=10, fillna=False):
+def on_balance_volume_mean_depreciated(close, volume, n=10, fillna=False):
     """On-balance volume mean (OBV mean)
 
     It's based on signed cumulative volume.
@@ -442,7 +442,7 @@ def on_balance_volume_mean(close, volume, n=10, fillna=False):
     return pd.Series(obv, name='obv')
 
 
-def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):
+def chaikin_money_flow_depreciated(high, low, close, volume, n=20, fillna=False):
     """Chaikin Money Flow (CMF)
 
     It measures the amount of Money Flow Volume over a specific period.
@@ -469,7 +469,7 @@ def chaikin_money_flow(high, low, close, volume, n=20, fillna=False):
     return pd.Series(cmf, name='cmf')
 
 
-def force_index(close, volume, n=2, fillna=False):
+def force_index_depreciated(close, volume, n=2, fillna=False):
     """Force Index (FI)
 
     It illustrates how strong the actual buying or selling pressure is. High
@@ -493,7 +493,7 @@ def force_index(close, volume, n=2, fillna=False):
     return pd.Series(fi, name='fi_'+str(n))
 
 
-def ease_of_movement(high, low, close, volume, n=20, fillna=False):
+def ease_of_movement_depreciated(high, low, close, volume, n=20, fillna=False):
     """Ease of movement (EoM, EMV)
 
     It relate an asset's price change to its volume and is particularly useful
@@ -519,7 +519,7 @@ def ease_of_movement(high, low, close, volume, n=20, fillna=False):
     return pd.Series(emv, name='eom_' + str(n))
 
 
-def volume_price_trend(close, volume, fillna=False):
+def volume_price_trend_depreciated(close, volume, fillna=False):
     """Volume-price trend (VPT)
 
     Is based on a running cumulative volume that adds or substracts a multiple
@@ -544,7 +544,7 @@ def volume_price_trend(close, volume, fillna=False):
     return pd.Series(vpt, name='vpt')
 
 
-def negative_volume_index(close, volume, fillna=False):
+def negative_volume_index_depreciated(close, volume, fillna=False):
     """Negative Volume Index (NVI)
 
     From: http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:negative_volume_inde

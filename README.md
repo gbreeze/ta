@@ -145,7 +145,7 @@ You can visualize the features in [this notebook](https://github.com/bukosabino/
 import pandas as pd
 from ta import *
 
-# Load datas
+# Load data
 df = pd.read_csv('your-file.csv', sep=',')
 
 # Clean NaN values

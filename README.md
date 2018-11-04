@@ -4,7 +4,22 @@
 
 ![Example Chart](https://github.com/twopirllc/ta/tree/qt-df-extension/doc/Example_TA_Chart.png)
 
-Technical Analysis is a library, with more than 60 Indicators, to financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is built upon Python Pandas library.
+Technical Analysis (TA) is a Python library, with more than 60 Indicators, for financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets. It is built upon Python Pandas library.
+
+## New Changes
+
+* Most noteably, doubling the number of indicators.
+* Abbreviated Indicator names as listed below.
+* *Extended Pandas DataFrame* as 'ta'.  See examples below.
+* Parameter names are more consistent.
+* Former indicators still exist and are renamed with '_depreciated' append to it's name.  For example, 'average_true_range' is now 'average_true_range_depreciated'.
+* Refactoring indicators into categories similar to [TA-lib](https://github.com/mrjbq7/ta-lib/tree/master/docs/func_groups).
+
+
+### What is Pandas DataFrame Extension?
+
+A [Pandas DataFrame Extension](https://pandas.pydata.org/pandas-docs/stable/extending.html), extends a DataFrame allowing one to add more functionality and features to Pandas to suit your needs.  As such, it is now easier to run Technical Analysis on existing Financial Time Series without leaving the current DataFrame.  This extension by default returns the Indicator result or, inclusively, it can append the result to the existing DataFrame by including the parameter 
+'append=True' in the method call. See examples below.
 
 
 ## Momentum (15)
@@ -139,7 +154,54 @@ You can get code examples in [examples_to_use](https://github.com/bukosabino/ta/
 
 You can visualize the features in [this notebook](https://github.com/bukosabino/ta/blob/master/examples_to_use/visualize_features.ipynb).
 
-#### Example adding all features
+### Indicator Help
+
+```python
+import pandas as pd
+from ta import ta
+
+# Help about an indicator
+help(ta.obv)
+
+# Help about an indicator as a DataFrame Extension
+help(pd.DataFrame().ta.obv)
+```
+
+### Calling an Indicator
+
+```python
+# Download some data from Alpha Vantage
+import alphaVantageAPI as av
+
+# Download Daily 'SPY' data
+spy = pd.DataFrame().av.D('SPY')
+
+# Typical Call
+spy_ema50 = ta.ema(spy['close'], length=50)
+
+# Extended Call
+spy_ema50 = spy.ta.ema(length=50)
+
+# Extended Call with appending to the DataFrame and returning the result
+# By default, apending is False
+spy_ema50 = spy.ta.ema(length=50, append=True)
+```
+
+### Additional ways of calling an Indicator
+
+```python
+# You can also use the 'kind' parameter.  The 'kind' automatically lowercases 'kind' so either is equivalent
+spy_ema50 = spy.ta(kind='ema', length=50)
+spy_ema50 = spy.ta(kind='Ema', length=50)
+
+# Using a non-default series as an input.
+# For example instead of 'ema' of using the default 'close' column, use 'open' instead
+spy_ema50_open = spy.ta.ema(close='open', length=50)
+```
+
+
+## Legacy Examples
+### Example adding all features
 
 ```python
 import pandas as pd
@@ -155,8 +217,7 @@ df = utils.dropna(df)
 df = add_all_ta_features(df, "Open", "High", "Low", "Close", "Volume_BTC", fillna=True)
 ```
 
-
-#### Example adding individual features
+### Example adding individual features
 
 ```python
 import pandas as pd
@@ -169,14 +230,14 @@ df = pd.read_csv('your-file.csv', sep=',')
 df = utils.dropna(df)
 
 # Add bollinger band high indicator filling NaN values
-df['bb_high_indicator'] = bollinger_hband_indicator(df["Close"], n=20, ndev=2, fillna=True)
+df['bb_high_indicator'] = bollinger_hband_indicator_depreciated(df["Close"], n=20, ndev=2, fillna=True)
 
 # Add bollinger band low indicator filling NaN values
-df['bb_low_indicator'] = bollinger_lband_indicator(df["Close"], n=20, ndev=2, fillna=True)
+df['bb_low_indicator'] = bollinger_lband_indicator_depreciated(df["Close"], n=20, ndev=2, fillna=True)
 ```
 
 
-# Deploy to developers
+## Developer Edition
 
 ```sh
 $ git clone https://github.com/bukosabino/ta.git
@@ -207,4 +268,4 @@ Developed by Bukosabino at Lecrin Technologies - http://lecrintech.com
 
 Refactored, Expanded and Extended (via Pandas) by Kevin Johnson - https://github.com/twopirllc
 
-Please, let us know about any comment or feedback.
+Please leave any comments, feedback, or suggestions.

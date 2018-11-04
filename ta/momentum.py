@@ -11,7 +11,7 @@ import pandas as pd
 
 from .utils import *
 from .overlap import hlc3, ema
-# from .utils import get_drift, get_offset, signed_series, verify_series
+
 
 
 def ao(high, low, fast=None, slow=None, offset=None, **kwargs):

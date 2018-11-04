@@ -210,13 +210,13 @@ class AnalysisIndicators(BasePandasObject):
                 del self._df[f'{x}']
 
 
-    def help(self):
-        """Simple Help Screen"""
+    def indicators(self):
+        """Indicator list"""
         ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))
-        total_indicators = len(ta_indicators) - 2  # Excluding constants and help methods.
-        print(f"TA - Technical Analysis Indicators\n")
-        # print(f"")
-        print(f"Total Indicators: {total_indicators}\nShort Names: {', '.join(ta_indicators)}")
+        total_indicators = len(ta_indicators) - len(['help', 'constants'])  # Excluding constants and help methods.
+        header = f"TA - Technical Analysis Indicators\n"
+        print(f"{header}Total Indicators: {total_indicators}\nAbbreviations: {', '.join(ta_indicators)}")
+
 
 
     # Momentum Indicators

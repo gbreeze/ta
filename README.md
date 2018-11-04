@@ -201,11 +201,8 @@ help(pd.DataFrame().ta.obv)
 ## Calling an Indicator
 
 ```python
-# Download some data from Alpha Vantage
-import alphaVantageAPI as av
-
-# Download Daily Adjusted 'SPY' data
-spy = pd.DataFrame().av.DA('SPY')
+# Load data
+spy = pd.read_csv('SPY.csv', sep=',')
 
 # Typical Call
 spy_ema50 = ta.ema(spy['close'], length=50)

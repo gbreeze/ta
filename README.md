@@ -2,7 +2,42 @@
 
 <!-- ![alt text](https://raw.githubusercontent.com/bukosabino/ta/master/doc/figure.png) -->
 
-Technical Analysis (TA) is a Python library, with more than 60 Indicators, for financial time series datasets (open, close, high, low, volume). You can use it to do feature engineering from financial datasets and built upon Python's Pandas library.
+Technical Analysis (TA) is an easy to use library that is built upon Python's Pandas library with more than 60 Indicators.  These indicators are comminly used for financial time series datasets with columns or labels similar to: datetime, open, high, low, close, volume, et al.  Many commonly used indicators are included, such as: _Moving Average Convergence Divergence_ (*MACD*), _Hull Exponential Moving Average_ (*HMA*), _Bollinger Bands_ (*BBANDS*), _On-Balance Volume_ (*OBV*), _Aroon Oscillator_ (*AROON*) and more.
+
+This version contains both the orignal code branch as well as a newly refactored branch with the option to use [Pandas DataFrame Extension](https://pandas.pydata.org/pandas-docs/stable/extending.html) mode. 
+All the indicators return a named Series or a DataFrame in uppercase underscore parameter format.  For example, MACD(fast=12, slow=26, signal=9) will return a DataFrame with columns: ['MACD_12_26_9', 'MACDH_12_26_9', 'MACDS_12_26_9'].
+
+
+## **Quick Start** using the DataFrame Extension
+
+```python
+import pandas as pd
+import ta as ta
+
+# Load data
+df = pd.read_csv('symbol.csv', sep=',')
+
+# Process and append your indicators to the 'df'
+df.ta.ema(length=8, append=True)
+df.ta.ema(length=21, append=True)
+df.ta.sma(length=50, append=True)
+df.ta.sma(length=200, append=True)
+df.ta.kc(append=True)
+
+df.ta.macd(fast=8, slow=21, signal=9, append=True)
+df.ta.rsi(length=14, append=True)
+
+df.ta.obv(append=True)
+df.ta.log_return(cumulative=True, append=True)
+
+# New Columns with results
+df.columns
+
+# Take a peek
+df.tail()
+
+# vv Continue Post Processing vv
+```
 
 ## New Changes
 
@@ -58,7 +93,7 @@ List of currently implemented Technical Analysis Indicators grouped by Category.
     * Also knowns as 'Typical Price'
 * _Hull Exponential Moving Average_: **hma**
 * _Ichimoku Kinkō Hyō_: **ichimoku**
-    * help(ta.ichimoku)
+    * Use: help(ta.ichimoku). Returns two DataFrames.
 * _Midpoint_: **midpoint**
 * _Midprice_: **midprice**
 * _Open-High-Low-Close Average_: **ohlc4**

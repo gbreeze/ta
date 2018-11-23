@@ -60,12 +60,13 @@ A [Pandas DataFrame Extension](https://pandas.pydata.org/pandas-docs/stable/exte
 
 List of currently implemented Technical Analysis Indicators grouped by Category.
 
-## _Momentum_ (15)
+## _Momentum_ (16)
 
 * _Awesome Oscillator_: **ao**
 * _Absolute Price Oscillator_: **apo**
 * _Balance of Power_: **bop**
 * _Commodity Channel Index_: **cci**
+* _Coppock Curve_: **copc**
 * _KST Oscillator_: **kst**
 * _Moving Average Convergence Divergence_: **macd**
 * _Momentum_: **mom**

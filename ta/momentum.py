@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 from .utils import *
-from .overlap import hlc3, ema
+from .overlap import hlc3, ema, wma
 
 
 
@@ -143,6 +143,36 @@ def cci(high, low, close, length=None, c=None, offset=None, **kwargs):
     cci.category = 'momentum'
 
     return cci
+
+
+def coppock(close, length=None, fast=None, slow=None, offset=None, **kwargs):
+    """Indicator: Coppock Curve (COPC)"""
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 10
+    fast = int(fast) if fast and fast > 0 else 11
+    slow = int(slow) if slow and slow > 0 else 14
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = get_offset(offset)
+
+    total_roc = roc(close, fast) + roc(close, slow)
+    coppock = wma(total_roc, length)
+
+    # Offset
+    coppock = coppock.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        coppock.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        coppock.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    coppock.name = f"COPC_{fast}_{slow}_{length}"
+    coppock.category = 'momentum'
+
+    return coppock
+
 
 
 def kst(close, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, sma2=None, sma3=None, sma4=None, signal=None, drift=None, offset=None, **kwargs):

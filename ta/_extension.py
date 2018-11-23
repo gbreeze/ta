@@ -249,6 +249,13 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    def coppock(self, close=None, length=None, fast=None, slow=None, offset=None, **kwargs):
+        close = self._get_column(close, 'close')
+        result = coppock(close=close, length=length, fast=fast, slow=slow, offset=offset, **kwargs)
+        self._append(result, **kwargs)
+        return result
+
+
     def kst(self, close=None, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, sma2=None, sma3=None, sma4=None, signal=None, offset=None, **kwargs):
         close = self._get_column(close, 'close')
         result = kst(close=close, roc1=roc1, roc2=roc2, roc3=roc3, roc4=roc4, sma1=sma1, sma2=sma2, sma3=sma3, sma4=sma4, signal=signal, offset=offset, **kwargs)

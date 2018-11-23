@@ -481,7 +481,7 @@ def wma(close, length=None, asc=None, offset=None, **kwargs):
 
 
 # Overlap Documentation
-hl2_docs = \
+hl2.__doc__ = \
 """Average of High-Low (HL2)
 
 Equally weighted Average of two series', namely High and Low.
@@ -506,7 +506,46 @@ Returns:
 """
 
 
-hlc3_docs = \
+ichimoku.__doc__ = \
+"""Ichimoku Kinkō Hyō (Ichimoku)
+
+It identifies the trend and look for potential signals within that trend.
+
+Sources:
+    http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ichimoku_cloud
+
+Calculation:
+    Default Inputs:
+        tenkan=9, kijun=26, senkou=52
+    tenkan_sen = midprice(high, low, length=tenkan)
+    kijun_sen = midprice(high, low, length=kijun)
+    span_a = 0.5 * (tenkan_sen + kijun_sen)
+    span_b = midprice(high=high, low=low, length=senkou)
+
+    span_a = span_a.shift(kijun)
+    span_b = span_b.shift(kijun)
+    chikou_span = close.shift(-kijun)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    tenkan (int): Tenkan period.  Default: 9
+    kijun (int): Kijun period.  Default: 26
+    senkou (int): Senkou period.  Default: 52
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pandas.Series: New feature generated.
+"""
+
+
+
+hlc3.__doc__ = \
 """Average of High-Low-Close (HLC3)
 
 Equally weighted Average of three series', namely High, Low, Close.
@@ -532,7 +571,7 @@ Returns:
 """
 
 
-ohlc4_docs = \
+ohlc4.__doc__ = \
 """Average of Open-High-Low-Close (OHLC4)
 
 Equally weighted Average of four series', namely Open, High, Low, Close.
@@ -559,7 +598,7 @@ Returns:
 """
 
 
-midpoint_docs = \
+midpoint.__doc__ = \
 """Midpoint (MIDPOINT)
 
 The Midpoint is the average of the highest and lowest closes over a period.
@@ -589,7 +628,7 @@ Returns:
 """
 
 
-midprice_docs = \
+midprice.__doc__ = \
 """Midprice (MIDPRICE)
 
 William's Percent R is a momentum oscillator similar to the RSI that
@@ -621,7 +660,7 @@ Returns:
 """
 
 
-dema_docs = \
+dema.__doc__ = \
 """Double Exponential Moving Average (DEMA)
 
 The Double Exponential Moving Average attempts to a smoother average with less
@@ -653,7 +692,7 @@ Returns:
 """
 
 
-ema_docs = \
+ema.__doc__ = \
 """Exponential Moving Average (EMA)
 
 The Exponential Moving Average is more responsive moving average compared to the
@@ -693,7 +732,7 @@ Returns:
 """
 
 
-hma_docs = \
+hma.__doc__ = \
 """Hull Moving Average (HMA)
 
 The Hull Exponential Moving Average attempts to reduce or remove lag in moving
@@ -727,7 +766,50 @@ Returns:
 """
 
 
-rma_docs = \
+ichimoku.__doc__ = \
+"""Ichimoku Kinkō Hyō (ichimoku)
+
+Developed Pre WWII as a forecasting model for financial markets.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/ichimoku-ich/
+
+Calculation:
+    Default Inputs:
+        tenkan=9, kijun=26, senkou=52
+    MIDPRICE = Midprice
+    TENKAN_SEN = MIDPRICE(high, low, close, length=tenkan)
+    KIJUN_SEN = MIDPRICE(high, low, close, length=kijun)
+    CHIKOU_SPAN = close.shift(-kijun)
+
+    SPAN_A = 0.5 * (TENKAN_SEN + KIJUN_SEN)
+    SPAN_A = SPAN_A.shift(kijun)
+
+    SPAN_B = MIDPRICE(high, low, close, length=senkou)
+    SPAN_B = SPAN_B.shift(kijun)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    tenkan (int): Tenkan period.  Default: 9
+    kijun (int): Kijun period.  Default: 26
+    senkou (int): Senkou period.  Default: 52
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.DataFrame: Two DataFrames.
+        For the visible period: spanA, spanB, tenkan_sen, kijun_sen,
+            and chikou_span columns
+        For the forward looking period: spanA and spanB columns
+"""
+
+
+rma.__doc__ = \
 """wildeR's Moving Average (RMA)
 
 The WildeR's Moving Average is simply an Exponential Moving Average (EMA)
@@ -757,7 +839,7 @@ Returns:
 """
 
 
-sma_docs = \
+sma.__doc__ = \
 """Simple Moving Average (SMA)
 
 The Simple Moving Average is the classic moving average that is the equally
@@ -787,7 +869,7 @@ Returns:
 """
 
 
-t3_docs = \
+t3.__doc__ = \
 """Tim Tillson's T3 Moving Average (T3)
 
 Tim Tillson's T3 Moving Average is considered a smoother and more responsive
@@ -829,7 +911,7 @@ Returns:
 """
 
 
-tema_docs = \
+tema.__doc__ = \
 """Triple Exponential Moving Average (TEMA)
 
 A less laggy Exponential Moving Average.
@@ -862,7 +944,7 @@ Returns:
 """
 
 
-trima_docs = \
+trima.__doc__ = \
 """Triangular Moving Average (TRIMA)
 REQUIRES: scipy
 
@@ -898,7 +980,7 @@ Returns:
 """
 
 
-vwap_docs = \
+vwap.__doc__ = \
 """Volume Weighted Average Price (VWAP)
 
 The Volume Weighted Average Price that measures the average typical price
@@ -930,7 +1012,7 @@ Returns:
 """
 
 
-vwma_docs = \
+vwma.__doc__ = \
 """Volume Weighted Moving Average (VWMA)
 
 Volume Weighted Moving Average.
@@ -960,7 +1042,7 @@ Returns:
 """
 
 
-wma_docs = \
+wma.__doc__ = \
 """Weighted Moving Average (WMA)
 
 The Weighted Moving Average where the weights are linearly increasing and
@@ -996,23 +1078,3 @@ Kwargs:
 Returns:
     pd.Series: New feature generated.
 """
-
-
-
-# Overlap Documentation
-hl2.__doc__ = hl2_docs
-hlc3.__doc__ = hlc3_docs
-ohlc4.__doc__ = ohlc4_docs
-midpoint.__doc__ = midpoint_docs
-midprice.__doc__ = midprice_docs
-dema.__doc__ = dema_docs
-ema.__doc__ = ema_docs
-hma.__doc__ = hma_docs
-rma.__doc__ = rma_docs
-sma.__doc__ = sma_docs
-t3.__doc__ = t3_docs
-tema.__doc__ = tema_docs
-trima.__doc__ = trima_docs
-vwap.__doc__ = vwap_docs
-vwma.__doc__ = vwma_docs
-wma.__doc__ = wma_docs

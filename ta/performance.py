@@ -52,7 +52,7 @@ def percent_return(close, length=None, cumulative=False, offset=None, **kwargs):
 
 
 
-log_return_docs = \
+log_return.__doc__ = \
 """Log Return
 
 Calculates the logarithmic return of a Series.
@@ -82,7 +82,7 @@ Returns:
 """
 
 
-percent_return_docs = \
+percent_return.__doc__ = \
 """Percent Return
 
 Calculates the percent return of a Series.
@@ -110,7 +110,3 @@ Kwargs:
 Returns:
     pd.Series: New feature generated.
 """
-
-
-log_return.__doc__ = log_return_docs
-percent_return.__doc__ = percent_return_docs

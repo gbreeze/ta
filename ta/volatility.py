@@ -299,6 +299,259 @@ def true_range(high, low, close, drift=None, offset=None, **kwargs):
 
 
 
+# Volatility Documentation
+atr.__doc__ = \
+"""Average True Range (ATR)
+
+Averge True Range is used to measure volatility, especially
+volatility caused by gaps or limit moves.
+
+Sources:
+    https://www.tradingview.com/wiki/Average_True_Range_(ATR)
+
+Calculation:
+    Default Inputs:
+        length=14, drift=1
+    SMA = Simple Moving Average
+    EMA = Exponential Moving Average
+    TR = True Range
+    tr = TR(high, low, close, drift)
+    if 'ema':
+        ATR = EMA(tr, length)
+    else:
+        ATR = SMA(tr, length)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 14
+    mamode (str): Two options: None or 'ema'.  Default: 'ema'
+    drift (int): The difference period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+bbands.__doc__ = \
+"""Bollinger Bands (BBANDS)
+
+A popular volatility indicator.
+
+Sources:
+    https://www.tradingview.com/wiki/Bollinger_Bands_(BB)
+
+Calculation:
+    Default Inputs:
+        length=20, std=2
+    EMA = Exponential Moving Average
+    SMA = Simple Moving Average
+    STDEV = Standard Deviation
+    stdev = STDEV(close, length)
+    if 'ema':
+        MID = EMA(close, length)
+    else:
+        MID = SMA(close, length)
+    
+    LOWER = MID - std * stdev
+    UPPER = MID + std * stdev
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): The short period.  Default: 20
+    std (int): The long period.   Default: 2
+    mamode (str): Two options: None or 'ema'.  Default: 'ema'
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.DataFrame: lower, mid, upper columns.
+"""
+
+
+donchian.__doc__ = \
+"""Donchian Channels (DC)
+
+Donchian Channels are used to measure volatility, similar to 
+Bollinger Bands and Keltner Channels.
+
+Sources:
+    https://www.tradingview.com/wiki/Donchian_Channels_(DC)
+
+Calculation:
+    Default Inputs:
+        length=20
+    LOWER = close.rolling(length).min()
+    UPPER = close.rolling(length).max()
+    MID = 0.5 * (LOWER + UPPER)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): The short period.  Default: 20
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.DataFrame: lower, mid, upper columns.
+"""
+
+
+kc.__doc__ = \
+"""Keltner Channels (KC)
+
+A popular volatility indicator similar to Bollinger Bands and
+Donchian Channels.
+
+Sources:
+    https://www.tradingview.com/wiki/Keltner_Channels_(KC)
+
+Calculation:
+    Default Inputs:
+        length=20, scalar=2
+    ATR = Average True Range
+    EMA = Exponential Moving Average
+    SMA = Simple Moving Average
+    if 'ema':
+        BASIS = EMA(close, length)
+        BAND = ATR(high, low, close)
+    else:
+        hl_range = high - low
+        tp = typical_price = hlc3(high, low, close)
+        BASIS = SMA(tp, length)
+        BAND = SMA(hl_range, length)
+    
+    LOWER = BASIS - scalar * BAND
+    UPPER = BASIS + scalar * BAND
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    length (int): The short period.  Default: 20
+    scalar (float): A positive float to scale the bands.   Default: 2
+    mamode (str): Two options: None or 'ema'.  Default: 'ema'
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.DataFrame: lower, basis, upper columns.
+"""
+
+
+massi.__doc__ = \
+"""Mass Index (MASSI)
+
+The Mass Index is a non-directional volatility indicator that utilitizes the
+High-Low Range to identify trend reversals based on range expansions.
+
+Sources:
+    https://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:mass_index
+
+Calculation:
+    Default Inputs:
+        fast: 9, slow: 25
+    EMA = Exponential Moving Average
+    hl = high - low
+    hl_ema1 = EMA(hl, fast)
+    hl_ema2 = EMA(hl_ema1, fast)
+    hl_ratio = hl_ema1 / hl_ema2
+    MASSI = SUM(hl_ratio, slow)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    fast (int): The short period.  Default: 9
+    slow (int): The long period.   Default: 25
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+natr.__doc__ = \
+"""Normalized Average True Range (NATR)
+
+Normalized Average True Range attempt to normalize the average
+true range.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/normalized-average-true-range-natr/
+
+Calculation:
+    Default Inputs:
+        length=20
+    ATR = Average True Range
+    NATR = (100 / close) * ATR(high, low, close)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    length (int): The short period.  Default: 20
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature
+"""
+
+
+true_range.__doc__ = \
+"""True Range
+
+An method to expand a classical range (high minus low) to include
+possible gap scenarios.
+
+Sources:
+    https://www.macroption.com/true-range/
+
+Calculation:
+    Default Inputs:
+        drift=1
+    ABS = Absolute Value
+    prev_close = close.shift(drift)
+    TRUE_RANGE = ABS([high - low, high - prev_close, low - prev_close]) 
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    drift (int): The shift period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature
+"""
+
+
+
 # Legacy Code
 def average_true_range_depreciated(high, low, close, n=14, fillna=False):
     """Average True Range (ATR)

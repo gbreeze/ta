@@ -607,3 +607,359 @@ def put_call_ratio():
     """
     # TODO
     return
+
+# Volume Documentation
+ad.__doc__ = \
+"""Accumulation/Distribution (AD)
+
+Accumulation/Distribution indicator utilizes the relative position
+of the close to it's High-Low range with volume.  Then it is cumulated.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/accumulationdistribution-ad/
+
+Calculation:
+    CUM = Cumulative Sum
+    if 'open':
+        AD = close - open
+    else:
+        AD = 2 * close - high - low
+
+    hl_range = high - low
+    AD = AD * volume / hl_range
+    AD = CUM(AD)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    volume (pd.Series): Series of 'volume's
+    open (pd.Series): Series of 'open's
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+adosc.__doc__ = \
+"""Accumulation/Distribution Oscillator or Chaikin Oscillator
+
+Accumulation/Distribution Oscillator indicator utilizes 
+Accumulation/Distribution and treats it similarily to MACD
+or APO.
+
+Sources:
+    https://www.investopedia.com/articles/active-trading/031914/understanding-chaikin-oscillator.asp
+
+Calculation:
+    Default Inputs:
+        fast=12, slow=26
+    AD = Accum/Dist
+    ad = AD(high, low, close, open)
+    fast_ad = EMA(ad, fast)
+    slow_ad = EMA(ad, slow)
+    ADOSC = fast_ad - slow_ad
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    open (pd.Series): Series of 'open's
+    volume (pd.Series): Series of 'volume's
+    fast (int): The short period.  Default: 12
+    slow (int): The long period.   Default: 26
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+cmf.__doc__ = \
+"""Chaikin Money Flow (CMF)
+
+Chailin Money Flow measures the amount of money flow volume over a specific
+period in conjunction with Accumulation/Distribution.
+
+Sources:
+    https://www.tradingview.com/wiki/Chaikin_Money_Flow_(CMF)
+    https://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:chaikin_money_flow_cmf
+
+Calculation:
+    Default Inputs:
+        length=20
+    if 'open':
+        ad = close - open
+    else:
+        ad = 2 * close - high - low
+    
+    hl_range = high - low
+    ad = ad * volume / hl_range
+    CMF = SUM(ad, length) / SUM(volume, length)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    open (pd.Series): Series of 'open's
+    volume (pd.Series): Series of 'volume's
+    length (int): The short period.  Default: 20
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+efi.__doc__ = \
+"""Elder's Force Index (EFI)
+
+Elder's Force Index measures the power behind a price movement using price
+and volume as well as potential reversals and price corrections.
+
+Sources:
+    https://www.tradingview.com/wiki/Elder%27s_Force_Index_(EFI)
+    https://www.motivewave.com/studies/elders_force_index.htm
+
+Calculation:
+    Default Inputs:
+        length=20, drift=1, mamode=None
+    EMA = Exponential Moving Average
+    SMA = Simple Moving Average
+
+    pv_diff = close.diff(drift) * volume
+    if mamode == 'sma':
+        EFI = SMA(pv_diff, length)
+    else:
+        EFI = EMA(pv_diff, length)
+
+Args:
+    close (pd.Series): Series of 'close's
+    volume (pd.Series): Series of 'volume's
+    length (int): The short period.  Default: 13
+    drift (int): The diff period.   Default: 1
+    mamode (str): Two options: None or 'sma'.  Default: None
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+eom.__doc__ = \
+"""Ease of Movement (EOM)
+
+Ease of Movement is a volume based oscillator that is designed to measure the
+relationship between price and volume flucuating across a zero line.
+
+Sources:
+    https://www.tradingview.com/wiki/Ease_of_Movement_(EOM)
+    https://www.motivewave.com/studies/ease_of_movement.htm
+    https://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ease_of_movement_emv
+
+Calculation:
+    Default Inputs:
+        length=14, divisor=100000000, drift=1
+    SMA = Simple Moving Average    
+    hl_range = high - low
+    distance = 0.5 * (high - high.shift(drift) + low - low.shift(drift))
+    box_ratio = (volume / divisor) / hl_range
+    eom = distance / box_ratio
+    EOM = SMA(eom, length)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    volume (pd.Series): Series of 'volume's
+    length (int): The short period.  Default: 14
+    drift (int): The diff period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+mfi.__doc__ = \
+"""Money Flow Index (MFI)
+
+Money Flow Index is an oscillator indicator that is used to measure buying and
+selling pressure by utilizing both price and volume.
+
+Sources:
+    https://www.tradingview.com/wiki/Money_Flow_(MFI)
+
+Calculation:
+    Default Inputs:
+        length=14, drift=1
+    tp = typical_price = hlc3 = (high + low + close) / 3
+    rmf = raw_money_flow = tp * volume
+
+    pmf = pos_money_flow = SUM(rmf, length) if tp.diff(drift) > 0 else 0
+    nmf = neg_money_flow = SUM(rmf, length) if tp.diff(drift) < 0 else 0
+
+    MFR = money_flow_ratio = pmf / nmf
+    MFI = money_flow_index = 100 * pmf / (pmf + nmf)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    volume (pd.Series): Series of 'volume's
+    length (int): The sum period.  Default: 14
+    drift (int): The difference period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+nvi.__doc__ = \
+"""Negative Volume Index (NVI)
+
+The Negative Volume Index is a cumulative indicator that uses volume change in
+an attempt to identify where smart money is active.
+
+Sources:
+    https://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:negative_volume_inde
+    https://www.motivewave.com/studies/negative_volume_index.htm
+
+Calculation:
+    Default Inputs:
+        length=20, initial=1000
+    ROC = Rate of Change
+
+    roc = ROC(close, length)
+    signed_volume = signed_series(volume, initial=1)
+    nvi = signed_volume[signed_volume < 0].abs() * roc_
+    nvi.fillna(0, inplace=True)
+    nvi.iloc[0]= initial
+    nvi = nvi.cumsum()
+
+Args:
+    close (pd.Series): Series of 'close's
+    volume (pd.Series): Series of 'volume's
+    length (int): The short period.  Default: 13
+    initial (int): The short period.  Default: 1000
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+obv.__doc__ = \
+"""On Balance Volume (OBV)
+
+On Balance Volume is a cumulative indicator to measure buying and selling
+pressure.
+
+Sources:
+    https://www.tradingview.com/wiki/On_Balance_Volume_(OBV)
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/on-balance-volume-obv/
+    https://www.motivewave.com/studies/on_balance_volume.htm
+
+Calculation:
+    signed_volume = signed_series(close, initial=1) * volume
+    obv = signed_volume.cumsum()
+
+Args:
+    close (pd.Series): Series of 'close's
+    volume (pd.Series): Series of 'volume's
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+pvol.__doc__ = \
+"""Price-Volume (PVOL)
+
+Returns a series of the product of price and volume.
+
+Calculation:
+    if signed:
+        pvol = signed_series(close, 1) * close * volume
+    else:
+        pvol = close * volume
+
+Args:
+    close (pd.Series): Series of 'close's
+    volume (pd.Series): Series of 'volume's
+    signed (bool): Keeps the sign of the difference in 'close's.  Default: True
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+pvt.__doc__ = \
+"""Price-Volume Trend (PVT)
+
+The Price-Volume Trend utilizes the Rate of Change with volume to
+and it's cumulative values to determine money flow.
+
+Sources:
+    https://www.tradingview.com/wiki/Price_Volume_Trend_(PVT)
+
+Calculation:
+    Default Inputs:
+        drift=1
+    ROC = Rate of Change
+    pv = ROC(close, drift) * volume
+    PVT = pv.cumsum()
+
+Args:
+    close (pd.Series): Series of 'close's
+    volume (pd.Series): Series of 'volume's
+    drift (int): The diff period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""

@@ -617,6 +617,577 @@ def willr(high, low, close, length=None, offset=None, **kwargs):
 
 
 
+
+ao.__doc__ = \
+"""Awesome Oscillator (AO)
+
+The Awesome Oscillator is an indicator used to measure a security's momentum.
+AO is generally used to affirm trends or to anticipate possible reversals.
+
+Sources:
+    https://www.tradingview.com/wiki/Awesome_Oscillator_(AO)
+    https://www.ifcm.co.uk/ntx-indicators/awesome-oscillator
+
+Calculation:
+    Default Inputs:
+        fast=5, slow=34
+    SMA = Simple Moving Average
+    median = (high + low) / 2
+    AO = SMA(median, fast) - SMA(median, slow)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    fast (int): The short period.  Default: 5
+    slow (int): The long period.   Default: 34
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+apo.__doc__ = \
+"""Absolute Price Oscillator (APO)
+
+The Absolute Price Oscillator is an indicator used to measure a security's
+momentum.  It is simply the difference of two Exponential Moving Averages
+(EMA) of two different periods.  Note: APO and MACD lines are equivalent.
+
+Sources:
+    https://www.investopedia.com/terms/p/ppo.asp
+
+Calculation:
+    Default Inputs:
+        fast=12, slow=26
+    EMA = Exponential Moving Average
+    APO = EMA(close, fast) - EMA(close, slow)
+
+Args:
+    close (pd.Series): Series of 'close's
+    fast (int): The short period.  Default: 12
+    slow (int): The long period.   Default: 26
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+bop.__doc__ = \
+"""Balance of Power (BOP)
+
+Balance of Power measure the market strength of buyers against sellers.
+
+Sources:
+    http://www.worden.com/TeleChartHelp/Content/Indicators/Balance_of_Power.htm
+
+Calculation:
+    BOP = (close - open) / (high - low)
+
+Args:
+    open (pd.Series): Series of 'open's
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+cci.__doc__ = \
+"""Commodity Channel Index (CCI)
+
+Commodity Channel Index is a momentum oscillator used to primarily identify
+overbought and oversold levels relative to a mean.
+
+Sources:
+    https://www.tradingview.com/wiki/Commodity_Channel_Index_(CCI)
+
+Calculation:
+    Default Inputs:
+        length=20, c=0.015
+    SMA = Simple Moving Average
+    MAD = Mean Absolute Deviation
+    tp = typical_price = hlc3 = (high + low + close) / 3
+    mean_tp = SMA(tp, length)
+    mad_tp = MAD(tp, length)
+    CCI = (tp - mean_tp) / (c * mad_tp)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 20
+    c (float):  Scaling Constant.  Default: 0.015
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+coppock.__doc__ = \
+"""Coppock Curve (COPC)
+
+Coppock Curve (originally called the "Trendex Model") is a momentum indicator
+is designed for use on a monthly time scale.  Although designed for monthly
+use, a daily calculation over the same period can be made, converting the
+periods to 294-day and 231-day rate of changes, and a 210-day weighted
+moving average.
+
+Sources:
+    https://en.wikipedia.org/wiki/Coppock_curve
+
+Calculation:
+    Default Inputs:
+        length=10, fast=11, slow=14
+    SMA = Simple Moving Average
+    MAD = Mean Absolute Deviation
+    tp = typical_price = hlc3 = (high + low + close) / 3
+    mean_tp = SMA(tp, length)
+    mad_tp = MAD(tp, length)
+    CCI = (tp - mean_tp) / (c * mad_tp)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): WMA period.  Default: 10
+    fast (int): Fast ROC period.  Default: 11
+    slow (int): Slow ROC period.  Default: 14
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+
+kst.__doc__ = \
+"""'Know Sure Thing' (KST)
+
+The 'Know Sure Thing' is a momentum based oscillator and based on ROC.
+
+Sources:
+    https://www.tradingview.com/wiki/Know_Sure_Thing_(KST)
+    https://www.incrediblecharts.com/indicators/kst.php
+
+Calculation:
+    Default Inputs:
+        roc1=10, roc2=15, roc3=20, roc4=30,
+        sma1=10, sma2=10, sma3=10, sma4=15, signal=9, drift=1
+    ROC = Rate of Change
+    SMA = Simple Moving Average
+    rocsma1 = SMA(ROC(close, roc1), sma1)
+    rocsma2 = SMA(ROC(close, roc2), sma2)
+    rocsma3 = SMA(ROC(close, roc3), sma3)
+    rocsma4 = SMA(ROC(close, roc4), sma4)
+
+    KST = 100 * (rocsma1 + 2 * rocsma2 + 3 * rocsma3 + 4 * rocsma4)
+    KST_Signal = SMA(KST, signal)
+
+Args:
+    close (pd.Series): Series of 'close's
+    roc1 (int): ROC 1 period.  Default: 10
+    roc2 (int): ROC 2 period.  Default: 15
+    roc3 (int): ROC 3 period.  Default: 20
+    roc4 (int): ROC 4 period.  Default: 30
+    sma1 (int): SMA 1 period.  Default: 10
+    sma2 (int): SMA 2 period.  Default: 10
+    sma3 (int): SMA 3 period.  Default: 10
+    sma4 (int): SMA 4 period.  Default: 15
+    signal (int): It's period.  Default: 9
+    drift (int): The difference period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.DataFrame: kst and kst_signal columns
+"""
+
+
+macd.__doc__ = \
+"""Moving Average Convergence Divergence (MACD)
+
+The MACD is a popular indicator to that is used to identify a security's trend.
+While APO and MACD are the same calculation, MACD also returns two more series
+called Signal and Histogram.  The Signal is an EMA of MACD and the Histogram is
+the difference of MACD and Signal.
+
+Sources:
+    https://www.tradingview.com/wiki/MACD_(Moving_Average_Convergence/Divergence)
+
+Calculation:
+    Default Inputs:
+        fast=12, slow=26, signal=9
+    EMA = Exponential Moving Average
+    MACD = EMA(close, fast) - EMA(close, slow)
+    Signal = EMA(MACD, signal)
+    Histogram = MACD - Signal
+
+Args:
+    close (pd.Series): Series of 'close's
+    fast (int): The short period.  Default: 12
+    slow (int): The long period.   Default: 26
+    signal (int): The signal period.   Default: 9
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.DataFrame: macd, histogram, signal columns.
+"""
+
+
+mom.__doc__ = \
+"""Momentum (MOM)
+
+Momentum is an indicator used to measure a security's speed (or strength) of
+movement.  Or simply the change in price.
+
+Sources:
+    http://www.onlinetradingconcepts.com/TechnicalAnalysis/Momentum.html
+
+Calculation:
+    Default Inputs:
+        length=1
+    MOM = close.diff(length)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+ppo.__doc__ = \
+"""Percentage Price Oscillator (PPO)
+
+The Percentage Price Oscillator is similar to MACD in measuring momentum.
+
+Sources:
+    https://www.tradingview.com/wiki/MACD_(Moving_Average_Convergence/Divergence)
+
+Calculation:
+    Default Inputs:
+        fast=12, slow=26
+    SMA = Simple Moving Average
+    EMA = Exponential Moving Average
+    fast_sma = SMA(close, fast)
+    slow_sma = SMA(close, slow)
+    PPO = 100 * (fast_sma - slow_sma) / slow_sma
+    Signal = EMA(PPO, signal)
+    Histogram = PPO - Signal
+
+Args:
+    close(pandas.Series): Series of 'close's
+    fast(int): The short period.  Default: 12
+    slow(int): The long period.   Default: 26
+    signal(int): The signal period.   Default: 9
+    offset(int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.DataFrame: ppo, histogram, signal columns
+"""
+
+
+roc.__doc__ = \
+"""Rate of Change (ROC)
+
+Rate of Change is an indicator is also referred to as Momentum (yeah, confusingly).
+It is a pure momentum oscillator that measures the percent change in price with the
+previous price 'n' (or length) periods ago.
+
+Sources:
+    https://www.tradingview.com/wiki/Rate_of_Change_(ROC)
+
+Calculation:
+    Default Inputs:
+        length=1
+    MOM = Momentum
+    ROC = 100 * MOM(close, length) / close.shift(length)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+rsi.__doc__ = \
+"""Relative Strength Index (RSI)
+
+The Relative Strength Index is popular momentum oscillator used to measure the
+velocity as well as the magnitude of directional price movements.
+
+Sources:
+    https://www.tradingview.com/wiki/Relative_Strength_Index_(RSI)
+
+Calculation:
+    Default Inputs:
+        length=14, drift=1
+    ABS = Absolute Value
+    EMA = Exponential Moving Average
+    positive = close if close.diff(drift) > 0 else 0
+    negative = close if close.diff(drift) < 0 else 0
+    pos_avg = EMA(positive, length)
+    neg_avg = ABS(EMA(negative, length))
+    RSI = 100 * pos_avg / (pos_avg + neg_avg)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 1
+    drift (int): The difference period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+stoch.__doc__ = \
+"""Stochastic (STOCH)
+
+Stochastic Oscillator is a range bound momentum indicator.  It displays the location
+of the close relative to the high-low range over a period.
+
+Sources:
+    https://www.tradingview.com/wiki/Stochastic_(STOCH)
+
+Calculation:
+    Default Inputs:
+        fast_k=14, slow_k=5, slow_d=3
+    SMA = Simple Moving Average
+    lowest_low   = low for last fast_k periods
+    highest_high = high for last fast_k periods
+
+    FASTK = 100 * (close - lowest_low) / (highest_high - lowest_low)
+    FASTD = SMA(FASTK, slow_d)
+
+    SLOWK = SMA(FASTK, slow_k)
+    SLOWD = SMA(SLOWK, slow_d)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    fast_k (int): The Fast %K period.  Default: 14
+    slow_k (int): The Slow %K period.  Default: 5
+    slow_d (int): The Slow %D period.  Default: 3
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.DataFrame: fastk, fastd, slowk, slowd columns.
+"""
+
+trix.__doc__ = \
+"""Trix (TRIX)
+
+TRIX is a momentum oscillator to identify divergences.
+
+Sources:
+    https://www.tradingview.com/wiki/TRIX
+
+Calculation:
+    Default Inputs:
+        length=18, drift=1
+    EMA = Exponential Moving Average
+    ROC = Rate of Change
+    ema1 = EMA(close, length)
+    ema2 = EMA(ema1, length)
+    ema3 = EMA(ema2, length)
+    TRIX = 100 * ROC(ema3, drift)
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 18
+    drift (int): The difference period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+tsi.__doc__ = \
+"""True Strength Index (TSI)
+
+The True Strength Index is a momentum indicator used to identify short-term
+swings while in the direction of the trend as well as determining overbought
+and oversold conditions.
+
+Sources:
+    https://www.investopedia.com/terms/t/tsi.asp
+
+Calculation:
+    Default Inputs:
+        fast=13, slow=25, drift=1
+    EMA = Exponential Moving Average
+    diff = close.diff(drift)
+
+    slow_ema = EMA(diff, slow)
+    fast_slow_ema = EMA(slow_ema, slow)
+
+    abs_diff_slow_ema = absolute_diff_ema = EMA(ABS(diff), slow)
+    abema = abs_diff_fast_slow_ema = EMA(abs_diff_slow_ema, fast)
+
+    TSI = 100 * fast_slow_ema / abema
+
+Args:
+    close (pd.Series): Series of 'close's
+    fast (int): The short period.  Default: 13
+    slow (int): The long period.   Default: 25
+    drift (int): The difference period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+uo.__doc__ = \
+"""Ultimate Oscillator (UO)
+
+The Ultimate Oscillator is a momentum indicator over three different
+periods.  It attempts to correct false divergence trading signals.
+
+Sources:
+    https://www.tradingview.com/wiki/Ultimate_Oscillator_(UO)
+
+Calculation:
+    Default Inputs:
+        fast=7, medium=14, slow=28,
+        fast_w=4.0, medium_w=2.0, slow_w=1.0, drift=1
+    min_low_or_pc  = close.shift(drift).combine(low, min)
+    max_high_or_pc = close.shift(drift).combine(high, max)
+
+    bp = buying pressure = close - min_low_or_pc
+    tr = true range = max_high_or_pc - min_low_or_pc
+
+    fast_avg = SUM(bp, fast) / SUM(tr, fast)
+    medium_avg = SUM(bp, medium) / SUM(tr, medium)
+    slow_avg = SUM(bp, slow) / SUM(tr, slow)
+
+    total_weight = fast_w + medium_w + slow_w
+    weights = (fast_w * fast_avg) + (medium_w * medium_avg) + (slow_w * slow_avg)
+    UO = 100 * weights / total_weight
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    fast (int): The Fast %K period.  Default: 7
+    medium (int): The Slow %K period.  Default: 14
+    slow (int): The Slow %D period.  Default: 28
+    fast_w (float): The Fast %K period.  Default: 4.0
+    medium_w (float): The Slow %K period.  Default: 2.0
+    slow_w (float): The Slow %D period.  Default: 1.0
+    drift (int): The difference period.   Default: 1
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+willr.__doc__ = \
+"""William's Percent R (WILLR)
+
+William's Percent R is a momentum oscillator similar to the RSI that
+attempts to identify overbought and oversold conditions.
+
+Sources:
+    https://www.tradingview.com/wiki/Williams_%25R_(%25R)
+
+Calculation:
+    Default Inputs:
+        length=20
+    lowest_low   = low.rolling(length).min()
+    highest_high = high.rolling(length).max()
+
+    WILLR = 100 * ((close - lowest_low) / (highest_high - lowest_low) - 1)
+
+Args:
+    high (pd.Series): Series of 'high's
+    low (pd.Series): Series of 'low's
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 14
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+
 # Legacy code
 def rsi_depreciated(close, n=14, fillna=False):
     """Relative Strength Index (RSI)

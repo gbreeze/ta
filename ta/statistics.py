@@ -158,7 +158,7 @@ def zscore(close, length=None, std=None, offset=None, **kwargs):
 
 
 # Statistics Documentation
-kurtosis_docs = \
+kurtosis.__doc__ = \
 """Kurtosis
 
 Rolling Kurtosis
@@ -184,7 +184,7 @@ Returns:
 """
 
 
-median_docs = \
+median.__doc__ = \
 """Median
 
 Rolling Median of over 'n' periods.  Sibling of a Simple Moving Average.
@@ -211,7 +211,7 @@ Returns:
 """
 
 
-quantile_docs = \
+quantile.__doc__ = \
 """Quantile
 
 Rolling Quantile
@@ -238,7 +238,7 @@ Returns:
 """
 
 
-skew_docs = \
+skew.__doc__ = \
 """Skew
 
 Rolling Skew
@@ -264,7 +264,7 @@ Returns:
 """
 
 
-stdev_docs = \
+stdev.__doc__ = \
 """Standard Deviation
 
 Rolling Standard Deviation
@@ -291,7 +291,7 @@ Returns:
 """
 
 
-variance_docs = \
+variance.__doc__ = \
 """Variance
 
 Rolling Variance
@@ -317,7 +317,7 @@ Returns:
 """
 
 
-zscore_docs = \
+zscore.__doc__ = \
 """ZScore
 
 Rolling Z Score
@@ -346,13 +346,3 @@ Kwargs:
 Returns:
     pd.Series: New feature generated.
 """
-
-
-# Statistics Documentation
-kurtosis.__doc__ = kurtosis_docs
-median.__doc__ = median_docs
-quantile.__doc__ = quantile_docs
-skew.__doc__ = skew_docs
-stdev.__doc__ = stdev_docs
-variance.__doc__ = variance_docs
-zscore.__doc__ = zscore_docs

@@ -41,7 +41,7 @@ df.tail()
 
 ## New Changes
 
-* Most noteably, doubling the number of indicators.
+* At 65+ indicators.
 * Abbreviated Indicator names as listed below.
 * *Extended Pandas DataFrame* as 'ta'.  See examples below.
 * Parameter names are more consistent.
@@ -57,8 +57,6 @@ A [Pandas DataFrame Extension](https://pandas.pydata.org/pandas-docs/stable/exte
 
 
 # Technical Analysis Indicators (by Category)
-
-List of currently implemented Technical Analysis Indicators grouped by Category.
 
 ## _Momentum_ (16)
 
@@ -155,8 +153,9 @@ Use parameter: cumulative=**True** for cumulative results.
 | ![Example ADX](/doc/Example_SPY_ADX.png) |
 
 
-## _Volatility_ (7)
+## _Volatility_ (8)
 
+* _Acceleration Bands_: **accbands**
 * _Average True Range_: **atr**
 * _Bollinger Bands_: **bbands**
 * _Donchian Channel_: **donchain**

@@ -7,7 +7,6 @@ Python's Pandas library.
 .. moduleauthor:: Dario Lopez Padial (Bukosabino)
 
 """
-from .wrapper import *
-from .utils import *
 from ._extension import *
-from ._docs import *
+from .utils import *
+from .wrapper import *

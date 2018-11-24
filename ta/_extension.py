@@ -594,6 +594,15 @@ class AnalysisIndicators(BasePandasObject):
 
 
 
+    def accbands(self, high=None, low=None, close=None, length=None, c=None, mamode=None, offset=None, **kwargs):
+        high = self._get_column(high, 'high')
+        low = self._get_column(low, 'low')
+        close = self._get_column(close, 'close')
+        result = accbands(high=high, low=low, close=close, length=length, c=c, mamode=mamode, offset=offset, **kwargs)
+        self._append(result, **kwargs)
+        return result
+
+
     def atr(self, high=None, low=None, close=None, length=None, mamode=None, offset=None, **kwargs):
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')
@@ -747,6 +756,7 @@ class AnalysisIndicators(BasePandasObject):
     # AwesomeOscillator = ao
     # AbsolutePriceOscillator = apo
     # BalanceOfPower = bop
+    # CoppockCurves = coppock
     # CommodityChannelIndex = cci
     # KnowSureThing = kst
     # MACD = macd
@@ -802,6 +812,7 @@ class AnalysisIndicators(BasePandasObject):
     # Vortex = vortex
 
     # # Volatility: volatility.py ✅
+    # AccelerationBands = accbands
     # AverageTrueRange = atr
     # BollingerBands = bbands
     # DonchianChannels = donchian

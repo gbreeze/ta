@@ -171,7 +171,7 @@ class AnalysisIndicators(BasePandasObject):
                 match = [i for i, x in enumerate(matches) if x]
                 # If found, awesome.  Return it or return the 'series'.
                 NOT_FOUND = f"[X] Ooops!!!: It's {series not in df.columns}, the series '{series}' not in {', '.join(list(df.columns))}"
-                return df.iloc[:,match[0]] if len(match) else  print(NOT_FOUND)
+                return df.iloc[:,match[0]] if len(match) else print(NOT_FOUND)
         
 
     def constants(self, apply, min_range=-100, max_range=100, every=10):
@@ -207,11 +207,12 @@ class AnalysisIndicators(BasePandasObject):
 
     def indicators(self):
         """Indicator list"""
-        helper_methods = ['indicators', 'constants']
+        helper_methods = ['indicators', 'constants'] # Public non-indicator methods
         ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))
-        total_indicators = len(ta_indicators) - len(helper_methods)  # Excluding constants and help methods.
+        [ta_indicators.remove(x) for x in helper_methods]  # Removes helper methods
+        abbr_list = ', '.join(ta_indicators)
         header = f"TA - Technical Analysis Indicators\n"
-        print(f"{header}Total Indicators: {total_indicators}\nAbbreviations: {', '.join(ta_indicators)}")
+        print(f"{header}Total Indicators: {len(ta_indicators)}\nAbbreviations:\n    {abbr_list}")
 
 
 
@@ -509,7 +510,9 @@ class AnalysisIndicators(BasePandasObject):
         self._append(result, **kwargs)
         return result
 
-    mean = sma
+
+    mean = sma # Alias of 'sma'
+
 
     def median(self, close=None, length=None, offset=None, **kwargs):
         close = self._get_column(close, 'close')
@@ -755,93 +758,3 @@ class AnalysisIndicators(BasePandasObject):
         result = pvt(close=close, volume=volume, offset=offset, **kwargs)
         self._append(result, **kwargs)
         return result
-
-
-
-    ## Indicator Aliases by Category, more to be added later...
-    # # Momentum: momomentum.py ✅
-    # AwesomeOscillator = ao
-    # AbsolutePriceOscillator = apo
-    # BalanceOfPower = bop
-    # CommodityChannelIndex = cci
-    # ChandeMomentumOscillator = cmo
-    # CoppockCurves = coppock
-    # KnowSureThing = kst
-    # MACD = macd
-    # Momentum = mom
-    # PercentagePriceOscillator = ppo
-    # RateOfChange = roc
-    # RelativeStrengthIndex = rsi
-    # Stochastic = stoch
-    # TRIX = trix
-    # TrueStrengthIndex = tsi
-    # UltimateOscillator = uo
-    # WilliamsR = willr
-
-    # # Overlap: overlap.py ✅
-    # DoubleExponentialMovingAverage = dema
-    # ExponentialMovingAverage = ema
-    # HL2 = hl2
-    # HLC3 = TypicalPrice = hlc3
-    # HullMovingAverage = hma
-    # Ichimoku = ichimoku
-    # Midpoint = midpoint
-    # Midprice = midprice
-    # OHLC4 = ohlc4
-    # WilliamsMovingAverage = rma
-    # SimpleMovingAverage = sma
-    # T3 = t3
-    # TripleExponentialMovingAverage = tema
-    # TriangularMovingAverage = trima # require scipy
-    # VolumeWeightedAveragePrice = vwap
-    # VolumeWeightedMovingAverage = vwma
-    # WeightedMovingAverage = wma
-
-    # # Performance: performance.py ✅
-    # LogReturn = log_return
-    # PctReturn = percent_return
-
-    # # Statistics: statistics.py ✅
-    # Kurtosis = kurtosis
-    # mean = sma
-    # Median = median
-    # Quantile = quantile
-    # Skew = skew
-    # StandardDeviation = stdev
-    # Variance = variance
-    # ZScore = zscore
-
-    # # Trend: trend.py ✅
-    # AverageDirectionalMovmentIndex = adx
-    # Aroon = aroon
-    # Decreasing = decreasing
-    # DetrendPriceOscillator = dpo
-    # Increasing = increasing
-    # Vortex = vortex
-
-    # # Volatility: volatility.py ✅
-    # AccelerationBands = accbands
-    # AverageTrueRange = atr
-    # BollingerBands = bbands
-    # DonchianChannels = donchian
-    # KeltnerChannels = kc
-    # MassIndex = massi
-    # NormalizedAverageTrueRange = natr
-    # TrueRange = true_range
-
-    # # Volume: volume.py ✅
-    # AccumDist = ad
-    # AccumDistOscillator = adosc
-    # ChaikinMoneyFlow = cmf
-    # EldersForceIndex = efi
-    # EaseOfMovement = eom
-    # MoneyFlowIndex = mfi
-    # NegativeVolumeIndex = nvi
-    # OnBalanceVolume = obv
-    # PriceVolume = pvol
-    # PriceVolumeTrend = pvt
-
-
-# ta_indicators = list((x for x in dir(pd.DataFrame().ta) if not x.startswith('_') and not x.endswith('_')))
-# if True:
-#     print(f"[i] TA Indicators: {len(ta_indicators)}\n{', '.join(ta_indicators)}")

@@ -145,6 +145,42 @@ def cci(high, low, close, length=None, c=None, offset=None, **kwargs):
     return cci
 
 
+def cmo(close, length=None, drift=None, offset=None, **kwargs):
+    """Indicator: Chande Momentum Oscillator (CMO)"""
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 10
+    drift = get_drift(drift)
+    offset = get_offset(offset)
+
+    # Calculate Result
+    negative = close.diff(drift)
+    positive = negative.copy()
+
+    positive[positive < 0] = 0  # Make negatives 0 for the postive series
+    negative[negative > 0] = 0  # Make postives 0 for the negative series
+
+    pos_sum = positive.rolling(length).sum()
+    neg_sum = np.fabs(negative).rolling(length).sum()
+    
+    cmo = 100 * (pos_sum - neg_sum) / (pos_sum + neg_sum)
+
+    # Offset
+    cmo = cmo.shift(offset)
+
+    # Handle fills
+    if 'fillna' in kwargs:
+        cmo.fillna(kwargs['fillna'], inplace=True)
+    if 'fill_method' in kwargs:
+        cmo.fillna(method=kwargs['fill_method'], inplace=True)
+
+    # Name and Categorize it
+    cmo.name = f"CMO_{length}"
+    cmo.category = 'momentum'
+
+    return cmo
+
+
 def coppock(close, length=None, fast=None, slow=None, offset=None, **kwargs):
     """Indicator: Coppock Curve (COPC)"""
     # Validate Arguments
@@ -155,6 +191,7 @@ def coppock(close, length=None, fast=None, slow=None, offset=None, **kwargs):
     min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
     offset = get_offset(offset)
 
+    # Calculate Result
     total_roc = roc(close, fast) + roc(close, slow)
     coppock = wma(total_roc, length)
 
@@ -734,6 +771,38 @@ Args:
     close (pd.Series): Series of 'close's
     length (int): It's period.  Default: 20
     c (float):  Scaling Constant.  Default: 0.015
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
+cmo.__doc__ = \
+"""Chande Momentum Oscillator (CMO)
+
+Attempts to capture the momentum of an asset with overbought at 50 and
+oversold at -50.
+
+Sources:
+    https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/chande-momentum-oscillator-cmo/
+
+Calculation:
+    Default Inputs:
+        drift=1
+    if close - prev_close > 0:
+        PSUM = SUM(close - prev_close)
+    else:
+        NSUM = ABS(SUM(close - prev_close))
+    CMO = 100 * (PSUM - NSUM) / (PSUM + NSUM)
+
+Args:
+    close (pd.Series): Series of 'close's
+    drift (int): The short period.  Default: 1
     offset (int): How many periods to offset the result.  Default: 0
 
 Kwargs:

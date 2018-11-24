@@ -249,6 +249,13 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    def cmo(self, close=None, length=None, drift=None, offset=None, **kwargs):
+        close = self._get_column(close, 'close')
+        result = cmo(close=close, length=length, drift=drift, offset=offset, **kwargs)
+        self._append(result, **kwargs)
+        return result
+
+
     def coppock(self, close=None, length=None, fast=None, slow=None, offset=None, **kwargs):
         close = self._get_column(close, 'close')
         result = coppock(close=close, length=length, fast=fast, slow=slow, offset=offset, **kwargs)
@@ -756,8 +763,9 @@ class AnalysisIndicators(BasePandasObject):
     # AwesomeOscillator = ao
     # AbsolutePriceOscillator = apo
     # BalanceOfPower = bop
-    # CoppockCurves = coppock
     # CommodityChannelIndex = cci
+    # ChandeMomentumOscillator = cmo
+    # CoppockCurves = coppock
     # KnowSureThing = kst
     # MACD = macd
     # Momentum = mom

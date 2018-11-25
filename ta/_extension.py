@@ -511,6 +511,13 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    def mad(self, close=None, length=None, offset=None, **kwargs):
+        close = self._get_column(close, 'close')
+        result = mad(close=close, length=length, offset=offset, **kwargs)
+        self._append(result, **kwargs)
+        return result
+
+
     mean = sma # Alias of 'sma'
 
 

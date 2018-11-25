@@ -9,7 +9,7 @@
 import numpy as np
 import pandas as pd
 
-from .utils import *
+from .utils import get_drift, get_offset, verify_series
 from .overlap import hlc3, ema, wma
 
 
@@ -794,7 +794,7 @@ Sources:
 Calculation:
     Default Inputs:
         drift=1
-    if close - prev_close > 0:
+    if close.diff(drift) > 0:
         PSUM = SUM(close - prev_close)
     else:
         NSUM = ABS(SUM(close - prev_close))

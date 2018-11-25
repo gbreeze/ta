@@ -6,6 +6,7 @@ from .overlap import ema, sma, vwma
 from .utils import get_offset, verify_series
 
 
+
 def kurtosis(close, length=None, offset=None, **kwargs):
     """Indicator: Kurtosis"""
     # Validate Arguments
@@ -25,6 +26,31 @@ def kurtosis(close, length=None, offset=None, **kwargs):
     kurtosis.category = 'statistics'
 
     return kurtosis
+
+
+def mad(close, length=None, offset=None, **kwargs):
+    """Indicator: Mean Absolute Deviation"""
+    # Validate Arguments
+    close = verify_series(close)
+    length = int(length) if length and length > 0 else 30
+    min_periods = int(kwargs['min_periods']) if 'min_periods' in kwargs and kwargs['min_periods'] is not None else length
+    offset = get_offset(offset)
+
+    # Calculate Result
+    def mad(series):
+        """Mean Absolute Deviation"""
+        return np.fabs(series - series.mean()).mean()
+
+    mad = close.rolling(length, min_periods=min_periods).apply(mad, raw=True)
+
+    # Offset
+    mad = mad.shift(offset)
+
+    # Name & Category
+    mad.name = f"MAD_{length}"
+    mad.category = 'statistics'
+
+    return mad
 
 
 def median(close, length=None, offset=None, **kwargs):
@@ -159,9 +185,7 @@ def zscore(close, length=None, std=None, offset=None, **kwargs):
 
 # Statistics Documentation
 kurtosis.__doc__ = \
-"""Kurtosis
-
-Rolling Kurtosis
+"""Rolling Kurtosis
 
 Sources:
 
@@ -184,8 +208,32 @@ Returns:
 """
 
 
+mad.__doc__ = \
+"""Rolling Mean Absolute Deviation
+
+Sources:
+
+Calculation:
+    Default Inputs:
+        length=30
+    mad = close.rolling(length).mad()
+
+Args:
+    close (pd.Series): Series of 'close's
+    length (int): It's period.  Default: 30
+    offset (int): How many periods to offset the result.  Default: 0
+
+Kwargs:
+    fillna (value, optional): pd.DataFrame.fillna(value)
+    fill_method (value, optional): Type of fill method
+
+Returns:
+    pd.Series: New feature generated.
+"""
+
+
 median.__doc__ = \
-"""Median
+"""Rolling Median
 
 Rolling Median of over 'n' periods.  Sibling of a Simple Moving Average.
 
@@ -194,7 +242,7 @@ Sources:
 
 Calculation:
     Default Inputs:
-        length=1
+        length=30
     MEDIAN = close.rolling(length).median()
 
 Args:
@@ -212,9 +260,7 @@ Returns:
 
 
 quantile.__doc__ = \
-"""Quantile
-
-Rolling Quantile
+"""Rolling Quantile
 
 Sources:
 
@@ -226,7 +272,7 @@ Calculation:
 Args:
     close (pd.Series): Series of 'close's
     length (int): It's period.  Default: 30
-    q (float): It's period.  Default: 0.5
+    q (float): The quantile.  Default: 0.5
     offset (int): How many periods to offset the result.  Default: 0
 
 Kwargs:
@@ -239,9 +285,7 @@ Returns:
 
 
 skew.__doc__ = \
-"""Skew
-
-Rolling Skew
+"""Rolling Skew
 
 Sources:
 
@@ -265,9 +309,7 @@ Returns:
 
 
 stdev.__doc__ = \
-"""Standard Deviation
-
-Rolling Standard Deviation
+"""Rolling Standard Deviation
 
 Sources:
 
@@ -292,9 +334,7 @@ Returns:
 
 
 variance.__doc__ = \
-"""Variance
-
-Rolling Variance
+"""Rolling Variance
 
 Sources:
 
@@ -318,9 +358,7 @@ Returns:
 
 
 zscore.__doc__ = \
-"""ZScore
-
-Rolling Z Score
+"""Rolling Z Score
 
 Sources:
 

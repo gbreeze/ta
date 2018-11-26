@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
+import math
 import numpy as np
 import pandas as pd
 
-from math import sqrt
-from .utils import get_drift, get_offset, verify_series
-# from .volatility import 
+try:
+    import scipy
+    _SCIPY_ = True
+except ImportError:
+    _SCIPY_ = False
+
+from .utils import get_drift, get_offset, pascals_triangle, verify_series
 
 
 
@@ -113,7 +118,7 @@ def hma(close, length=None, offset=None, **kwargs):
 
     # Calculate Result
     half_length = int(length / 2)
-    sqrt_length = int(sqrt(length))
+    sqrt_length = int(math.sqrt(length))
 
     wmaf = wma(close=close, length=half_length)
     wmas = wma(close=close, length=length)
@@ -389,10 +394,13 @@ def trima(close, length=None, offset=None, **kwargs):
     offset = get_offset(offset)
 
     # Calculate Result
-    trima = close.rolling(length, min_periods=min_periods, win_type='triang').mean()
+    half_length = round(0.5 * (length + 1))
+    sma1 = close.rolling(half_length, min_periods=half_length).mean()
+    trima = sma1.rolling(half_length, min_periods=half_length).mean()
 
     # Offset
-    trima = trima.shift(offset)
+    if offset != 0:
+        trima = trima.shift(offset)
 
     # Name & Category
     trima.name = f"TRIMA_{length}"
@@ -467,7 +475,7 @@ def wma(close, length=None, asc=None, offset=None, **kwargs):
         return _compute
 
     close_ = close.rolling(length, min_periods=length)
-    wma =close_.apply(linear_weights(weights), raw=True)
+    wma = close_.apply(linear_weights(weights), raw=True)
 
     # Offset
     wma = wma.shift(offset)
@@ -946,7 +954,6 @@ Returns:
 
 trima.__doc__ = \
 """Triangular Moving Average (TRIMA)
-REQUIRES: scipy
 
 A weighted moving average where the shape of the weights are triangular and the
 greatest weight is in the middle of the period.
@@ -958,12 +965,9 @@ Calculation:
     Default Inputs:
         length=10
     SMA = Simple Moving Average
-    if scipy:
-        TRIMA = close.rolling(length, win_type='triang').mean()
-    else:
-        half_length = math.round(0.5 * (length + 1))
-        SMA1 = SUM(close, half_length) / half_length
-        TRIMA = SMA(SMA1, half_length) / half_length
+    half_length = math.round(0.5 * (length + 1))
+    SMA1 = SMA(close, half_length)
+    TRIMA = SMA(SMA1, half_length)
 
 Args:
     close (pd.Series): Series of 'close's

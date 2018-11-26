@@ -123,9 +123,10 @@ Use parameter: cumulative=**True** for cumulative results.
 | ![Example Cumulative Percent Return](/doc/Example_SPY_CumulativePercentReturn.png) |
 
 
-## _Statistics_ (8)
+## _Statistics_ (9)
 
 * _Kurtosis_: **kurtosis**
+* _Mean Absolute Deviation_: **mad**
 * _Mean_: **mean**
     * Alias of **sma**
 * _Median_: **median**

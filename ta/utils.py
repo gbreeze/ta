@@ -50,13 +50,22 @@ def get_offset(x:int):
     return int(x) if x else 0
 
 
-def pascals_triangle(n:int):
-    if n < 0:
-        return None
+def multichoose(n:int, r:int):
+    """https://en.wikipedia.org/wiki/Binomial_coefficient"""
+    return combination(n + r - 1, r)
 
+
+def pascals_triangle(n:int):
+    """Pascal's Triangle
+
+    Returns a numpy array of the nth row of Pascal's Triangle.
+    """
+    if n < 0: return None
+
+    # Calculation
     triangle = np.array([combination(n, i) for i in range(0, n + 1)])
 
-    # Variations
+    # Variations and Properties
     max_ = np.max(triangle)
     inverted = max_ - triangle
     triangle_sum = np.sum(triangle)
@@ -65,7 +74,7 @@ def pascals_triangle(n:int):
     weighted = triangle / triangle_sum
     inv_weighted = inverted / triangle_sum
 
-    return triangle, inverted, weighted, inv_weighted, triangle_avg
+    return triangle, triangle_sum, triangle_avg, inverted, weighted, inv_weighted, triangle_avg
 
 
 def signed_series(series:pd.Series, initial:int = None):

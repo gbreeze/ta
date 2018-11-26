@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import math
+import numpy as np
 import pandas as pd
 
-# from numpy import fabs
 from sys import float_info as sflt
 
 
@@ -33,6 +33,23 @@ def get_drift(x:int):
 def get_offset(x:int):
     """Returns an int, otherwise defaults to zero."""
     return int(x) if x else 0
+
+
+def pascals_triangle(n:int):
+    """Pascal's Triangle:
+    https://www.sanfoundry.com/python-program-print-pascal-triangle/"""
+    
+    triangles = []
+    for i in range(n):
+        triangles.append([])
+        triangles[i].append(1)
+        for j in range(1,i):
+           triangles[i].append(triangles[i - 1][j - 1] + triangles[i - 1][j])
+
+        if n != 0: triangles[i].append(1)
+        
+    last, total = np.array(triangles[-1]), np.sum(triangles[-1])
+    return last, total
 
 
 def signed_series(series:pd.Series, initial:int = None):

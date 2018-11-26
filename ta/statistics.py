@@ -19,7 +19,8 @@ def kurtosis(close, length=None, offset=None, **kwargs):
     kurtosis = close.rolling(length, min_periods=min_periods).kurt()
 
     # Offset
-    kurtosis = kurtosis.shift(offset)
+    if offset != 0:
+        kurtosis = kurtosis.shift(offset)
 
     # Name & Category
     kurtosis.name = f"KURT_{length}"
@@ -44,7 +45,8 @@ def mad(close, length=None, offset=None, **kwargs):
     mad = close.rolling(length, min_periods=min_periods).apply(mad, raw=True)
 
     # Offset
-    mad = mad.shift(offset)
+    if offset != 0:
+        mad = mad.shift(offset)
 
     # Name & Category
     mad.name = f"MAD_{length}"
@@ -65,7 +67,8 @@ def median(close, length=None, offset=None, **kwargs):
     median = close.rolling(length, min_periods=min_periods).median()
 
     # Offset
-    median = median.shift(offset)
+    if offset != 0:
+        median = median.shift(offset)
 
     # Name & Category
     median.name = f"MEDIAN_{length}"
@@ -87,7 +90,8 @@ def quantile(close, length=None, q=None, offset=None, **kwargs):
     quantile = close.rolling(length, min_periods=min_periods).quantile(q)
 
     # Offset
-    quantile = quantile.shift(offset)
+    if offset != 0:
+        quantile = quantile.shift(offset)
 
     # Name & Category
     quantile.name = f"QTL_{length}_{q}"
@@ -108,7 +112,8 @@ def skew(close, length=None, offset=None, **kwargs):
     skew = close.rolling(length, min_periods=min_periods).skew()
 
     # Offset
-    skew = skew.shift(offset)
+    if offset != 0:
+        skew = skew.shift(offset)
 
     # Name & Category
     skew.name = f"SKEW_{length}"
@@ -129,7 +134,8 @@ def stdev(close, length=None, offset=None, **kwargs):
     stdev = variance(close=close, length=length).apply(np.sqrt)
 
     # Offset
-    stdev = stdev.shift(offset)
+    if offset != 0:
+        stdev = stdev.shift(offset)
 
     # Name & Category
     stdev.name = f"STDEV_{length}"
@@ -150,7 +156,8 @@ def variance(close, length=None, offset=None, **kwargs):
     variance = close.rolling(length, min_periods=min_periods).var()
 
     # Offset
-    variance = variance.shift(offset)
+    if offset != 0:
+        variance = variance.shift(offset)
 
     # Name & Category
     variance.name = f"VAR_{length}"
@@ -173,7 +180,8 @@ def zscore(close, length=None, std=None, offset=None, **kwargs):
     zscore = (close - mean) / std
 
     # Offset
-    zscore = zscore.shift(offset)
+    if offset != 0:
+        zscore = zscore.shift(offset)
 
     # Name & Category
     zscore.name = f"Z_{length}"

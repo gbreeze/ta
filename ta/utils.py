@@ -46,7 +46,8 @@ def pascals_triangle(n:int):
         for j in range(1,i):
            triangles[i].append(triangles[i - 1][j - 1] + triangles[i - 1][j])
 
-        if n != 0: triangles[i].append(1)
+        if n != 0:
+            triangles[i].append(1)
         
     last, total = np.array(triangles[-1]), np.sum(triangles[-1])
     return last, total

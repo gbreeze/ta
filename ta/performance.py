@@ -19,7 +19,8 @@ def log_return(close, length=None, cumulative=False, offset=None, **kwargs):
         log_return = log_return.cumsum()
 
     # Offset
-    log_return = log_return.shift(offset)
+    if offset != 0:
+        log_return = log_return.shift(offset)
 
     # Name & Category
     log_return.name = f"{'CUM' if cumulative else ''}LOGRET_{length}"
@@ -42,7 +43,8 @@ def percent_return(close, length=None, cumulative=False, offset=None, **kwargs):
         pct_return = pct_return.cumsum()
 
     # Offset
-    pct_return = pct_return.shift(offset)
+    if offset != 0:
+        pct_return = pct_return.shift(offset)
 
     # Name & Category
     pct_return.name = f"{'CUM' if cumulative else ''}PCTRET_{length}"

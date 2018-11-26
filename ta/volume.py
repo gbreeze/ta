@@ -35,7 +35,8 @@ def ad(high, low, close, volume, open_=None, offset=None, **kwargs):
     ad = ad.cumsum()
 
     # Offset
-    ad = ad.shift(offset)
+    if offset != 0:
+        ad = ad.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -70,7 +71,8 @@ def adosc(high, low, close, volume, open_=None, fast=None, slow=None, offset=Non
     adosc = fast_ad - slow_ad
 
     # Offset
-    adosc = adosc.shift(offset)
+    if offset != 0:
+        adosc = adosc.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -108,7 +110,8 @@ def cmf(high, low, close, volume, open_=None, length=None, offset=None, **kwargs
     cmf = ad.rolling(length, min_periods=min_periods).sum() / volume.rolling(length, min_periods=min_periods).sum()
 
     # Offset
-    cmf = cmf.shift(offset)
+    if offset != 0:
+        cmf = cmf.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -143,7 +146,8 @@ def efi(close, volume, length=None, drift=None, mamode=None, offset=None, **kwar
         efi = pv_diff.ewm(span=length, min_periods=min_periods).mean()
 
     # Offset
-    efi = efi.shift(offset)
+    if offset != 0:
+        efi = efi.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -179,7 +183,8 @@ def eom(high, low, close, volume, length=None, divisor=None, drift=None, offset=
     eom = eom.rolling(length, min_periods=min_periods).mean()
 
     # Offset
-    eom = eom.shift(offset)
+    if offset != 0:
+        eom = eom.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -223,6 +228,10 @@ def mfi(high, low, close, volume, length=None, drift=None, offset=None, **kwargs
     mfi = 100 * psum / (psum + nsum)
     tdf['mfi'] = mfi
 
+    # Offset
+    if offset != 0:
+        mfi = mfi.shift(offset)
+
     # Handle fills
     if 'fillna' in kwargs:
         mfi.fillna(kwargs['fillna'], inplace=True)
@@ -255,7 +264,8 @@ def nvi(close, volume, length=None, initial=None, offset=None, **kwargs):
     nvi = nvi.cumsum()
 
     # Offset
-    nvi = nvi.shift(offset)
+    if offset != 0:
+        nvi = nvi.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -282,7 +292,8 @@ def obv(close, volume, offset=None, **kwargs):
     obv = signed_volume.cumsum()
 
     # Offset
-    obv = obv.shift(offset)
+    if offset != 0:
+        obv = obv.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -311,7 +322,8 @@ def pvol(close, volume, signed=True, offset=None, **kwargs):
         pvol = close * volume
 
     # Offset
-    pvol = pvol.shift(offset)
+    if offset != 0:
+        pvol = pvol.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -339,7 +351,8 @@ def pvt(close, volume, drift=None, offset=None, **kwargs):
     pvt = pv.cumsum()
 
     # Offset
-    pvt = pvt.shift(offset)
+    if offset != 0:
+        pvt = pvt.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:

@@ -27,7 +27,8 @@ def dema(close, length=None, offset=None, **kwargs):
     dema = 2 * ema1 - ema2
 
     # Offset
-    dema = dema.shift(offset)
+    if offset != 0:
+        dema = dema.shift(offset)
 
     # Name & Category
     dema.name = f"DEMA_{length}"
@@ -54,7 +55,8 @@ def ema(close, length=None, offset=None, **kwargs):
     ema = close.ewm(span=length, min_periods=min_periods, adjust=adjust).mean()
 
     # Offset
-    ema = ema.shift(offset)
+    if offset != 0:
+        ema = ema.shift(offset)
 
     # Name & Category
     ema.name = f"EMA_{length}"
@@ -74,7 +76,8 @@ def hl2(high, low, offset=None, **kwargs):
     hl2 = 0.5 * (high + low)
 
     # Offset
-    hl2 = hl2.shift(offset)
+    if offset != 0:
+        hl2 = hl2.shift(offset)
 
     # Name & Category
     hl2.name = "HL2"
@@ -95,7 +98,8 @@ def hlc3(high, low, close, offset=None, **kwargs):
     hlc3 = (high + low + close) / 3
 
     # Offset
-    hlc3 = hlc3.shift(offset)
+    if offset != 0:
+        hlc3 = hlc3.shift(offset)
 
     # Name & Category
     hlc3.name = "HLC3"
@@ -125,7 +129,8 @@ def hma(close, length=None, offset=None, **kwargs):
     hma = wma(close=2 * wmaf - wmas, length=sqrt_length)
 
     # Offset
-    hma = hma.shift(offset)
+    if offset != 0:
+        hma = hma.shift(offset)
 
     # Name & Category
     hma.name = f"HMA_{length}"
@@ -159,11 +164,12 @@ def ichimoku(high, low, close, tenkan=None, kijun=None, senkou=None, offset=None
     chikou_span = close.shift(-kijun)
 
     # Offset
-    tenkan_sen = tenkan_sen.shift(offset)
-    kijun_sen = kijun_sen.shift(offset)
-    span_a = span_a.shift(offset)
-    span_b = span_b.shift(offset)
-    chikou_span = chikou_span.shift(offset)
+    if offset != 0:
+        tenkan_sen = tenkan_sen.shift(offset)
+        kijun_sen = kijun_sen.shift(offset)
+        span_a = span_a.shift(offset)
+        span_b = span_b.shift(offset)
+        chikou_span = chikou_span.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -218,7 +224,8 @@ def midpoint(close, length=None, offset=None, **kwargs):
     midpoint = 0.5 * (lowest + highest)
 
     # Offset
-    midpoint = midpoint.shift(offset)
+    if offset != 0:
+        midpoint = midpoint.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -248,7 +255,8 @@ def midprice(high, low, length=None, offset=None, **kwargs):
     midprice = 0.5 * (lowest_low + highest_high)
 
     # Offset
-    midprice = midprice.shift(offset)
+    if offset != 0:
+        midprice = midprice.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -276,7 +284,8 @@ def ohlc4(open_, high, low, close, offset=None, **kwargs):
     ohlc4 = 0.25 * (open_ + high + low + close)
 
     # Offset
-    ohlc4 = ohlc4.shift(offset)
+    if offset != 0:
+        ohlc4 = ohlc4.shift(offset)
 
     # Name & Category
     ohlc4.name = "OHLC4"
@@ -298,7 +307,8 @@ def rma(close, length=None, offset=None, **kwargs):
     rma = close.ewm(alpha=alpha, min_periods=min_periods).mean()
 
     # Offset
-    rma = rma.shift(offset)
+    if offset != 0:
+        rma = rma.shift(offset)
 
     # Name & Category
     rma.name = f"RMA_{length}"
@@ -319,7 +329,8 @@ def sma(close, length=None, offset=None, **kwargs):
     sma = close.rolling(length, min_periods=min_periods).mean()
 
     # Offset
-    sma = sma.shift(offset)
+    if offset != 0:
+        sma = sma.shift(offset)
 
     # Name & Category
     sma.name = f"SMA_{length}"
@@ -352,7 +363,8 @@ def t3(close, length=None, a=None, offset=None, **kwargs):
     t3 = c1 * e6 + c2 * e5 + c3 * e4 + c4 * e3
 
     # Offset
-    t3 = t3.shift(offset)
+    if offset != 0:
+        t3 = t3.shift(offset)
 
     # Name & Category
     t3.name = f"T3_{length}_{a}"
@@ -376,7 +388,8 @@ def tema(close, length=None, offset=None, **kwargs):
     tema = 3 * (ema1 - ema2) + ema3
 
     # Offset
-    tema = tema.shift(offset)
+    if offset != 0:
+        tema = tema.shift(offset)
 
     # Name & Category
     tema.name = f"TEMA_{length}"
@@ -424,7 +437,8 @@ def vwap(high, low, close, volume, offset=None, **kwargs):
     vwap = tpv.cumsum() / volume.cumsum()
 
     # Offset
-    vwap = vwap.shift(offset)
+    if offset != 0:
+        vwap = vwap.shift(offset)
 
     # Name & Category
     vwap.name = "VWAP"
@@ -446,7 +460,8 @@ def vwma(close, volume, length=None, offset=None, **kwargs):
     vwma = sma(close=pv, length=length) / sma(close=volume, length=length)
 
     # Offset
-    vwma = vwma.shift(offset)
+    if offset != 0:
+        vwma = vwma.shift(offset)
 
     # Name & Category
     vwma.name = f"VWMA_{length}"
@@ -478,7 +493,8 @@ def wma(close, length=None, asc=None, offset=None, **kwargs):
     wma = close_.apply(linear_weights(weights), raw=True)
 
     # Offset
-    wma = wma.shift(offset)
+    if offset != 0:
+        wma = wma.shift(offset)
 
     # Name & Category
     wma.name = f"WMA_{length}"

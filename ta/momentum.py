@@ -33,7 +33,8 @@ def ao(high, low, fast=None, slow=None, offset=None, **kwargs):
     ao = fast_sma - slow_sma
 
     # Offset
-    ao = ao.shift(offset)
+    if offset != 0:
+        ao = ao.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -64,6 +65,10 @@ def apo(close, fast=None, slow=None, offset=None, **kwargs):
     slowma = close.ewm(span=slow, min_periods=min_periods).mean()
     apo = fastma - slowma
 
+    # Offset
+    if offset != 0:
+        apo = apo.shift(offset)
+
     # Handle fills
     if 'fillna' in kwargs:
         apo.fillna(kwargs['fillna'], inplace=True)
@@ -92,7 +97,8 @@ def bop(open_, high, low, close, offset=None, **kwargs):
     bop = close_open_range / high_log_range
 
     # Offset
-    bop = bop.shift(offset)
+    if offset != 0:
+        bop = bop.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -130,7 +136,8 @@ def cci(high, low, close, length=None, c=None, offset=None, **kwargs):
     cci = (typical_price - mean_typical_price) / (c * mad_typical_price)
 
     # Offset
-    cci = cci.shift(offset)
+    if offset != 0:
+        cci = cci.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -166,7 +173,8 @@ def cmo(close, length=None, drift=None, offset=None, **kwargs):
     cmo = 100 * (pos_sum - neg_sum) / (pos_sum + neg_sum)
 
     # Offset
-    cmo = cmo.shift(offset)
+    if offset != 0:
+        cmo = cmo.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -196,7 +204,8 @@ def coppock(close, length=None, fast=None, slow=None, offset=None, **kwargs):
     coppock = wma(total_roc, length)
 
     # Offset
-    coppock = coppock.shift(offset)
+    if offset != 0:
+        coppock = coppock.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -240,8 +249,9 @@ def kst(close, roc1=None, roc2=None, roc3=None, roc4=None, sma1=None, sma2=None,
     kst_signal = kst.rolling(signal).mean()
 
     # Offset
-    kst = kst.shift(offset)
-    kst_signal = kst_signal.shift(offset)
+    if offset != 0:
+        kst = kst.shift(offset)
+        kst_signal = kst_signal.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -286,9 +296,10 @@ def macd(close, fast=None, slow=None, signal=None, offset=None, **kwargs):
     histogram = macd - signalma
 
     # Offset
-    macd = macd.shift(offset)
-    histogram = histogram.shift(offset)
-    signalma = signalma.shift(offset)
+    if offset != 0:
+        macd = macd.shift(offset)
+        histogram = histogram.shift(offset)
+        signalma = signalma.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -326,7 +337,8 @@ def mom(close, length=None, offset=None, **kwargs):
     mom = close.diff(length)
 
     # Offset
-    mom = mom.shift(offset)
+    if offset != 0:
+        mom = mom.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -362,9 +374,10 @@ def ppo(close, fast=None, slow=None, signal=None, offset=None, **kwargs):
     histogram = ppo - signalma
 
     # Offset
-    ppo = ppo.shift(offset)
-    signalma = signalma.shift(offset)
-    histogram = histogram.shift(offset)
+    if offset != 0:
+        ppo = ppo.shift(offset)
+        signalma = signalma.shift(offset)
+        histogram = histogram.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -403,7 +416,8 @@ def roc(close, length=None, offset=None, **kwargs):
     roc = 100 * mom(close=close, length=length) / close.shift(length)
 
     # Offset
-    roc = roc.shift(offset)
+    if offset != 0:
+        roc = roc.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -439,7 +453,8 @@ def rsi(close, length=None, drift=None, offset=None, **kwargs):
     rsi = 100 * positive_avg / (positive_avg + negative_avg)
 
     # Offset
-    rsi = rsi.shift(offset)
+    if offset != 0:
+        rsi = rsi.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -476,10 +491,11 @@ def stoch(high, low, close, fast_k=None, slow_k=None, slow_d=None, offset=None, 
     slowd = slowk.rolling(slow_d, min_periods=slow_d).mean()
 
     # Offset
-    fastk = fastk.shift(offset)
-    fastd = fastd.shift(offset)
-    slowk = slowk.shift(offset)
-    slowd = slowd.shift(offset)
+    if offset != 0:
+        fastk = fastk.shift(offset)
+        fastd = fastd.shift(offset)
+        slowk = slowk.shift(offset)
+        slowd = slowd.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -525,7 +541,8 @@ def trix(close, length=None, drift=None, offset=None, **kwargs):
     trix = 100 * ema3.pct_change(drift)
 
     # Offset
-    trix = trix.shift(offset)
+    if offset != 0:
+        trix = trix.shift(offset)
 
     # Name & Category
     trix.name = f"TRIX_{length}"
@@ -557,7 +574,8 @@ def tsi(close, fast=None, slow=None, drift=None, offset=None, **kwargs):
     tsi = 100 * fast_slow_ema / ma
 
     # Offset
-    tsi = tsi.shift(offset)
+    if offset != 0:
+        tsi = tsi.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -606,7 +624,8 @@ def uo(high, low, close, fast=None, medium=None, slow=None, fast_w=None, medium_
     uo = 100 * weights / total_weight
 
     # Offset
-    uo = uo.shift(offset)
+    if offset != 0:
+        uo = uo.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -638,7 +657,8 @@ def willr(high, low, close, length=None, offset=None, **kwargs):
     willr = 100 * ((close - lowest_low) / (highest_high - lowest_low) - 1)
 
     # Offset
-    willr = willr.shift(offset)
+    if offset != 0:
+        willr = willr.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:

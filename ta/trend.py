@@ -45,9 +45,10 @@ def adx(high, low, close, length=None, drift=None, offset=None, **kwargs):
     adx = rma(close=dx, length=length)
 
     # Offset
-    dmp = dmp.shift(offset)
-    dmn = dmn.shift(offset)
-    adx = adx.shift(offset)
+    if offset != 0:
+        dmp = dmp.shift(offset)
+        dmn = dmn.shift(offset)
+        adx = adx.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -102,6 +103,11 @@ def aroon(close, length=None, offset=None, **kwargs):
         aroon_up.fillna(method=kwargs['fill_method'], inplace=True)
         aroon_down.fillna(method=kwargs['fill_method'], inplace=True)
 
+    # Offset
+    if offset != 0:
+        aroon_up = aroon_up.shift(offset)
+        aroon_down = aroon_down.shift(offset)
+
     # Name and Categorize it
     aroon_up.name = f"AROONU_{length}"
     aroon_down.name = f"AROOND_{length}"
@@ -130,7 +136,8 @@ def decreasing(close, length=None, asint=True, offset=None, **kwargs):
         decreasing = decreasing.astype(int)
 
     # Offset
-    decreasing = decreasing.shift(offset)
+    if offset != 0:
+        decreasing = decreasing.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -161,7 +168,8 @@ def dpo(close, length=None, centered=True, offset=None, **kwargs):
         dpo = dpo.shift(-drift)
 
     # Offset
-    dpo = dpo.shift(offset)
+    if offset != 0:
+        dpo = dpo.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -189,7 +197,8 @@ def increasing(close, length=None, asint=True, offset=None, **kwargs):
         increasing = increasing.astype(int)
 
     # Offset
-    increasing = increasing.shift(offset)
+    if offset != 0:
+        increasing = increasing.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -226,8 +235,9 @@ def vortex(high, low, close, length=None, drift=None, offset=None, **kwargs):
     vim = vmm.rolling(length, min_periods=min_periods).sum() / tr_sum
 
     # Offset
-    vip = vip.shift(offset)
-    vim = vim.shift(offset)
+    if offset != 0:
+        vip = vip.shift(offset)
+        vim = vim.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:

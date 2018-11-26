@@ -15,7 +15,6 @@ from .statistics import variance, stdev
 
 
 
-
 def accbands(high, low, close, length=None, c=None, drift=None, mamode=None, offset=None, **kwargs):
     """Indicator: Acceleration Bands (ACCBANDS)
     https://www.tradingtechnologies.com/help/x-study/technical-indicator-definitions/acceleration-bands-abands/
@@ -47,9 +46,10 @@ def accbands(high, low, close, length=None, c=None, drift=None, mamode=None, off
         upper = _upper.ewm(span=length, min_periods=min_periods).mean()
 
     # Offset
-    lower = lower.shift(offset)
-    mid = mid.shift(offset)
-    upper = upper.shift(offset)
+    if offset != 0:
+        lower = lower.shift(offset)
+        mid = mid.shift(offset)
+        upper = upper.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -96,7 +96,8 @@ def atr(high, low, close, length=None, mamode=None, drift=None, offset=None, **k
         atr = tr.rolling(length, min_periods=min_periods).mean()
 
     # Offset
-    atr = atr.shift(offset)
+    if offset != 0:
+        atr = atr.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -134,9 +135,10 @@ def bbands(close, length=None, std=None, mamode=None, offset=None, **kwargs):
     upper = mid + std * standard_deviation
 
     # Offset
-    lower = lower.shift(offset)
-    mid = mid.shift(offset)
-    upper = upper.shift(offset)
+    if offset != 0:
+        lower = lower.shift(offset)
+        mid = mid.shift(offset)
+        upper = upper.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -187,9 +189,10 @@ def donchian(close, length=None, offset=None, **kwargs):
         upper.fillna(method=kwargs['fill_method'], inplace=True)
 
     # Offset
-    lower = lower.shift(offset)
-    mid = mid.shift(offset)
-    upper = upper.shift(offset)
+    if offset != 0:
+        lower = lower.shift(offset)
+        mid = mid.shift(offset)
+        upper = upper.shift(offset)
 
     # Name and Categorize it
     lower.name = f"DCL_{length}"
@@ -234,9 +237,10 @@ def kc(high, low, close, length=None, scalar=None, mamode=None, offset=None, **k
     upper = basis + scalar * band
 
     # Offset
-    lower = lower.shift(offset)
-    basis = basis.shift(offset)
-    upper = upper.shift(offset)
+    if offset != 0:
+        lower = lower.shift(offset)
+        basis = basis.shift(offset)
+        upper = upper.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -284,7 +288,8 @@ def massi(high, low, fast=None, slow=None, offset=None, **kwargs):
     massi = hl_ratio.rolling(slow, min_periods=slow).sum()
 
     # Offset
-    massi = massi.shift(offset)
+    if offset != 0:
+        massi = massi.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -314,7 +319,8 @@ def natr(high, low, close, length=None, mamode=None, drift=None, offset=None, **
     natr = (100 / close) * atr(high=high, low=low, close=close, length=length, mamode=mamode, drift=drift, offset=offset, **kwargs)
 
     # Offset
-    natr = natr.shift(offset)
+    if offset != 0:
+        natr = natr.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:
@@ -345,7 +351,8 @@ def true_range(high, low, close, drift=None, offset=None, **kwargs):
     true_range = true_range.abs().max(axis=1)
 
     # Offset
-    true_range = true_range.shift(offset)
+    if offset != 0:
+        true_range = true_range.shift(offset)
 
     # Handle fills
     if 'fillna' in kwargs:

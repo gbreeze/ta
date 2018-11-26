@@ -3,8 +3,23 @@ import math
 import numpy as np
 import pandas as pd
 
+from functools import reduce
+from operator import mul
 from sys import float_info as sflt
 
+
+
+def combination(n:int, r:int):
+    """https://stackoverflow.com/questions/4941753/is-there-a-math-ncr-function-in-python"""
+    if r < 0:
+        return None
+    r = min(n, n - r)
+    if r == 0:
+        return 1
+
+    numerator   = reduce(mul, range(n, n - r, -1), 1)
+    denominator = reduce(mul, range(1, r + 1), 1)
+    return numerator // denominator
 
 
 def dropna(df):

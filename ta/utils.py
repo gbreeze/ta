@@ -22,7 +22,7 @@ def combination(n:int, r:int):
     return numerator // denominator
 
 
-def dropna(df):
+def dropna(df:pd.DataFrame):
     """Drop rows with 'Nan' values"""
     df = df[df < math.exp(709)] # big number
     df = df[df != 0.0]
@@ -51,21 +51,21 @@ def get_offset(x:int):
 
 
 def pascals_triangle(n:int):
-    """Pascal's Triangle:
-    https://www.sanfoundry.com/python-program-print-pascal-triangle/"""
-    
-    triangles = []
-    for i in range(n):
-        triangles.append([])
-        triangles[i].append(1)
-        for j in range(1,i):
-           triangles[i].append(triangles[i - 1][j - 1] + triangles[i - 1][j])
+    if n < 0:
+        return None
 
-        if n != 0:
-            triangles[i].append(1)
-        
-    last, total = np.array(triangles[-1]), np.sum(triangles[-1])
-    return last, total
+    triangle = np.array([combination(n, i) for i in range(0, n + 1)])
+
+    # Variations
+    max_ = np.max(triangle)
+    inverted = max_ - triangle
+    triangle_sum = np.sum(triangle)
+    triangle_avg = np.average(triangle)
+
+    weighted = triangle / triangle_sum
+    inv_weighted = inverted / triangle_sum
+
+    return triangle, inverted, weighted, inv_weighted, triangle_avg
 
 
 def signed_series(series:pd.Series, initial:int = None):

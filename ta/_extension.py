@@ -370,6 +370,13 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    def fwma(self, close=None, length=None, offset=None, **kwargs):
+        close = self._get_column(close, 'close')
+        result = fwma(close=close, length=length, offset=offset, **kwargs)
+        self._append(result, **kwargs)
+        return result
+
+
     def hl2(self, high=None, low=None, offset=None, **kwargs):
         high = self._get_column(high, 'high')
         low = self._get_column(low, 'low')

@@ -84,10 +84,11 @@ A [Pandas DataFrame Extension](https://pandas.pydata.org/pandas-docs/stable/exte
 | ![Example MACD](/doc/Example_SPY_MACD.png) |
 
 
-## _Overlap_ (18)
+## _Overlap_ (19)
 
 * _Double Exponential Moving Average_: **dema**
 * _Exponential Moving Average_: **ema**
+* _Fibonacci's Weighted Moving Average_: **fwma**
 * _High-Low Average_: **hl2**
 * _High-Low-Close Average_: **hlc3**
     * Commonly known as 'Typical Price' in Technical Analysis literature

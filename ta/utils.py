@@ -22,6 +22,21 @@ def combination(n:int, r:int):
     return numerator // denominator
 
 
+def fibonacci(n:int, zero=True):
+    """Fibonacci Sequence as a numpy array"""
+    if zero:
+        a, b = 0, 1
+    else:
+        n -= 1
+        a, b = 1, 1
+
+    result = np.array([a])
+    for i in range(0, n):
+        a, b = b, a + b
+        result = np.append(result, a)
+    return result
+
+
 def dropna(df:pd.DataFrame):
     """Drop rows with 'Nan' values"""
     df = df[df < math.exp(709)] # big number

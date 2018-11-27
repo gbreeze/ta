@@ -40,8 +40,9 @@ def ema_depreciated(series:pd.Series, periods:int):
     return pd.concat([sma, rest]).ewm(span=periods, adjust=False).mean()
 
 
-def fibonacci(n:int, zero=True):
+def fibonacci(n:int, weighted=True, **kwargs):
     """Fibonacci Sequence as a numpy array"""
+    zero = kwargs.pop('zero', True)
     if zero:
         a, b = 0, 1
     else:
@@ -52,7 +53,12 @@ def fibonacci(n:int, zero=True):
     for i in range(0, n):
         a, b = b, a + b
         result = np.append(result, a)
-    return result
+
+    if weighted:
+        fib_sum = np.sum(result)
+        return result / fib_sum
+    else:
+        return result
 
 
 def get_drift(x:int):

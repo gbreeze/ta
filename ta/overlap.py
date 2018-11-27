@@ -9,7 +9,8 @@ try:
 except ImportError:
     _SCIPY_ = False
 
-from .utils import get_drift, get_offset, pascals_triangle, verify_series
+from .utils import pascals_triangle
+from .utils import get_drift, get_offset, verify_series
 
 
 

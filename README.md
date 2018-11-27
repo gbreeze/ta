@@ -41,7 +41,7 @@ df.tail()
 
 ## New Changes
 
-* At 65+ indicators.
+* At 70+ indicators.
 * Abbreviated Indicator names as listed below.
 * *Extended Pandas DataFrame* as 'ta'.  See examples below.
 * Parameter names are more consistent.
@@ -84,24 +84,25 @@ A [Pandas DataFrame Extension](https://pandas.pydata.org/pandas-docs/stable/exte
 | ![Example MACD](/doc/Example_SPY_MACD.png) |
 
 
-## _Overlap_ (17)
+## _Overlap_ (18)
 
 * _Double Exponential Moving Average_: **dema**
 * _Exponential Moving Average_: **ema**
 * _High-Low Average_: **hl2**
 * _High-Low-Close Average_: **hlc3**
-    * Also knowns as 'Typical Price'
+    * Commonly known as 'Typical Price' in Technical Analysis literature
 * _Hull Exponential Moving Average_: **hma**
 * _Ichimoku Kinkō Hyō_: **ichimoku**
     * Use: help(ta.ichimoku). Returns two DataFrames.
 * _Midpoint_: **midpoint**
 * _Midprice_: **midprice**
 * _Open-High-Low-Close Average_: **ohlc4**
+* _Pascal's Weighted Moving Average_: **pwma**
 * _William's Moving Average_: **rma**
 * _Simple Moving Average_: **sma**
 * _T3 Moving Average_: **t3**
 * _Triple Exponential Moving Average_: **tema**
-* _Triangular Moving Average_: **trima** (requires scipy)
+* _Triangular Moving Average_: **trima**
 * _Volume Weighted Average Price_: **vwap**
 * _Volume Weighted Moving Average_: **vwma**
 * _Weighted Moving Average_: **wma**

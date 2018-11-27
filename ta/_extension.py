@@ -428,6 +428,13 @@ class AnalysisIndicators(BasePandasObject):
         return result
 
 
+    def pwma(self, close=None, length=None, offset=None, **kwargs):
+        close = self._get_column(close, 'close')
+        result = pwma(close=close, length=length, offset=offset, **kwargs)
+        self._append(result, **kwargs)
+        return result
+
+
     def rma(self, close=None, length=None, offset=None, **kwargs):
         close = self._get_column(close, 'close')
         result = rma(close=close, length=length, offset=offset, **kwargs)

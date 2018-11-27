@@ -70,12 +70,13 @@ def multichoose(n:int, r:int):
     return combination(n + r - 1, r)
 
 
-def pascals_triangle(n:int):
+def pascals_triangle(n:int, weighted=True, **kwargs):
     """Pascal's Triangle
 
     Returns a numpy array of the nth row of Pascal's Triangle.
     """
     if n < 0: return None
+    sink = kwargs.pop('all', False)
 
     # Calculation
     triangle = np.array([combination(n, i) for i in range(0, n + 1)])
@@ -86,10 +87,15 @@ def pascals_triangle(n:int):
     triangle_sum = np.sum(triangle)
     triangle_avg = np.average(triangle)
 
-    weighted = triangle / triangle_sum
-    inv_weighted = inverted / triangle_sum
+    weights = triangle / triangle_sum
+    inv_weights = inverted / triangle_sum
 
-    return triangle, triangle_sum, triangle_avg, inverted, weighted, inv_weighted, triangle_avg
+    if sink:
+        return triangle, triangle_sum, triangle_avg, inverted, weights, inv_weights, triangle_avg
+    if weighted:
+        return weights
+    else:
+        return triangle
 
 
 def signed_series(series:pd.Series, initial:int = None):
